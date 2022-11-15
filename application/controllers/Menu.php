@@ -98,7 +98,7 @@ class Menu extends CI_Controller
             $icon = htmlspecialchars($this->input->post('icon'));
             $is_active = $this->input->post('is_active');
 
-            if (str_contains($icon, 'fa-fw') == false)
+            if (strpos($icon, 'fa-fw') == false)
                 $icon = $icon . ' fa-fw';
 
             $data = [
@@ -229,7 +229,7 @@ class Menu extends CI_Controller
             $icon = htmlspecialchars($this->input->post('icon'));
             $is_active = $this->input->post('is_active');
 
-            if (str_contains($icon, 'fa-fw') == false)
+            if (strpos($icon, 'fa-fw') == false)
                 $icon = $icon . ' fa-fw';
 
             $data = [

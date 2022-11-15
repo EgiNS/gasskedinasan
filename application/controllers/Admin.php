@@ -18,7 +18,9 @@ class Admin extends CI_Controller
         $this->load->model('Tryout_model', 'tryout');
         $this->load->model('User_tryout_model', 'user_tryout');
         $this->load->model('Repop_tinymce_model', 'repop_tinymce');
+        $this->load->model('Latsol_model', 'latsol');
 
+        $this->load->helper(array('url','download'));
         $this->loginUser = $this->user->getLoginUser();
         $this->tipeSoal = $this->soal->getAllTipeSoal();
         $this->sidebarMenu = 'Admin';
@@ -362,7 +364,14 @@ class Admin extends CI_Controller
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $title = 'Tambah Soal ' . $tryout['name'];
         $count_soal = $this->soal->getNumRows(['id >' => 0], $slug);
 
@@ -384,7 +393,7 @@ class Admin extends CI_Controller
                 'href' => 'active'
             ],
             [
-                'title' => 'No. ' . $count_soal + 1,
+                'title' => 'No. ' . ($count_soal + 1),
                 'href' => 'active'
             ]
         ];
@@ -392,7 +401,7 @@ class Admin extends CI_Controller
         $count_soal = $this->soal->getNumRows(['id >' => 0], $slug);
         if ($count_soal == (int)$tryout['jumlah_soal']) {
             $this->session->set_flashdata('error', 'Tidak dapat menambahkan soal baru karena jumlah soal tryout sudah lengkap');
-            redirect('admin/soaltryout/' . $slug);
+            redirect('admin/soal' . $jenis . '/' . $slug);
         }
 
         $data = [
@@ -958,7 +967,14 @@ class Admin extends CI_Controller
         $slug = $this->input->get('tryout');
         $soal = $this->soal->get('one', ['token' => $token_edit], $slug);
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $title = 'Edit No. ' . $soal['id'] . ' ' . $tryout['name'];
 
         $breadcrumb_item = [
@@ -1804,7 +1820,14 @@ class Admin extends CI_Controller
         $email_kunci_jawaban = 'kunci_jawaban_' . $slug . '@gmail.com';
         $soal = $this->soal->get('one', ['token' => $token], $slug);
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $title = 'No. ' . $soal['id'] . ' ' . $tryout['name'];
 
         $breadcrumb_item = [
@@ -2102,25 +2125,37 @@ class Admin extends CI_Controller
 
     public function userparadata($slug)
     {
-        $submenu_parent = 3;
-        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
-        submenu_access($submenu_parent);
         $id = $this->input->get('id');
         // User Tryout
         $user_tryout = $this->user_tryout->get('one', ['id' => $id], $slug);
         $user = $this->user->get('one', ['email' => $user_tryout['email']]);
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+            $submenu_parent = 3;
+            $href1 = 'admin/tryout';
+            $href2 = 'admin/detailtryout/';
+        } else {
+            $jenis = 'latsol';
+            $submenu_parent = 15;
+            $href1 = 'admin/bimbel';
+            $href2 = 'admin/detaillatsol/';
+        }
+        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
+        submenu_access($submenu_parent);
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $title = 'Paradata ' . $user['name'] . ' - ' . $tryout['name'];
 
         $breadcrumb_item = [
             [
                 'title' => $parent_title,
-                'href' => 'admin/tryout'
+                'href' => $href1
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => $href2 . $tryout['slug']
             ],
             [
                 'title' => 'Paradata',
@@ -2214,14 +2249,26 @@ class Admin extends CI_Controller
 
     public function nilaipeserta($slug)
     {
-        $submenu_parent = 3;
+        $id = $this->input->get('id');
+
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+            $submenu_parent = 3;
+            $href1 = 'admin/tryout';
+            $href2 = 'admin/detailtryout/';
+        } else {
+            $jenis = 'latsol';
+            $submenu_parent = 15;
+            $href1 = 'admin/bimbel';
+            $href2 = 'admin/detaillatsol/';
+        }
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
-        $id = $this->input->get('id');
 
         // User Tryout
         $user_tryout = $this->user_tryout->get('one', ['id' => $id], $slug);
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $user = $this->user->get('one', ['email' => $user_tryout['email']]);
 
         $title = 'Nilai ' . $user['name'] . ' - ' . $tryout['name'];
@@ -2229,11 +2276,11 @@ class Admin extends CI_Controller
         $breadcrumb_item = [
             [
                 'title' => $parent_title,
-                'href' => 'admin/tryout'
+                'href' => $href1
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => $href2 . $tryout['slug']
             ],
             [
                 'title' => 'Nilai',
@@ -2762,7 +2809,7 @@ class Admin extends CI_Controller
                         'updated_at' => $now
                     ];
 
-                    $this->bobot_nilai->update($data, ['jawaban' => 'benar']);
+                    $this->bobot_nilai->update($data, ['jawaban' => 'benar', 'tryout' => $tryout['slug']]);
 
                     $data = [
                         'bobot' => $bobot_salah,
@@ -2770,7 +2817,7 @@ class Admin extends CI_Controller
                         'updated_at' => $now
                     ];
 
-                    $this->bobot_nilai->update($data, ['jawaban' => 'salah']);
+                    $this->bobot_nilai->update($data, ['jawaban' => 'salah', 'tryout' => $tryout['slug']]);
 
                     for ($i = 1; $i <= $tryout['jumlah_soal']; $i++) {
 
@@ -2810,8 +2857,15 @@ class Admin extends CI_Controller
     {
         $sub_menu_parent = 3;
         submenu_access($sub_menu_parent);
+        
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
 
         $kunci_jawaban = ['A', 'B', 'C', 'D', 'E'];
         $email_kunci_twk_tiu = 'kunci_jawaban_' . $slug . '@gmail.com';
@@ -2910,7 +2964,7 @@ class Admin extends CI_Controller
         }
         $page = $this->input->get('page');
         $this->session->set_flashdata('success', 'Generate Dummy Soal Tryout ' . $tryout['name']);
-        redirect('admin/soaltryout/' . $slug . '?per_page=' . $page);
+        redirect('admin/soal' . $jenis . '/' . $slug . '?per_page=' . $page);
     }
 
     public function paymentlist()
@@ -3186,17 +3240,25 @@ class Admin extends CI_Controller
         $sub_menu_parent = 3;
         submenu_access($sub_menu_parent);
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
+
         if ($tryout['hidden'] == 0) {
-            $this->tryout->update(['hidden' => 1], ['slug' => $slug]);
+            $this->$jenis->update(['hidden' => 1], ['slug' => $slug]);
 
             $this->session->set_flashdata('success', 'Menyembunyikan Tryout');
         } else if ($tryout['hidden'] == 1) {
-            $this->tryout->update(['hidden' => 0], ['slug' => $slug]);
+            $this->$jenis->update(['hidden' => 0], ['slug' => $slug]);
 
             $this->session->set_flashdata('success', 'Menampilkan Tryout');
         }
-        redirect('admin/detailtryout/' . $slug);
+        redirect('admin/detail' . $jenis .'/' . $slug);
     }
 
     public function hapustryout()
@@ -3245,6 +3307,55 @@ class Admin extends CI_Controller
             $this->tryout->dropTryoutnonSKD($slug);
 
         $this->tryout->delete(['id' => $id]);
+        $this->bobot_nilai->delete(['tryout' => $slug]);
+
+        $this->session->set_flashdata('success', 'Menghapus Tryout');
+    }
+
+    public function hapuslatsol()
+    {
+        $id = $this->input->post('id');
+
+        $latsol = $this->latsol->get('one', ['id' => $id]);
+        $slug = $latsol['slug'];
+
+        $soal = $this->soal->getAll($slug);
+        $path_gambar_soal = FCPATH . 'assets/img/soal/';
+
+        foreach ($soal as $s) {
+
+            // HAPUS FILE GAMBAR PADA FOLDER
+            if ($s['gambar_soal'] != null)
+                if (file_exists($path_gambar_soal . $s['gambar_soal']))
+                    unlink($path_gambar_soal . $s['gambar_soal']);
+
+            if ($s['gambar_a'] != null) {
+                if (file_exists($path_gambar_soal . $s['gambar_a']))
+                    unlink($path_gambar_soal . $s['gambar_a']);
+                if (file_exists($path_gambar_soal . $s['gambar_b']))
+                    unlink($path_gambar_soal . $s['gambar_b']);
+                if (file_exists($path_gambar_soal . $s['gambar_c']))
+                    unlink($path_gambar_soal . $s['gambar_c']);
+                if (file_exists($path_gambar_soal . $s['gambar_d']))
+                    unlink($path_gambar_soal . $s['gambar_d']);
+                if (file_exists($path_gambar_soal . $s['gambar_e']))
+                    unlink($path_gambar_soal . $s['gambar_e']);
+            }
+
+            if ($s['gambar_pembahasan'] != null)
+                if (file_exists($path_gambar_soal . $s['gambar_pembahasan']))
+                    unlink($path_gambar_soal . $s['gambar_pembahasan']);
+        }
+
+        // HAPUS FILE PEMBAHASAN
+        if ($latsol['materi'] != null)
+            if (file_exists(FCPATH . 'assets/file/' . $latsol['materi']))
+                unlink(FCPATH . 'assets/file/' . $latsol['materi']);
+
+
+            $this->latsol->dropTryoutnonSKD($slug);
+
+        $this->latsol->delete(['id' => $id]);
         $this->bobot_nilai->delete(['tryout' => $slug]);
 
         $this->session->set_flashdata('success', 'Menghapus Tryout');
@@ -3325,8 +3436,14 @@ class Admin extends CI_Controller
     {
         $sub_menu_parent = 3;
         submenu_access($sub_menu_parent);
-
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $soal_tryout = $this->soal->getNumRows(['id >' => 0], $slug);
 
         if ($soal_tryout == $tryout['jumlah_soal']) {
@@ -3335,8 +3452,8 @@ class Admin extends CI_Controller
                 $bobot_nilai_A = $this->bobot_nilai_tiap_soal->get('one', ['pilihan' => 'A'], $slug);
 
                 if ($bobot_nilai[0]['status'] == 0 && $bobot_nilai_A[1] == null) {
-                    $this->session->set_flashdata('error', 'Gagal melakukan release Tryout. Anda belum menetapkan bobot nilai pada soal tryout ini, silakan tetapkan bobot nilai pada menu Soal Tryout');
-                    redirect('admin/detailtryout/' . $slug);
+                    $this->session->set_flashdata('error', 'Gagal melakukan release Tryout Anda belum menetapkan bobot nilai pada soal tryout ini, silakan tetapkan bobot nilai pada menu Soal Tryout');
+                    redirect('admin/detail' . $jenis  . '/' . $slug);
                 } else if ($bobot_nilai[0]['status'] == 1) {
                     $kunci_jawaban = $this->jawaban->get('one', ['email' => 'kunci_jawaban_' . $slug . '@gmail.com'], $slug);
                     $stop = false;
@@ -3352,55 +3469,55 @@ class Admin extends CI_Controller
                         foreach ($soal as $s)
                             $message = $s . ', ';
                         $this->session->set_flashdata('error', 'Soal nomor ' . $message . 'merupakan soal yang kunci jawabannya belum diinputkan. Silakan input kunci jawaban pada soal-soal tersebut pada menu Edit Soal');
-                        redirect('admin/detailtryout/' . $slug);
+                        redirect('admin/detail' . $jenis  . '/' . $slug);
                     } else {
                         if ($tryout['status'] == 0) {
-                            $this->tryout->update(['status' => 1], ['slug' => $slug]);
+                            $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                             $this->session->set_flashdata('success', 'Melakukan release tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                            redirect('admin/detailtryout/' . $slug);
+                            redirect('admin/detail' . $jenis  . '/' . $slug);
                         } else if ($tryout['status'] == 1) {
-                            $this->tryout->update(['status' => 2], ['slug' => $slug]);
+                            $this->$jenis->update(['status' => 2], ['slug' => $slug]);
                             $this->session->set_flashdata('success', 'Menarik kembali tryout. Peserta tidak bisa memulai pengerjaan tryout');
-                            redirect('admin/detailtryout/' . $slug);
+                            redirect('admin/detail' . $jenis  . '/' . $slug);
                         } else if ($tryout['status'] == 2) {
-                            $this->tryout->update(['status' => 1], ['slug' => $slug]);
+                            $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                             $this->session->set_flashdata('success', 'Melakukan release kembali Tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                            redirect('admin/detailtryout/' . $slug);
+                            redirect('admin/detail' . $jenis  . '/' . $slug);
                         }
                     }
                 } else {
                     if ($tryout['status'] == 0) {
-                        $this->tryout->update(['status' => 1], ['slug' => $slug]);
+                        $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                         $this->session->set_flashdata('success', 'Melakukan release tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                        redirect('admin/detailtryout/' . $slug);
+                        redirect('admin/detail' . $jenis  . '/' . $slug);
                     } else if ($tryout['status'] == 1) {
-                        $this->tryout->update(['status' => 2], ['slug' => $slug]);
+                        $this->$jenis->update(['status' => 2], ['slug' => $slug]);
                         $this->session->set_flashdata('success', 'Menarik kembali tryout. Peserta tidak bisa memulai pengerjaan tryout');
-                        redirect('admin/detailtryout/' . $slug);
+                        redirect('admin/detail' . $jenis  . '/' . $slug);
                     } else if ($tryout['status'] == 2) {
-                        $this->tryout->update(['status' => 1], ['slug' => $slug]);
+                        $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                         $this->session->set_flashdata('success', 'Melakukan release kembali Tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                        redirect('admin/detailtryout/' . $slug);
+                        redirect('admin/detail' . $jenis  . '/' . $slug);
                     }
                 }
             } else if ($tryout['tipe_tryout'] == 'SKD') {
                 if ($tryout['status'] == 0) {
-                    $this->tryout->update(['status' => 1], ['slug' => $slug]);
+                    $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                     $this->session->set_flashdata('success', 'Melakukan release tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                    redirect('admin/detailtryout/' . $slug);
+                    redirect('admin/detail' . $jenis  . '/' . $slug);
                 } else if ($tryout['status'] == 1) {
-                    $this->tryout->update(['status' => 2], ['slug' => $slug]);
+                    $this->$jenis->update(['status' => 2], ['slug' => $slug]);
                     $this->session->set_flashdata('success', 'Menarik kembali tryout. Peserta tidak bisa memulai pengerjaan tryout');
-                    redirect('admin/detailtryout/' . $slug);
+                    redirect('admin/detail' . $jenis  . '/' . $slug);
                 } else if ($tryout['status'] == 2) {
-                    $this->tryout->update(['status' => 1], ['slug' => $slug]);
+                    $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                     $this->session->set_flashdata('success', 'Melakukan release kembali Tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                    redirect('admin/detailtryout/' . $slug);
+                    redirect('admin/detail' . $jenis  . '/' . $slug);
                 }
             }
         } else {
             $this->session->set_flashdata('error', 'Gagal melakukan release Tryout. Jumlah soal belum lengkap, silakan lengkapi soal tryout terlebih dahulu untuk melakukan release pada tryout');
-            redirect('admin/detailtryout/' . $slug);
+            redirect('admin/detail' . $jenis  . '/' . $slug);
         }
     }
 
@@ -3438,6 +3555,587 @@ class Admin extends CI_Controller
             else echo false;
         } else if ($count_user_tryout == 0)
             echo json_encode(['status' => 0]);
+    }
+
+    public function bimbelskd() 
+    {
+        $parent_title = getSubmenuTitleById(15)['title'];
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'admin/bimbelskd'
+            ]
+        ];
+
+        $all_materi = $this->latsol->get('many', ['jenis <'=>4]);
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' =>$breadcrumb_item,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'user' => $this->loginUser,
+            'all_materi' => $all_materi
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/bimbel', $data);
+        $this->load->view('templates/user_footer');
+    }
+
+    public function bimbelmtk() 
+    {
+        $parent_title = getSubmenuTitleById(17)['title'];
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'admin/bimbelmtk'
+            ]
+        ];
+
+        $all_materi = $this->latsol->get('many', ['jenis'=>4]);
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' =>$breadcrumb_item,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'user' => $this->loginUser,
+            'all_materi' => $all_materi
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/bimbel', $data);
+        $this->load->view('templates/user_footer');
+    }
+
+    public function tambahlatsol() 
+    {
+        $jenis = $this->input->post('jenis');
+        if ($jenis == 4) {
+            $all_latsol = $this->latsol->get('many', ['jenis'=>4]);
+            $num = 17;
+            $link = 'mtk';
+        } else {
+            $all_latsol = $this->latsol->getAll();
+            $num = 15;
+            $link = 'skd';
+        }
+
+        $parent_title = getSubmenuTitleById($num)['title'];
+        //submenu_acces($num);
+
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'admin/bimbel' . $link
+            ],
+            [
+                'title' => $title,
+                'href' => 'active'
+            ]
+        ];
+
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'user' => $this->loginUser,
+            'all_materi' => $all_latsol
+        ];
+        
+        $jenis = $this->input->post('jenis');
+        $judul = $this->input->post('judul');
+        $slug = 'latsol_' . str_replace(' ', '_', strtolower($judul));
+        $jumlah_soal = $this->input->post('jumlah_soal');
+        $lama_pengerjaan = $this->input->post('lama_pengerjaan');
+
+        $this->form_validation->set_rules('jenis', 'Jenis Materi', 'required');
+        $this->form_validation->set_rules('judul', 'Judul Materi', 'required|is_unique[latsol.name]', [
+            'is_unique' => 'Tidak boleh sama.'
+        ]);
+        $this->form_validation->set_rules('upload_materi', 'File Materi', 'is_unique[latsol.materi]', [
+            'is_unique' => 'Tidak boleh sama.'
+        ]);
+        $this->form_validation->set_rules('jumlah_soal', 'Jumlah Soal', 'required|numeric');
+        $this->form_validation->set_rules('lama_pengerjaan', 'Lama Pengerjaan', 'required|numeric');
+
+        if ($this->form_validation->run() == false) {
+            $this->load->view('templates/user_header', $data);
+            $this->load->view('templates/user_sidebar', $data);
+            $this->load->view('templates/user_topbar', $data);
+            $this->load->view('admin/bimbel', $data);
+            $this->load->view('templates/user_footer');
+        } else {
+            //CONFIQ FILE 
+            $config['allowed_types'] = 'pdf';
+            $config['max_size']     = '20480'; //20MB
+            $config['upload_path'] = './assets/file/materi/';
+            $this->load->library('upload', $config);
+ 
+            if ($this->upload->do_upload('upload_materi')) {
+                $upload_materi = $this->upload->data('file_name');
+            } else {
+                $error = $this->upload->display_errors();
+                $this->session->set_flashdata('error', $error);
+                redirect('admin/bimbel' . $link);
+            }
+            
+            $data = [
+                'jenis' => $jenis,
+                'name' => $judul,
+                'slug' => $slug,
+                'materi' => $upload_materi,
+                'tipe_tryout' => 'nonSKD',
+                'jumlah_soal' => $jumlah_soal,
+                'lama_pengerjaan' => $lama_pengerjaan
+            ];
+            
+            $this->latsol->insert($data, ['slug' => $slug]);
+            
+            $this->load->model('Paradata_model', 'paradata');
+            $this->load->model('Ragu_ragu_model', 'ragu_ragu');
+
+            //CREATE TABLE
+            //PARADATA
+            $this->paradata->createTable($slug);
+
+            //RAGU-RAGU
+            $this->ragu_ragu->createTable($slug, $jumlah_soal);
+
+            //TABEL JAWABAN
+            $this->jawaban->createTable($slug, $jumlah_soal);
+
+            //TABEL SOAL
+            $this->soal->createTablenonSKD($slug);
+
+            //TABEL USER TRYOUT
+            $this->user_tryout->createTablenonSKD($slug);
+
+            //INSERT PESERTA ROLE BIMBEL
+            if ($jenis != 4) {
+                $user_3 = $this->user->get('many', ['role_id'=>3]);
+
+                foreach ($user_3 as $u) {
+                    $data = [
+                        'email' => $u['email'],
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+            
+                    $this->user_tryout->insert($data, $slug);
+                }
+            } else if ($jenis == 4) {
+                $user_4 = $this->user->get('many', ['role_id'=>4]);
+
+                foreach ($user_4 as $u) {
+                    $data = [
+                        'email' => $u['email'],
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+            
+                    $this->user_tryout->insert($data, $slug);
+                }
+            }
+
+            $user_5 = $this->user->get('many', ['role_id'=>5]);
+            $user_6 = $this->user->get('many', ['role_id'=>6]);
+
+            foreach ($user_5 as $u) {
+                $data = [
+                    'email' => $u['email'],
+                    'token' => 11111,
+                    'status' => 0
+                ];
+            
+                $this->user_tryout->insert($data, $slug);
+            }
+
+            foreach ($user_6 as $u) {
+                $data = [
+                    'email' => $u['email'],
+                    'token' => 11111,
+                    'status' => 0
+                ];
+            
+                $this->user_tryout->insert($data, $slug);
+            }
+
+            //TABEL BOBOT NILAI TIAP SOAL
+            $this->bobot_nilai_tiap_soal->createTable($jumlah_soal, $slug);
+
+            $pilihan = ['A', 'B', 'C', 'D', 'E'];
+            foreach ($pilihan as $p)
+                $this->bobot_nilai_tiap_soal->insert(['pilihan' => $p], $slug);
+
+            // INSERT BOBOT NILAI
+            $jawaban = ['benar', 'salah'];
+            foreach ($jawaban as $j) {
+                $data = [
+                    'jawaban' => $j,
+                    'bobot' => null,
+                    'tryout' => $slug,
+                    'status' => 0
+                ];
+
+                $this->bobot_nilai->insert($data);
+            }
+
+            $this->session->set_flashdata('success', 'Mengunggah materi dan membuat latihan soal');
+            redirect('admin/bimbel' . $link);
+        }
+    }
+
+    public function detaillatsol($slug)
+    {
+        $this->load->model('Kode_settings_model', 'kode_settings');
+
+        $latsol = $this->latsol->get('one', ['slug' => $slug]);
+        if ($latsol['jenis'] == 4) {
+            $jenis = 'mtk';
+            $submenu_parent = 17;
+        } else {
+            $jenis = 'skd';
+            $submenu_parent = 15;
+        }
+    
+        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
+        submenu_access($submenu_parent);
+        
+        $title = $latsol['name'];
+
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'admin/bimbel' . $jenis
+            ],
+            [
+                'title' => $title,
+                'href' => 'active'
+            ]
+        ];
+
+        $user_latsol = $this->user_tryout->getAll($slug);
+        if (count($user_latsol) == 0) {
+            $persentase = 0;
+        } else {
+            $persentase = $this->jawaban->getNumRows(['waktu_selesai !=' => null], $slug) / count($user_latsol) * 100;
+            $persentase = round($persentase, 2);
+        }
+
+        $user = $this->loginUser;
+
+        $data = [
+            'title' => $title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $user,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'latsol' => $latsol,
+            'all_user' => $user_latsol,
+            'jawaban' => $this->jawaban->getAll($slug, array('email', 'waktu_mulai', 'waktu_selesai')),
+            'jumlah_soal' => $this->soal->getNumRows(['id >' => 0], $slug),
+            'persentase_selesai' => $persentase,
+            'slug' => $slug,
+            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/detaillatsol', $data);
+        $this->load->view('templates/user_footer');
+    }
+
+    public function soallatsol($slug)
+    {
+        $this->load->model('Kode_settings_model', 'kode_settings');
+
+        $tryout = $this->latsol->get('one', ['slug' => $slug]);
+        if ($tryout['jenis'] == 4) {
+            $jenis = 'mtk';
+            $submenu_parent = 17;
+        } else {
+            $jenis = 'skd';
+            $submenu_parent = 15;
+        }
+
+        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
+        submenu_access($submenu_parent);
+
+        $title = 'Soal ' . $tryout['name'];
+        
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'admin/bimbel' . $jenis
+            ],
+            [
+                'title' => $tryout['name'],
+                'href' => 'admin/detaillatsol/' . $tryout['slug']
+            ],
+            [
+                'title' => 'Soal',
+                'href' => 'active'
+            ]
+        ];
+
+        $this->load->library('pagination');
+
+        $config['base_url'] = base_url('admin/soallatsol/' . $slug);
+
+        //HITUNG JUMLAH SOAL
+        $config['total_rows'] = $this->soal->getNumRows(['id !=' => null], $slug);
+
+        //JUMLAH SOAL YANG AKAN DITAMPILKAN PER HALAMAN
+        $config['per_page'] = 20;
+
+        //URL MENGGUNAKAN GET
+        $config['page_query_string'] = true;
+
+        //JUMLAH NOMOR DISAMPING NOMOR ACTIVE
+        $config['num_links'] = 10;
+
+        $config['full_tag_open'] = '<nav><ul class="pagination justify-content-center">';
+        $config['full_tag_close'] = '</ul></nav>';
+
+        $config['first_link'] = 'First';
+        $config['first_tag_open'] = '<li class="page-item">';
+        $config['first_tag_close'] = '</li>';
+
+        $config['last_link'] = 'Last';
+        $config['last_tag_open'] = '<li class="page-item">';
+        $config['last_tag_close'] = '</li>';
+
+        $config['next_link'] = '&raquo';
+        $config['next_tag_open'] = '<li class="page-item">';
+        $config['next_tag_close'] = '</li>';
+
+        $config['prev_link'] = '&laquo';
+        $config['prev_tag_open'] = '<li class="page-item">';
+        $config['prev_tag_close'] = '</li>';
+
+        //UNTUK HALAMAN YANG SEDANG AKTIF
+        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
+        $config['cur_tag_close'] = '</a></li>';
+
+
+        $config['num_tag_open'] = '<li class="page-item">';
+        $config['num_tag_close'] = '</li>';
+
+        //SETIAP NOMOR YANG TIDAK AKTIF ADA CLASS INI
+        $config['attributes'] = array('class' => 'page-link');
+
+        //INISIALISASI PAGINATION
+        $this->pagination->initialize($config);
+
+        //AMBIL NILAI PADA URL DENGAN METHOD GET 
+        $data['start'] = $this->input->get('per_page');
+
+        $tryout = $this->latsol->get('one', ['slug' => $slug]);
+
+        $data = [
+            'title' => $title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'soal' => $this->soal->getForPagination(['id !=' => null], $config['per_page'], $data['start'], $slug),
+            'tryout' => $tryout,
+            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
+        ];
+
+        $pilihan = ['A', 'B', 'C', 'D', 'E'];
+
+        $bobot_nilai = null;
+        $bobot_nilai = $this->bobot_nilai->get('many', ['status' => 1, 'tryout' => $slug]);
+
+        $data['bobot_nilai'] = $bobot_nilai;
+        $data['bobot_nilai_tiap_soal'] = $this->bobot_nilai_tiap_soal->getAll($slug);
+        
+        $checkbox = $this->input->post('kustombobottiapsoal');
+        if ($checkbox) {
+            for ($i = 1; $i <= $tryout['jumlah_soal']; $i++) {
+                for ($j = 0; $j < count($pilihan); $j++) {
+                    $this->form_validation->set_rules($i . $pilihan[$j], 'no. ' . $i . ' ' . $pilihan[$j], 'required|trim|numeric');
+                }
+            }
+        } else {
+            $this->form_validation->set_rules('bobotbenar', 'Bobot Jawaban Benar', 'required|trim|numeric');
+            $this->form_validation->set_rules('bobotsalah', 'Bobot Jawaban Salah', 'required|trim|numeric');
+        }
+
+        $page = $this->input->get('page');
+
+        if ($this->form_validation->run() == false) {
+            $this->load->view('templates/user_header', $data);
+            $this->load->view('templates/user_sidebar', $data);
+            $this->load->view('templates/user_topbar', $data);
+            $this->load->view('admin/soallatsol', $data);
+            $this->load->view('templates/user_footer');
+        } else {
+            if ($checkbox) {
+                for ($i = 1; $i <= $tryout['jumlah_soal']; $i++) {
+
+                    // AMBIL BOBOT NILAI SOAL KE-I
+                    $A = $this->input->post($i . 'A');
+                    $B = $this->input->post($i . 'B');
+                    $C = $this->input->post($i . 'C');
+                    $D = $this->input->post($i . 'D');
+                    $E = $this->input->post($i . 'E');
+
+                    $nilai = [$A, $B, $C, $D, $E];
+                    $pilihan = ['A', 'B', 'C', 'D', 'E'];
+
+                    // UPDATE PILIHAN
+                    for ($j = 0; $j <= 4; $j++) {
+                        $n = $nilai[$j];
+                        $p = $pilihan[$j];
+                        $this->bobot_nilai_tiap_soal->update(
+                            [
+                                '`' . $i . '`' => $n
+                            ],
+                            [
+                                'pilihan' => $p
+                            ],
+                            $slug
+                        );
+                    }
+                }
+
+                $this->bobot_nilai->update(['bobot' => null, 'status' => 0], ['tryout' => $slug]);
+            } else {
+                // CEK KUNCI
+                $kunci_jawaban = $this->jawaban->get('one', ['email' => 'kunci_jawaban_' . $slug . '@gmail.com'], $slug);
+                $stop = false;
+                $soal = [];
+                for ($i = 1; $i <= $tryout['jumlah_soal']; $i++) {
+                    if ($kunci_jawaban[$i] == 'Z') {
+                        $stop = true;
+                        array_push($soal, $i);
+                    }
+                }
+
+                if ($stop == true) {
+                    foreach ($soal as $s)
+                        $message = $s . ', ';
+                    $this->session->set_flashdata('error', 'Soal nomor ' . $message . 'merupakan soal yang kunci jawabannya belum diinputkan. Silakan input kunci jawaban pada soal-soal tersebut pada menu Edit Soal');
+                    redirect('admin/soallatsol/' . $slug . '?per_page=' . $page);
+                } else {
+                    $bobot_benar = $this->input->post('bobotbenar');
+                    $bobot_salah = $this->input->post('bobotsalah');
+
+                    $now = date("Y-m-d H:i:s O", time());
+
+                    $data = [
+                        'bobot' => $bobot_benar,
+                        'status' => 1,
+                        'updated_at' => $now
+                    ];
+
+                    $this->bobot_nilai->update($data, ['jawaban' => 'benar', 'tryout' => $tryout['slug']]);
+
+                    $data = [
+                        'bobot' => $bobot_salah,
+                        'status' => 1,
+                        'updated_at' => $now
+                    ];
+
+                    $this->bobot_nilai->update($data, ['jawaban' => 'salah', 'tryout' => $tryout['slug']]);
+
+                    for ($i = 1; $i <= $tryout['jumlah_soal']; $i++) {
+
+                        $A = null;
+                        $B = null;
+                        $C = null;
+                        $D = null;
+                        $E = null;
+
+                        $nilai = [$A, $B, $C, $D, $E];
+                        $pilihan = ['A', 'B', 'C', 'D', 'E'];
+
+                        // UPDATE PILIHAN
+                        for ($j = 0; $j <= 4; $j++) {
+                            $n = $nilai[$j];
+                            $p = $pilihan[$j];
+                            $this->bobot_nilai_tiap_soal->update(
+                                [
+                                    '`' . $i . '`' => $n
+                                ],
+                                [
+                                    'pilihan' => $p
+                                ],
+                                $slug
+                            );
+                        }
+                    }
+                }
+            }
+
+            $this->session->set_flashdata('success', 'Update Bobot Nilai ' . $tryout['name']);
+            redirect('admin/soallatsol/' . $slug . '?per_page=' . $page);
+        }
+    }
+
+    public function updatemateri($slug)
+    {
+        $latsol = $this->latsol->get('one', ['slug' => $slug]);
+
+        $this->latsol->update(['materi' => null], ['id' => $id]);
+        if (file_exists(FCPATH . 'assets/file/materi/' . $latsol['materi']))
+            unlink(FCPATH . 'assets/file/materi/' . $latsol['materi']);
+
+        $this->form_validation->set_rules('upload_materi', 'File Materi', 'is_unique[latsol.materi]', [
+            'is_unique' => 'Tidak boleh sama.'
+        ]);
+
+        if ($this->form_validation->run() == false) {
+            redirect('admin/detaillatsol/' . $slug);
+        } else {
+            //CONFIQ FILE 
+            $config['allowed_types'] = 'pdf';
+            $config['max_size']     = '20480'; //20MB
+            $config['upload_path'] = './assets/file/materi/';
+            $this->load->library('upload', $config);
+             
+            if ($this->upload->do_upload('update_materi')) {
+                $update_materi = $this->upload->data('file_name');
+            } else {
+                $error = $this->upload->display_errors();
+                $this->session->set_flashdata('error', $error);
+                redirect('admin/detaillatsol/' . $slug);
+            }
+
+            $this->latsol->update(['materi' => $update_materi], ['slug' => $slug]);
+
+            $this->session->set_flashdata('success', 'Mengupdate Materi');
+            redirect('admin/detaillatsol/' . $slug);
+        }
+    }
+
+    public function hapusmateri($id)
+    {
+        $latsol = $this->latsol->get('one', ['id' => $id]);
+
+        // SET NULL PEMBAHASAN
+        $this->latsol->update(['materi' => null], ['id' => $id]);
+
+        if (file_exists(FCPATH . 'assets/file/materi/' . $latsol['materi']))
+            unlink(FCPATH . 'assets/file/materi/' . $latsol['materi']);
+
+        $this->session->set_flashdata('success', 'Menghapus Materi');
+    }
+
+    public function downloadmateri($filename)
+    {
+        force_download('./assets/file/materi/' . $filename, NULL);
     }
 
     private function _tinymcerepop($tinymce_content, $row_edit = null)

@@ -15,6 +15,7 @@ class Exam extends CI_Controller
         $this->load->model('Soal_model', 'soal');
         $this->load->model('Ragu_ragu_model', 'ragu_ragu');
         $this->load->model('Jawaban_model', 'jawaban');
+        $this->load->model('Latsol_model', 'latsol');
 
         $this->loginUser = $this->user->getLoginUser();
         $this->tipeSoal = $this->soal->getAllTipeSoal();
@@ -31,7 +32,14 @@ class Exam extends CI_Controller
         if ($token == null)
             redirect("exam/question/" . $soal_pertama['token'] . "?tryout=" . $slug);
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+            $latsol = substr($slug,0,6);
+            if ($latsol != 'latsol') {
+                $jenis = 'tryout';
+            } else {
+                $jenis = 'latsol';
+            }
+    
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
 
         $email = $this->session->userdata('email');
         $company_settings = $this->company_settings->get('one', ['id' => 1]);
@@ -52,7 +60,11 @@ class Exam extends CI_Controller
 
         if (isset($data['jawaban']['waktu_selesai'])) {
             $this->session->set_flashdata('error', 'Anda sudah menyelesaikan Try Out ini');
-            redirect('tryout/mytryout');
+            if ($jenis == 'tryout') {
+                redirect('tryout/mytryout');
+            } else {
+                redirect('bimbel/bimbelskd');
+            }
         } else if (!isset($data['user_tryout']))
             redirect('auth/blocked');
 
@@ -151,7 +163,14 @@ class Exam extends CI_Controller
         $this->load->model('Kunci_tkp_model', 'kunci_tkp');
 
         $email = $this->session->userdata('email');
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $kunci = $this->jawaban->get('one', ['email' => 'kunci_jawaban_' . $slug . '@gmail.com'], $slug);
         $jawaban = $this->jawaban->get('one', ['email' => $email], $slug);
         $jumlah_soal = $tryout['jumlah_soal'];

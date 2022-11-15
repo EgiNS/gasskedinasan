@@ -13,6 +13,7 @@ class Tryout extends CI_Controller
         $this->load->model('Tryout_model', 'tryout');
         $this->load->model('User_tryout_model', 'user_tryout');
         $this->load->model('Soal_model', 'soal');
+        $this->load->model('Latsol_model', 'latsol');
 
         $this->loginUser = $this->user->getLoginUser();
         $this->tipeSoal = $this->soal->getAllTipeSoal();
@@ -103,17 +104,26 @@ class Tryout extends CI_Controller
 
     public function nilai($slug)
     {
-        $submenu_parent = 11;
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+            $submenu_parent = 11;
+            $href = 'tryout/mytryout';
+        } else {
+            $jenis = 'latsol';
+            $submenu_parent = 14;
+            $href = 'bimbel/bimbelskd';
+        }
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
 
-        $tryout = $this->tryout->get('one', ['slug' => $slug], array('name', 'tipe_tryout'));
+        $tryout = $this->$jenis->get('one', ['slug' => $slug], array('name', 'tipe_tryout'));
         $title = 'Nilai - ' . $tryout['name'];
 
         $breadcrumb_item = [
             [
                 'title' => $parent_title,
-                'href' => 'tryout/mytryout'
+                'href' => $href
             ],
             [
                 'title' => $tryout['name'],
@@ -251,10 +261,21 @@ class Tryout extends CI_Controller
 
     public function answeranalysis($slug)
     {
-        $submenu_parent = 11;
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+            $submenu_parent = 11;
+            $href = 'tryout/mytryout';
+        } else {
+            $jenis = 'latsol';
+            $submenu_parent = 14;
+            $href = 'bimbel/bimbelskd';
+        }
+
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $token = $this->input->get('soal');
         $soal = $this->soal->get('one', ['token' => $token], $slug);
 
@@ -263,7 +284,7 @@ class Tryout extends CI_Controller
         $breadcrumb_item = [
             [
                 'title' => $parent_title,
-                'href' => 'tryout/mytryout'
+                'href' => $href
             ],
             [
                 'title' => $tryout['name'],
@@ -486,11 +507,28 @@ class Tryout extends CI_Controller
 
     private function _checkaccesstotryout($status, $token_soal_pertama, $slug)
     {
+        $latsol = substr($slug,0,6);
+        if ($latsol != 'latsol') {
+            $jenis = 'tryout';
+        } else {
+            $jenis = 'latsol';
+        }
+
+        $tryout = $this->$jenis->get('one', ['slug' => $slug]);
+
         $page = $this->uri->segment(2);
         if ($page != 'pembahasan' || $page != 'ranking') {
             if ($status == 0) {
                 $this->session->set_flashdata('error', 'Anda Belum Memulai Tryout');
-                redirect('tryout/mytryout');
+                if ($jenis == 'tryout') {
+                    redirect('tryout/mytryout');
+                } else {
+                    if ($tryout['jenis']==4) {
+                        redirect('bimbel/bimbelmtk');
+                    } else {
+                        redirect('bimbel/kategori/' . $tryout['jenis']);
+                    }
+                }
             } else if ($status == 1)
                 redirect('exam/question/' . $token_soal_pertama . '?tryout=' . $slug);
         }

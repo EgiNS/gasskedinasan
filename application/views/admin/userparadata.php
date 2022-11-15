@@ -37,7 +37,7 @@
             </div>
             <?php if ($terdeteksi == true) : ?>
             <div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">
-                <?= 'Waktu pengerjaan tryout melebihi <b>' . $jawaban['waktu_selesai'] - $jawaban['waktu_mulai'] - 60 * $tryout['lama_pengerjaan'] . ' detik</b> dari waktu yang ditentukan.'; ?>
+                <?= 'Waktu pengerjaan tryout melebihi <b>' . ($jawaban['waktu_selesai'] - $jawaban['waktu_mulai'] - 60 * $tryout['lama_pengerjaan']) . ' detik</b> dari waktu yang ditentukan.'; ?>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
