@@ -54,14 +54,39 @@
     </div>
     <br>
     <br>
-    <h2 style="font-weight: bold;">Total: <?= $total; ?></h2>
+    <h4 style="font-weight: bold; text-align: end;">Total: <?= $total; ?></h4>
     <?php if ($nilai_twk < 65 || $nilai_tiu < 80 || $nilai_tkp < 156) : ?>
-    <h3><b>Keputusan:</b> <b style="color: red;">Tidak Lulus Passing Grade</b></h3>
+    <h5 style="text-align: end;"><b>Keputusan:</b> <b style="color: red;">Tidak Lulus Passing Grade</b></h5>
     <?php else : ?>
     <?php if ($nilai_twk >= 65 && $nilai_tiu >= 80 && $nilai_tkp >= 156) : ?>
-    <h3><b>Keputusan:</b> <b style="color: greenyellow;">Anda Lulus Passing Grade</b></h3>
+    <h5 style="text-align: end;"><b>Keputusan:</b> <b style="color: greenyellow;">Anda Lulus Passing Grade</b></h5>
     <?php endif; ?>
     <?php endif; ?>
+    <h5 class="my-4" style="font-weight: bold;">Riwayat Nilai Pengerjaan</h5>
+    <table class="my-3 table table-striped projects" id="">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>TWK</th>
+                        <th>TIU</th>
+                        <th>TKP</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $i = 0;
+                    foreach ($riwayat as $r) : ?>
+                    <tr>
+                        <td><?= $i + 1; ?></td>
+                        <td><?= $r['twk']?></td>
+                        <td><?= $r['tiu']?></td>
+                        <td><?= $r['tkp']?></td>
+                        <td><?= $r['twk'] + $r['tiu'] + $r['tkp']?></td>
+                    </tr>
+                    <?php $i++;
+                    endforeach; ?>
+                </tbody>
+    </table>
 
     <?php elseif ($tryout['tipe_tryout'] == 'nonSKD') : ?>
     <div class="row justify-content-center">
@@ -76,6 +101,27 @@
                 </div>
             </div>
         </div>
+    </div>
+    <h5 class="mt-3" style="font-weight: bold;">Riwayat Nilai Pengerjaan</h5>
+    <div class="row justify-content-center">
+        <table class="my-3 col-4 table table-striped projects" id="">
+                    <thead>
+                        <tr>
+                            <th>Pengerjaan</th>
+                            <th>Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $i = 0;
+                        foreach ($riwayat as $r) : ?>
+                        <tr>
+                            <td><?= $i + 1; ?></td>
+                            <td><?= $r['nilai']?></td>
+                        </tr>
+                        <?php $i++;
+                        endforeach; ?>
+                    </tbody>
+        </table>
     </div>
     <?php endif; ?>
 </div>

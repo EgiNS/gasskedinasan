@@ -35,6 +35,7 @@
                     <tr>
                         <th class="text-center">Peringkat</th>
                         <th class="text-center">Nama</th>
+                        <th class="text-center">No. WA</th>
                         <th class="text-center">TWK</th>
                         <th class="text-center">TIU</th>
                         <th class="text-center">TKP</th>
@@ -50,6 +51,7 @@
                     <tr>
                         <td class="text-center"><?= $i; ?></td>
                         <td class="text-center"><?= ucwords(strtolower($uu['name'])); ?></td>
+                        <td class="text-center"><?= $uu['no_wa']; ?></td>
 
                         <!--Nilai TWK-->
                         <td class="btn-success text-center"><?= $uu['twk']; ?></td>
@@ -76,6 +78,8 @@
                     <tr>
                         <td class="text-center"><?= $j; ?></td>
                         <td class="text-center"><?= ucwords(strtolower($uu['name'])); ?></td>
+                        
+                        <td class="text-center"><?= $uu['no_wa']; ?></td>
 
                         <!--Nilai TWK-->
                         <?php if ($uu['twk'] >= 65) : ?>

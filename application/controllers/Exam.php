@@ -29,8 +29,10 @@ class Exam extends CI_Controller
 
         $slug = $this->input->get('tryout');
         $soal_pertama = $this->soal->get('one', ['id' => 1], $slug);
-        if ($token == null)
+
+        if ($token == null) {
             redirect("exam/question/" . $soal_pertama['token'] . "?tryout=" . $slug);
+        }
 
             $latsol = substr($slug,0,6);
             if ($latsol != 'latsol') {
@@ -44,28 +46,24 @@ class Exam extends CI_Controller
         $email = $this->session->userdata('email');
         $company_settings = $this->company_settings->get('one', ['id' => 1]);
 
+        $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+        $last = $this->jawaban->getLastRow(['email'=>$email], $slug);
+
         $data = [
             'title' => 'Pengerjaan Tryout ' . $tryout['name'] . ' - ' . $company_settings['name'],
             'soal' => $this->soal->get('one', ['token' => $token], $slug),
             'user' => $this->loginUser,
             'soal_lengkap' => $this->soal->getAll($slug, array('token')),
-            'jawaban' => $this->jawaban->get('one', ['email' => $email], $slug),
+            'jawaban' => $this->jawaban->get('one', ['id'=>$last['id']], $slug),
             'ragu_ragu' => $this->ragu_ragu->get('one', ['email' => $email], $slug),
-            'user_tryout' => $this->user_tryout->get('one', ['email' => $email], $slug),
+            'user_tryout' => $this->user_tryout->get('one', ['email' => $email, 'pengerjaan'=>$pengerjaan], $slug),
             'tryout' => $tryout
         ];
 
         if ($tryout['tipe_tryout'] == 'SKD')
             $data['tipe_soal'] = $this->tipeSoal;
 
-        if (isset($data['jawaban']['waktu_selesai'])) {
-            $this->session->set_flashdata('error', 'Anda sudah menyelesaikan Try Out ini');
-            if ($jenis == 'tryout') {
-                redirect('tryout/mytryout');
-            } else {
-                redirect('bimbel/bimbelskd');
-            }
-        } else if (!isset($data['user_tryout']))
+        if (!isset($data['user_tryout']))
             redirect('auth/blocked');
 
         $this->load->view('templates/user_header', $data);
@@ -102,6 +100,8 @@ class Exam extends CI_Controller
             ]
         ];
 
+        $last = $this->jawaban->getLastRow(['email'=>$email], $slug);
+
         if ($keterangan == 'R' || $keterangan == 'Y') {
             $this->db->insert('user_paradata_' . $slug, $data['ragu_ragu']);
             $this->paradata->insert($data['ragu_ragu'], $slug);
@@ -123,7 +123,7 @@ class Exam extends CI_Controller
                     '`' . $nomor . '`' => $pilihan
                 ],
                 [
-                    'email' => $email
+                    'id' => $last['id']
                 ],
                 $slug
             );
@@ -135,7 +135,7 @@ class Exam extends CI_Controller
                     '`' . $nomor . '`' => $pilihan
                 ],
                 [
-                    'email' => $email
+                    'id' => $last['id']
                 ],
                 $slug
             );
@@ -151,11 +151,21 @@ class Exam extends CI_Controller
             'waktu_mulai' => time()
         ];
 
+        $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+        $user_to = $this->user_tryout->get('one', ['email' => $email, 'pengerjaan'=>$pengerjaan], $slug);
+
+        // log_message('debug', 'Pengerjaan '.$pengerjaan);
+        // log_message('debug', 'Nilai '.$user_to['total']);die;
+
         $this->jawaban->insert($data, $slug);
 
         $this->ragu_ragu->insert(['email' => $email], $slug);
 
-        $this->user_tryout->update(['status' => 1], ['email' => $email], $slug);
+        if ($pengerjaan >= 1 && ($user_to['total'] != null || $user_to['nilai'] != null)) {
+            $this->user_tryout->insert(['email'=>$email, 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
+        } else {
+            $this->user_tryout->update(['status' => 1], ['email' => $email], $slug);
+        }
     }
 
     public function setselesai($slug)
@@ -172,7 +182,7 @@ class Exam extends CI_Controller
 
         $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $kunci = $this->jawaban->get('one', ['email' => 'kunci_jawaban_' . $slug . '@gmail.com'], $slug);
-        $jawaban = $this->jawaban->get('one', ['email' => $email], $slug);
+        $jawaban = end($this->jawaban->get('many', ['email' => $email], $slug));
         $jumlah_soal = $tryout['jumlah_soal'];
 
         if ($tryout['tipe_tryout'] == 'SKD') {
@@ -230,10 +240,12 @@ class Exam extends CI_Controller
                 'total' => $nilai_twk + $nilai_tiu + $nilai_tkp
             ];
 
-            $this->user_tryout->update($update, ['email' => $email], $slug);
+            $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+
+            $this->user_tryout->update($update, ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
 
             // END PERHITUNGAN NILAI
-
+            $last = $this->jawaban->getLastRow(['email'=>$email], $slug);
 
             $time = time();
 
@@ -242,7 +254,7 @@ class Exam extends CI_Controller
                     '`waktu_selesai`' => $time
                 ],
                 [
-                    'email' => $email
+                    'id' => $last['id']
                 ],
                 $slug
             );
@@ -290,19 +302,23 @@ class Exam extends CI_Controller
                 'nilai' => $nilai
             ];
 
-            $this->user_tryout->update($update, ['email' => $email], $slug);
+            $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+
+            $this->user_tryout->update($update, ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
 
             // END PERHITUNGAN NILAI
 
 
             $time = time();
 
+            $last = $this->jawaban->getLastRow(['email'=>$email], $slug);
+
             $this->jawaban->update(
                 [
                     '`waktu_selesai`' => $time
                 ],
                 [
-                    'email' => $email
+                    'id' => $last['id']
                 ],
                 $slug
             );

@@ -10,7 +10,7 @@ class Bimbel extends CI_Controller
         is_logged_in();
 
         $this->load->model('User_model', 'user');
-        // $this->load->model('Tryout_model', 'tryout');
+        $this->load->model('Tryout_model', 'tryout');
         $this->load->model('User_tryout_model', 'user_tryout');
         $this->load->model('Latsol_model', 'latsol');
         // $this->load->model('Soal_model', 'soal');
@@ -169,6 +169,82 @@ class Bimbel extends CI_Controller
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
         $this->load->view('bimbel/index', $data);
+        $this->load->view('templates/user_footer');
+    }
+
+    public function tryout() {
+        $parent_title = getSubmenuTitleById(19)['title'];
+        submenu_access(19);
+
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'active'
+            ]
+        ];
+
+        $user = $this->loginUser;
+        if ($user['role_id'] == 3 || $user['role_id'] == 7) {
+            $tryout = $this->tryout->get('many', ['tipe_tryout'=>'SKD','hidden'=>0, 'for_bimbel'=>1]);
+        } else if ($user['role_id'] == 4  || $user['role_id'] == 6) {
+            $tryout = $this->tryout->get('many', ['tipe_tryout'=>'nonSKD','hidden'=>0, 'for_bimbel'=>1]);
+        } else if ($user['role_id'] == 5) {
+            $tryout = $this->tryout->get('many', ['hidden'=>0, 'for_bimbel'=>1]);
+        } else if ($user['role_id'] == 8) {
+            $tryout = $this->tryout->get('many', ['hidden'=>0, 'for_bimbel'=>2]);
+        }
+        
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $user,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'tryout' => $tryout,
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('bimbel/tryout', $tryout);
+        $this->load->view('templates/user_footer');
+    }
+
+    public function detailtryout($slug)
+    {
+        $parent_title = getSubmenuTitleById(19)['title'];
+        submenu_access(19);
+        $user = $this->loginUser;
+        $tryout = $this->tryout->get('one', ['slug'=>$slug]);
+
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'bimbel/tryout'
+            ],
+            [
+                'title' => $tryout['name'],
+                'href' => 'active'
+            ]
+        ];
+
+        $mytryout = $this->user_tryout->get('one', ['email' => $user['email']], $tryout['slug']);
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $user,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'tryout' => $tryout,
+            'mytryout' => $mytryout
+        ];
+
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('bimbel/detailtryout', $data);
         $this->load->view('templates/user_footer');
     }
 }

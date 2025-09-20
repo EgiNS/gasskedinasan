@@ -44,38 +44,41 @@ $(function () {
 
   $(".kerjakan").on("click", function (e) {
     e.preventDefault(); //Mematikan href
-    const user_token = $(this).data("token");
     const slug = $(this).data("slug");
-    token();
-    function token() {
-      Swal.fire({
-        title: "Masukkan Token",
-        html: `<input type="text" id="token" class="swal2-input" placeholder="Enter Token" autocomplete="off">`,
-        confirmButtonText: "Enter",
-        showCancelButton: true,
-        focusConfirm: false,
-        preConfirm: () => {
-          const token = Swal.getPopup().querySelector("#token").value;
-          // const password = Swal.getPopup().querySelector('#password').value
-          if (!token) {
-            Swal.showValidationMessage(`Silakan masukkan token`);
-          } else if (token == user_token) {
-            validasi(slug);
-          } else {
-            Swal.showValidationMessage(`Token salah`);
-          }
-          return { token: token };
-        },
-      });
-      // .then((result) => {
-      //   if(result.value.token == tryout_token) {
-      //     validasi();
-      //   } else {
-      //     token();
-      //     Swal.showValidationMessage(`Token salah`);
-      //   }
-      // })
-    }
+    console.log("kerja")
+    validasi(slug);
+    // const user_token = $(this).data("token");
+    // const slug = $(this).data("slug");
+    // token();
+    // function token() {
+    //   Swal.fire({
+    //     title: "Masukkan Token",
+    //     html: `<input type="text" id="token" class="swal2-input" placeholder="Enter Token" autocomplete="off">`,
+    //     confirmButtonText: "Enter",
+    //     showCancelButton: true,
+    //     focusConfirm: false,
+    //     preConfirm: () => {
+    //       const token = Swal.getPopup().querySelector("#token").value;
+    //       // const password = Swal.getPopup().querySelector('#password').value
+    //       if (!token) {
+    //         Swal.showValidationMessage(`Silakan masukkan token`);
+    //       } else if (token == user_token) {
+    //         validasi(slug);
+    //       } else {
+    //         Swal.showValidationMessage(`Token salah`);
+    //       }
+    //       return { token: token };
+    //     },
+    //   });
+    //   // .then((result) => {
+    //   //   if(result.value.token == tryout_token) {
+    //   //     validasi();
+    //   //   } else {
+    //   //     token();
+    //   //     Swal.showValidationMessage(`Token salah`);
+    //   //   }
+    //   // })
+    // }
 
     function validasi(slug) {
       Swal.fire({

@@ -34,7 +34,7 @@
                 <label for="no_wa" class="col-sm-2 col-form-label">WhatsApp</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="no_wa" name="no_wa" value="<?= $user['no_wa']; ?>"
-                        autocomplete="off">
+                        autocomplete="off" placeholder="Contoh: 628xxx">
                     <?= form_error('no_wa', '<small class="text-danger pl-3">', '</small>'); ?>
                 </div>
             </div>

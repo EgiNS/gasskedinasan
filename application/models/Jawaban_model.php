@@ -18,8 +18,21 @@ class Jawaban_model extends CI_Model
 
     public function getAll($slug, $select = '*')
     {
-        $this->db->select($select);
-        return $this->db->get($this->table . $slug)->result_array();
+        $table = $this->table . $slug;
+
+        if (is_array($select)) {
+            $select = implode(', ', array_map(fn($s) => "t1.$s", $select));
+        }
+
+        $sql = "SELECT $select
+                FROM $table AS t1
+                JOIN (
+                    SELECT email, MAX(id) AS max_id
+                    FROM $table
+                    GROUP BY email
+                ) AS t2 ON t1.email = t2.email AND t1.id = t2.max_id";
+
+        return $this->db->query($sql)->result_array();
     }
 
     public function get($count, $key, $slug, $select = '*')
@@ -53,6 +66,16 @@ class Jawaban_model extends CI_Model
         $this->db->where($data);
         $result = $this->db->get($this->table . $slug);
         return $result->num_rows();
+    }
+
+    public function getLastRow($key, $slug) {
+        $this->db->select('id');
+        $this->db->from($this->table . $slug);
+        $this->db->where($key); // bisa pakai filter tambahan jika perlu
+        $this->db->order_by('id', 'DESC');
+        $this->db->limit(1);
+        $query = $this->db->get();
+        return $query->row_array();
     }
 
     public function createTable($slug, $jumlah_soal)

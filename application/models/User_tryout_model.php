@@ -63,6 +63,9 @@ class User_tryout_model extends CI_Model
             `email` varchar(256) NOT NULL,
             `token` int(11) DEFAULT NULL,
             `status` int(11) DEFAULT 0,
+            `freemium` int(11) DEFAULT 0,
+            `bukti` varchar(256) DEFAULT NULL,
+            `refferal` varchar(256) DEFAULT NULL,
             `twk` int(11) DEFAULT NULL,
             `tiu` int(11) DEFAULT NULL,
             `tkp` int(11) DEFAULT NULL,
@@ -81,6 +84,9 @@ class User_tryout_model extends CI_Model
             `email` varchar(256) NOT NULL,
             `token` int(11) DEFAULT NULL,
             `status` int(11) DEFAULT 0,
+            `freemium` int(11) DEFAULT 0,
+            `bukti` varchar(256) DEFAULT NULL,
+            `refferal` varchar(256) DEFAULT NULL,
             `nilai` int(11) DEFAULT NULL,
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB";
@@ -92,17 +98,60 @@ class User_tryout_model extends CI_Model
     {
         // $query = "SELECT * FROM `user_tryout` JOIN `user` ON `user_tryout`.`email` = `user`.`email` ORDER BY `user_tryout`.`total` DESC, `user_tryout`.`tkp` DESC, `user_tryout`.`tiu` DESC, `user_tryout`.`twk` DESC;";
 
-        $query = 'SELECT * FROM user_tryout_' . $slug . ' JOIN ' . '`user` ON `user_tryout_' . $slug . '`.`email` = `user`.`email` ORDER BY `user_tryout_' . $slug . '`.`total` DESC, `user_tryout_' . $slug . '`.`tkp` DESC, `user_tryout_' . $slug . '`.`tiu` DESC, `user_tryout_' . $slug . '`.`twk` DESC;';
+        $query = "
+            SELECT u.*, ut.*
+        FROM user AS u
+        JOIN (
+            SELECT t1.*
+            FROM user_tryout_{$slug} t1
+            JOIN (
+                SELECT email, MIN(id) AS min_id
+                FROM user_tryout_{$slug}
+                GROUP BY email
+            ) t2 ON t1.email = t2.email AND t1.id = t2.min_id
+        ) ut ON u.email = ut.email
+        ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
+        ";
+
         return $this->db->query($query)->result_array();
     }
 
     public function getRankingnonSKD($slug, $select = '*')
     {
-        $this->db->select($select);
-        $this->db->join('user', 'user.email = ' . $this->table . $slug . '.email');
-        $this->db->order_by('nilai', 'DESC');
-        $this->db->where(['nilai !=' => null]);
-        return $this->db->get($this->table . $slug)->result_array();
+        $query = $this->db->query("
+            SELECT ut.*, u.*
+            FROM (
+                SELECT * FROM {$this->table}{$slug} ut1
+                WHERE id IN (
+                    SELECT MIN(id) FROM {$this->table}{$slug}
+                    WHERE nilai IS NOT NULL
+                    GROUP BY email
+                )
+            ) ut
+            JOIN user u ON u.email = ut.email
+            ORDER BY ut.nilai DESC
+        ");
+        return $query->result_array();
+
+    }
+
+    public function getRankingnonSKDAdmin($slug, $select = '*')
+    {
+        $slug_table = 'user_tryout_' . $slug;
+
+        $subquery = "
+            SELECT MIN(id) AS min_id
+            FROM {$slug_table}
+            GROUP BY email
+        ";
+
+        $this->db->select('user.*, ut.*');
+        $this->db->from('user');
+        $this->db->join("({$slug_table} ut)", "user.email = ut.email");
+        $this->db->where("ut.id IN ({$subquery})");
+        $this->db->order_by('ut.nilai', 'DESC');
+
+        return $this->db->get()->result_array();
     }
 
     public function getPersentaseStatusUser($slug)

@@ -14,7 +14,7 @@
                     <tr>
                         <th>No.</th>
                         <th>Tryout</th>
-                        <th>Token</th>
+                        <th>Grup & Live</th>
                         <th>Status</th>
                         <th>Nilai</th>
                         <th>Ranking</th>
@@ -29,19 +29,39 @@
                     <tr>
                         <td><?= $i + 1; ?></td>
                         <td><?= $tryout[$i]['name']; ?></td>
-                        <td><?= $myt['token']; ?></td>
+                        <?php if (isset($myt['freemium'])) : ?>
+                            <?php if ($myt['freemium'] == 1) : ?>
+                                <td><a href="<?= $tryout[$i]['link_premium']; ?>"><?= $tryout[$i]['link_premium']; ?></a></td>
+                            <?php else : ?> 
+                                <td><a href="<?= $tryout[$i]['link']; ?>"><?= $tryout[$i]['link']; ?></a></td>
+                            <?php endif; ?>  
+                        <?php else : ?> 
+                            <td>-</td>     
+                        <?php endif; ?> 
                         <?php if ($myt['status'] == 0) : ?>
                         <td><span class="badge badge-danger">belum memulai</span></td>
                         <?php elseif ($myt['status'] == 1) : ?>
                         <td><span class="badge badge-warning">proses</span></td>
                         <?php elseif ($myt['status'] == 2) : ?>
                         <td><span class="badge badge-success">selesai</span></td>
+                        <?php elseif ($myt['status'] == 100) : ?>
+                        <td><span class="badge badge-warning">menunggu verifikasi dalam 24 jam</span></td>
                         <?php endif; ?>
                         <td><a href="<?= base_url('tryout/nilai/' . $tryout[$i]['slug']); ?>">nilai</a></td>
                         <td><a href="<?= base_url('tryout/ranking/' . $tryout[$i]['slug']); ?>">ranking</a></td>
-                        <td><a href="<?= base_url('tryout/pembahasan/' . $tryout[$i]['slug']); ?>">pembahasan</a></td>
-                        <td><a href="<?= base_url('tryout/answeranalysis/' . $tryout[$i]['slug']); ?>">answer
-                                analysis</a></td>
+                        <?php if (isset($myt['freemium'])) : ?>
+                            <?php if ($myt['freemium'] == 1) : ?>
+                                <td><a href="<?= base_url('tryout/answeranalysis/' . $tryout[$i]['slug']); ?>">answer analysis</a></td>
+                                <td><a href="<?= base_url('tryout/pembahasan/' . $tryout[$i]['slug']); ?>">pembahasan</a></td>
+                            <?php elseif ($myt['freemium'] == 0) : ?>
+                                <td>-</td>
+                                <td>-</td>
+                            <?php endif; ?> 
+                        <?php else : ?> 
+                            <td><a href="<?= base_url('tryout/pembahasan/' . $tryout[$i]['slug']); ?>">pembahasan</a></td>
+                            <td><a href="<?= base_url('tryout/answeranalysis/' . $tryout[$i]['slug']); ?>">answer
+                                        analysis</a></td>
+                        <?php endif; ?>    
                         <?php if ($myt['status'] == 0) : ?>
                         <td><button type="button" data-token="<?= $myt['token']; ?>"
                                 data-slug="<?= $tryout[$i]['slug']; ?>"
@@ -51,6 +71,19 @@
                         <td><a href="<?= base_url('exam/question' . '?tryout=' . $tryout[$i]['slug']); ?>"
                                 class="btn btn-sm btn-warning">Lanjutkan</a></td>
                         <?php elseif ($myt['status'] == 2) : ?>
+                            <?php if (isset($myt['freemium'])) : ?>
+                                <?php if ($myt['freemium'] == 1) : ?>
+                                    <td><button type="button" data-token="<?= $myt['token']; ?>"
+                                            data-slug="<?= $tryout[$i]['slug']; ?>"
+                                            class="btn btn-sm btn-danger <?= ($tryout[$i]['status'] == 1 ? 'kerjakan' : 'notrelease'); ?>">Kerjakan Lagi</button>
+                                    </td>
+                                <?php else : ?>
+                                    <td>-</td>
+                                <?php endif; ?>
+                            <?php else : ?>
+                                <td>-</td>
+                            <?php endif; ?>
+                        <?php elseif ($myt['status'] == 100) : ?>
                         <td class="text-center">-</td>
                         <?php endif; ?>
                     </tr>

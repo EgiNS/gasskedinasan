@@ -1,5 +1,13 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/dist/css/tryoutcard.css'); ?>">
+<style>
+    @media (max-width: 768px) {
+    .solution_card {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+    }
+}
+</style>
 <div class="container-fluid">
 
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
@@ -10,45 +18,86 @@
         <?= breadcumb($breadcrumb_item); ?>
     </nav>
 
-    <div class="row">
-        <?php if ($tryout) : ?>
-        <?php for ($i = 0; $i < ceil(count($tryout) / 5); $i++) : ?>
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="solution_cards_box">
-                <div class="owl-carousel">
-                    <?php for ($j = $i * 5; $j < $i * 5 + 5; $j++) : ?>
-                    <?php if (!empty($tryout[$j])) : ?>
-                    <div class="solution_card">
-                        <div class="hover_color_bubble"></div>
-                        <div class="row align-items-center">
-                            <div class="ml-2 so_top_icon">
-                                <img src="<?= base_url('assets/img/tryout.svg'); ?>" alt="tryout.svg">
+        <div class="row">
+                <div class="d-flex mt-3 flex-column">
+            <h4 class="pl-3">TRYOUT SKD</h4>
+            <?php if ($tryout_skd) : ?>
+                <div class="d-flex flex-wrap justify-content-start solution_cards_box p-2">
+                    <?php foreach ($tryout_skd as $item) : ?>
+                        <div class="solution_card m-2" style="flex: 1 1 calc(33.33% - 1rem); max-width: calc(33.33% - 1rem); box-sizing: border-box;">
+                            <div class="hover_color_bubble"></div>
+
+                            <?php if ($item['gambar']) : ?>
+                                <img src="<?= base_url('assets/img/' . $item["gambar"]); ?>" class="mb-1" style="width: 100%;" alt="tryout">
+                            <?php endif; ?>
+
+                            <div class="row align-items-center justify-content-start">
+                                <div class="ml-2 so_top_icon">
+                                    <img src="<?= base_url('assets/img/tryout.svg'); ?>" alt="tryout.svg">
+                                </div>
+                                <div class="mx-2 solu_title">
+                                    <h3 class="font-weight-bold" style="<?= ($item['hidden'] == 1 ? 'color: red;' : ''); ?>">
+                                        <?= $item['name']; ?>
+                                    </h3>
+                                </div>
                             </div>
-                            <div class="mx-2 solu_title">
-                                <h3 class="font-weight-bold"
-                                    style="<?= ($tryout[$j]['hidden'] == 1 ? 'color: red;' : ''); ?>">
-                                    <?= $tryout[$j]['name']; ?></h3>
+
+                            <div>
+                                <p><?= $item['keterangan']; ?></p>
+                            </div>
+
+                            <div class="solu_description mb-2">
+                                <a href="<?= base_url('tryout/detail/') . $item['slug']; ?>" class="read_more_btn text-decoration-none">Detail</a>
                             </div>
                         </div>
-                        <div>
-                            <p><?= $tryout[$j]['keterangan']; ?></p>
-                        </div>
-                        <div class="solu_description fixed-bottom mb-5 ml-4">
-                            <a href="<?= base_url('tryout/detail/') . $tryout[$j]['slug']; ?>"
-                                class="read_more_btn text-decoration-none">Read more...</a>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    <?php endfor; ?>
+                    <?php endforeach; ?>
                 </div>
-            </div>
+            <?php else : ?>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <h2 class="h2 mb-4 text-gray-800">Belum ada tryout yang tersedia</h2>
+                </div>
+            <?php endif; ?>
         </div>
-        <?php endfor; ?>
-        <?php else : ?>
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <h2 class="h2 mb-4 text-gray-800">Belum ada tryout yang tersedia</h2>
+
+        <div class="d-flex mt-3 flex-column">
+            <h4 class="pl-3 mt-2">TRYOUT MATEMATIKA</h4>
+            <?php if ($tryout_mtk) : ?>
+                <div class="d-flex flex-wrap justify-content-start solution_cards_box p-2">
+                    <?php foreach ($tryout_mtk as $item) : ?>
+                        <div class="solution_card m-2" style="flex: 1 1 calc(33.33% - 1rem); max-width: calc(33.33% - 1rem); box-sizing: border-box;">
+                            <div class="hover_color_bubble"></div>
+
+                            <?php if ($item['gambar']) : ?>
+                                <img src="<?= base_url('assets/img/' . $item["gambar"]); ?>" class="mb-1" style="width: 100%;" alt="tryout">
+                            <?php endif; ?>
+
+                            <div class="row align-items-center justify-content-start">
+                                <div class="ml-2 so_top_icon">
+                                    <img src="<?= base_url('assets/img/tryout.svg'); ?>" alt="tryout.svg">
+                                </div>
+                                <div class="mx-2 solu_title">
+                                    <h3 class="font-weight-bold" style="<?= ($item['hidden'] == 1 ? 'color: red;' : ''); ?>">
+                                        <?= $item['name']; ?>
+                                    </h3>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p><?= $item['keterangan']; ?></p>
+                            </div>
+
+                            <div class="solu_description mb-2">
+                                <a href="<?= base_url('tryout/detail/') . $item['slug']; ?>" class="read_more_btn text-decoration-none">Detail</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <h2 class="h2 mb-4 text-gray-800">Belum ada tryout yang tersedia</h2>
+                </div>
+            <?php endif; ?>
         </div>
-        <?php endif; ?>
     </div>
 </div>
 </div>

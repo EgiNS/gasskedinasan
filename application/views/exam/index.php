@@ -199,7 +199,7 @@
     <?php endif; ?>
 
 
-    <div class="col-lg-8">
+    <div class="col-lg-8 text-gray-800">
         <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
         <h1 class="h3 mb-4 text-gray-800">
             <b><?= 'No ' . $soal['id'] . ' | ' . $tipe_soal[$soal['tipe_soal'] - 1]['name']; ?></b>

@@ -12,7 +12,7 @@
                             <div class="col-lg">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Login Page</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Halaman Login</h1>
                                     </div>
 
                                     <?= $this->session->flashdata('message'); ?>
@@ -36,12 +36,11 @@
                                         <hr>
                                         <a class="btn btn-primary btn-user btn-block"
                                             href="<?= base_url('auth/registration'); ?>">
-                                            Create an Account!
+                                            Buat Akun!
                                         </a>
                                     </form>
                                     <div class="text-center mt-4">
-                                        <a class="small" href="<?= base_url('auth/forgotpassword'); ?>">Forgot
-                                            Password?</a>
+                                        <a class="small" href="<?= base_url('auth/forgotpassword'); ?>">Lupa Password?</a>
                                     </div>
                                 </div>
                             </div>

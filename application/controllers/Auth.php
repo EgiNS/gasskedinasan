@@ -10,8 +10,11 @@ class Auth extends CI_Controller
         $this->load->library('form_validation');
         $this->load->model('User_model', 'user');
         $this->load->model('Token_model', 'token');
+        $this->load->model('Paket_to_model', 'paket_to');
+        $this->load->model('Tryout_model', 'tryout');
         $this->load->model('Token_settings_model', 'token_settings');
         $this->load->model('Email_settings_model', 'email_settings');
+        $this->load->model('User_tryout_model', 'user_tryout');
         $this->loginUser = $this->user->getLoginUser();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -52,6 +55,7 @@ class Auth extends CI_Controller
         $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email|is_unique[user.email]', [
             'is_unique' => 'This email has already registered!'
         ]);
+        $this->form_validation->set_rules('no_wa', 'No. WA', 'required|trim');
         $this->form_validation->set_rules('password1', 'Password', 'required|trim|min_length[3]|matches[password2]', [
             'matches' => 'Password dont match!',
             'min_length' => 'Password too short!'
@@ -66,6 +70,7 @@ class Auth extends CI_Controller
         } else {
             $name = $this->input->post('name', true);
             $email = $this->input->post('email', true);
+            $no_wa =  $this->input->post('no_wa', true);
             $password = $this->input->post('password1');
 
             //siapkan token
@@ -95,12 +100,13 @@ class Auth extends CI_Controller
                 $message = '<div class="alert alert-success" role="alert">Congratulation! Your account has been created. Please check your email for activate your account.</div>';
             } else {
                 $is_active = 1;
-                $message = '<div class="alert alert-success" role="alert">Congratulation! Your account has been created. Please login.</div>';
+                $message = '<div class="alert alert-success" role="alert">Selamat! Akun Anda telah berhasil didaftarkan. Silakan Login.</div>';
             }
 
             $data = [
                 'name' => htmlspecialchars($name),
                 'email' => htmlspecialchars($email),
+                'no_wa' => htmlspecialchars($no_wa),
                 'image' => 'default.jpg',
                 'password' => password_hash($password, PASSWORD_DEFAULT),
                 'role_id' => 2,
@@ -108,6 +114,360 @@ class Auth extends CI_Controller
             ];
 
             $this->user->insert($data);
+
+            $this->session->set_flashdata('message', $message);
+            redirect('auth');
+        }
+    }
+    
+    public function registerto()
+    {
+        $email_settings = $this->email_settings->get('one', ['id' => 1]);
+        $token_settings = $this->token_settings->get('one', ['id' => 1]);
+
+        if ($this->session->userdata('email')) {
+            redirect('user');
+        }
+        $this->form_validation->set_rules('name', 'Name', 'required|trim');
+        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email|is_unique[user.email]', [
+            'is_unique' => 'This email has already registered!'
+        ]);
+        $this->form_validation->set_rules('no_wa', 'No. WA', 'required|trim');
+        $this->form_validation->set_rules('password1', 'Password', 'required|trim|min_length[3]|matches[password2]', [
+            'matches' => 'Password dont match!',
+            'min_length' => 'Password too short!'
+        ]);
+        $this->form_validation->set_rules('password2', 'Password', 'required|trim|matches[password1]');
+
+        if ($this->form_validation->run() == false) {
+            $errors = validation_errors('<li>', '</li>');
+            $this->session->set_flashdata('error', '<ul>' . $errors . '</ul>');
+            var_dump($this->session->flashdata('error'));
+            redirect(base_url());
+        } else {
+            $name = $this->input->post('name', true);
+            $email = $this->input->post('email', true);
+            $no_wa =  $this->input->post('no_wa', true);
+            $password = $this->input->post('password1');
+
+            //siapkan token
+            $random = random_bytes(32);
+
+            //terjemahkan token
+            $token = base64_encode($random);
+
+            //tabel di database
+            $user_token = [
+                'email' => $email,
+                'token' => $token,
+                'date_created' => time()
+            ];
+
+            // kirim email ke user yang baru registrasi
+            if ($token_settings['account_activation'] == 1) {
+                $is_active = 0;
+
+                if ($email_settings['mail_transport_type'] == 'smtp')
+                    $this->_smtpMail($token, 'verify');
+                else if ($email_settings['mail_transport_type'] == 'php')
+                    $this->_phpMail($token, 'verify');
+
+                $this->token->insert($user_token);
+
+                $message = '<div class="alert alert-success" role="alert">Congratulation! Your account has been created. Please check your email for activate your account.</div>';
+            } else {
+                $is_active = 1;
+                $message = '<div class="alert alert-success" role="alert">Selamat! Anda telah berhasil terdaftar. Silakan Login dengan email dan password yang telah kamu daftarkan untuk mengakses try out. <br><br> Jangan lupa gabung grup belajar melalui menu my tryout setelah melakukan login. </div>';
+
+            }
+
+            $data = [
+                'name' => htmlspecialchars($name),
+                'email' => htmlspecialchars($email),
+                'no_wa' => htmlspecialchars($no_wa),
+                'image' => 'default.jpg',
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'role_id' => 2,
+                'is_active' => $is_active
+            ];
+
+            $this->user->insert($data);
+
+            //ubah ini sesuai
+            $slug = $this->input->post('slug');
+
+            $user_tryout = $this->user_tryout->get('one', ['email' => htmlspecialchars($email)], $slug);
+            if ($user_tryout)
+                $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
+            else {
+                $data = [
+                    'email' => htmlspecialchars($email),
+                    'token' => 11111,
+                    'status' => 0
+                ];
+                $this->user_tryout->insert($data, $slug);
+                $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+            }
+
+            $this->session->set_flashdata('message', $message);
+            redirect('auth');
+        }
+    }
+    
+    public function registerfreemium()
+    {
+        $email_settings = $this->email_settings->get('one', ['id' => 1]);
+        $token_settings = $this->token_settings->get('one', ['id' => 1]);
+
+        if ($this->session->userdata('email')) {
+            redirect('user');
+        }
+        $this->form_validation->set_rules('name', 'Name', 'required|trim');
+        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email|is_unique[user.email]', [
+            'is_unique' => 'This email has already registered!'
+        ]);
+        $this->form_validation->set_rules('no_wa', 'No. WA', 'required|trim');
+        $this->form_validation->set_rules('password1', 'Password', 'required|trim|min_length[3]|matches[password2]', [
+            'matches' => 'Password dont match!',
+            'min_length' => 'Password too short!'
+        ]);
+        $this->form_validation->set_rules('password2', 'Password', 'required|trim|matches[password1]');
+
+        if ($this->form_validation->run() == false) {
+            $errors = validation_errors('<li>', '</li>');
+            $this->session->set_flashdata('error', '<ul>' . $errors . '</ul>');
+            var_dump($this->session->flashdata('error'));
+            redirect(base_url());
+        } else {
+            $name = $this->input->post('name', true);
+            $email = $this->input->post('email', true);
+            $no_wa =  $this->input->post('no_wa', true);
+            $password = $this->input->post('password1');
+
+            //siapkan token
+            $random = random_bytes(32);
+
+            //terjemahkan token
+            $token = base64_encode($random);
+
+            //tabel di database
+            $user_token = [
+                'email' => $email,
+                'token' => $token,
+                'date_created' => time()
+            ];
+
+            // kirim email ke user yang baru registrasi
+            if ($token_settings['account_activation'] == 1) {
+                $is_active = 0;
+
+                if ($email_settings['mail_transport_type'] == 'smtp')
+                    $this->_smtpMail($token, 'verify');
+                else if ($email_settings['mail_transport_type'] == 'php')
+                    $this->_phpMail($token, 'verify');
+
+                $this->token->insert($user_token);
+
+                $message = '<div class="alert alert-success" role="alert">Congratulation! Your account has been created. Please check your email for activate your account.</div>';
+            } else {
+                $is_active = 1;
+                
+                $slug = $this->input->post('slug');
+                $tryout = $this->tryout->get('one', ['slug' => $slug]);
+                
+                $message = '<div class="alert alert-success" role="alert">
+                    Selamat! Anda telah berhasil terdaftar. Silakan Login dengan email dan password yang telah kamu daftarkan untuk mengakses try out. <br><br> 
+                    Jangan lupa gabung grup belajar melalui menu my tryout setelah melakukan login. 
+                </div>';
+            }
+
+            $data = [
+                'name' => htmlspecialchars($name),
+                'email' => htmlspecialchars($email),
+                'no_wa' => htmlspecialchars($no_wa),
+                'image' => 'default.jpg',
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'role_id' => 2,
+                'is_active' => $is_active
+            ];
+
+            $this->user->insert($data);
+
+            $user_tryout = $this->user_tryout->get('one', ['email' => htmlspecialchars($email)], $slug);
+            if ($user_tryout)
+                $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
+            else {
+                $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
+                $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
+                $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
+                $config['file_name'] = time();  // Nama file unik (timestamp)
+        
+                $this->load->library('upload', $config);
+        
+                // Load konfigurasi upload
+                $this->upload->initialize($config);
+        
+                if ($this->upload->do_upload('bukti')) {
+                    // Jika upload berhasil, ambil informasi file yang di-upload
+                    $uploadData = $this->upload->data();
+                    
+                    // Dapatkan path file yang di-upload
+                    $imagePath = $uploadData['file_name'];
+                } else {
+                    $error = $this->upload->display_errors();
+                    $this->session->set_flashdata('error', $error);
+                    redirect()->back();
+                }  
+
+                $data = [
+                    'email' => htmlspecialchars($email),
+                    'token' => 11111,
+                    'status' => 100,
+                    'freemium' => 1,
+                    'bukti' => $imagePath
+                ];
+                
+                $kode_refferal = $this->input->post('kode_refferal');
+                $tryout = $this->tryout->get('one', ['slug' => $slug]);
+    
+                if ($kode_refferal) {
+                    $kode_refferal_valid = json_decode($tryout['kode_refferal'], true);
+                    $is_valid = false;
+    
+                    if (in_array($kode_refferal, $kode_refferal_valid)) {
+                        $is_valid = true;
+                    }
+    
+                    if ($is_valid) {
+                        $data['refferal'] = $kode_refferal;
+                    }
+                }
+
+                $this->user_tryout->insert($data, $slug);
+                $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+            }
+
+            $this->session->set_flashdata('message', $message);
+            redirect('auth');
+        }
+    }
+    
+    public function registerpaketto()
+    {
+        $email_settings = $this->email_settings->get('one', ['id' => 1]);
+        $token_settings = $this->token_settings->get('one', ['id' => 1]);
+
+        if ($this->session->userdata('email')) {
+            redirect('user');
+        }
+        $this->form_validation->set_rules('name', 'Name', 'required|trim');
+        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email|is_unique[user.email]', [
+            'is_unique' => 'This email has already registered!'
+        ]);
+        $this->form_validation->set_rules('no_wa', 'No. WA', 'required|trim');
+        $this->form_validation->set_rules('password1', 'Password', 'required|trim|min_length[3]|matches[password2]', [
+            'matches' => 'Password dont match!',
+            'min_length' => 'Password too short!'
+        ]);
+        $this->form_validation->set_rules('password2', 'Password', 'required|trim|matches[password1]');
+
+        if ($this->form_validation->run() == false) {
+            $errors = validation_errors('<li>', '</li>');
+            $this->session->set_flashdata('error', '<ul>' . $errors . '</ul>');
+            var_dump($this->session->flashdata('error'));
+            redirect(base_url());
+        } else {
+            $name = $this->input->post('name', true);
+            $email = $this->input->post('email', true);
+            $no_wa =  $this->input->post('no_wa', true);
+            $password = $this->input->post('password1');
+
+            //siapkan token
+            $random = random_bytes(32);
+
+            //terjemahkan token
+            $token = base64_encode($random);
+
+            //tabel di database
+            $user_token = [
+                'email' => $email,
+                'token' => $token,
+                'date_created' => time()
+            ];
+
+            // kirim email ke user yang baru registrasi
+            if ($token_settings['account_activation'] == 1) {
+                $is_active = 0;
+
+                if ($email_settings['mail_transport_type'] == 'smtp')
+                    $this->_smtpMail($token, 'verify');
+                else if ($email_settings['mail_transport_type'] == 'php')
+                    $this->_phpMail($token, 'verify');
+
+                $this->token->insert($user_token);
+
+                $message = '<div class="alert alert-success" role="alert">Congratulation! Your account has been created. Please check your email for activate your account.</div>';
+            } else {
+                $is_active = 1;
+                
+                $slug = $this->input->post('slug');
+                $tryout = $this->tryout->get('one', ['slug' => $slug]);
+                
+                $message = '<div class="alert alert-success" role="alert">
+                    Selamat! Anda telah berhasil terdaftar. Silakan Login dengan email dan password yang telah kamu daftarkan untuk mengakses try out. <br><br> 
+                    Jangan lupa gabung grup belajar melalui menu my tryout setelah melakukan login. 
+                </div>';
+            }
+
+            $data = [
+                'name' => htmlspecialchars($name),
+                'email' => htmlspecialchars($email),
+                'no_wa' => htmlspecialchars($no_wa),
+                'image' => 'default.jpg',
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'role_id' => 2,
+                'is_active' => $is_active
+            ];
+
+            $this->user->insert($data);
+
+            $slug = 'fast_mtk_stis';
+        
+            $user_tryout = $this->paket_to->get('one', ['email' => $email], $slug);
+            if ($user_tryout)
+                $this->session->set_flashdata('error', "Anda sudah terdaftar pada paket tryout ini");
+            else {
+                $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
+                $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
+                $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
+                $config['file_name'] = time();  // Nama file unik (timestamp)
+        
+                $this->load->library('upload', $config);
+        
+                // Load konfigurasi upload
+                $this->upload->initialize($config);
+        
+                if ($this->upload->do_upload('bukti')) {
+                    // Jika upload berhasil, ambil informasi file yang di-upload
+                    $uploadData = $this->upload->data();
+                    
+                    // Dapatkan path file yang di-upload
+                    $imagePath = $uploadData['file_name'];
+                } else {
+                    $error = $this->upload->display_errors();
+                    $this->session->set_flashdata('error', $error);
+                    redirect()->back();
+                }  
+
+                $data = [
+                    'email' => htmlspecialchars($email),
+                    'status' => 1,
+                    'bukti' => $imagePath
+                ];
+
+                $this->paket_to->insert_pendaftar($data, 'fast_mtk_stis');
+                $this->session->set_flashdata('success', "melakukan pendaftaran pada paket tryout ini");
+            }
 
             $this->session->set_flashdata('message', $message);
             redirect('auth');
@@ -337,11 +697,16 @@ class Auth extends CI_Controller
                     ];
                     $this->session->set_userdata($data);
 
+                    $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
+
                     //jika benar
-                    if ($user['role_id'] == 1)
+                    if ($user['role_id'] == 1) {
                         redirect('admin');
-                    else
-                        redirect('user');
+                    } else if ($user['role_id'] == 8) {
+                        redirect('bimbel/tryout');
+                    } else {
+                        redirect('tryout/paketto');
+                    }
                 } else {
                     $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Wrong password!</div>');
                     $this->session->set_flashdata('auth_email', $user['email']);

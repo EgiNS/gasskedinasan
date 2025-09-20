@@ -75,7 +75,7 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    <?= form_error_user('user'); ?>
                     <?php $i = 1; ?>
                     <?php foreach ($all_user as $au) : ?>
                     <tr>
@@ -88,11 +88,37 @@
                         <td><?= $au['created_at']; ?></td>
                         <td><?= $au['updated_at']; ?></td>
                         <td class="text-center">
-                            <a class="btn btn-warning btn-sm updateuserrole" data-id="<?= $au['id']; ?>"
-                                data-toggle="modal" data-target="#updateUserRoleModal" href="#">
-                                <i class="fas fa-pencil-alt">
-                                </i>
+                            <a href="<?= base_url('admin/viewupdaterole/') . $au['id']; ?>" class="badge badge-primary add-new-primary">
+                                Update role
                             </a>
+
+                            <!-- Tombol untuk memicu modal -->
+                            <button type="button" class="badge badge-danger" data-toggle="modal" data-target="#exampleModal" data-id="<?= $au['id']; ?>">
+                                Hapus user
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Hapus User</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Apakah anda yakin untuk menghapus user ini?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                            <a href="#" id="deleteUserButton" class="btn btn-danger">Hapus!</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            </div>
                         </td>
                     </tr>
                     <?php $i++; ?>
@@ -140,44 +166,50 @@
     </div>
 </div>
 
-<!-- MODAL UPDATE USER ROLE -->
-<div class="modal fade" id="updateUserRoleModal" tabindex="-1" aria-labelledby="updateUserRoleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="updateUserRoleModalLabel">Update User Role</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="<?= base_url('admin/updateuserrole'); ?>" method="post">
+<script>
+$(document).ready(function() {
+    // Inisialisasi DataTable
+    $('#tabelwoi').DataTable();
 
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="name" name="name" readonly>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="email" name="email" readonly>
-                    </div>
+    // Menggunakan event delegation
+    $(document).on('click', '.badge-danger', function() {
+        var userId = $(this).data('id');
+        
+        // Perbarui href tombol hapus di dalam modal
+        var deleteUrl = 'hapususer/' + userId;
+        $('#deleteUserButton').attr('href', deleteUrl);
+        
+        // Tampilkan modal
+        $('#exampleModal').modal('show');
+    });
 
-                    <div class="form-group d-flex">
-                        <select name="role_id" id="role_id" class="form-control mr-2" disabled>
-                            <option disabled>Select Role</option>
-                            <?php foreach ($role as $r) : ?>
-                            <option value="<?= $r['id']; ?>"><?= $r['role']; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <a id="lock-role" href="#" data-kode="<?= $kode; ?>"><i class="fa-solid fa-lock"></i></a> <a
-                            class="unlock-role d-none"><i class="fa-solid fa-lock-open"></i></a>
+    // Pastikan modal tidak duplikat dalam loop
+    if ($('#exampleModal').length == 0) {
+        $('body').append(`
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Hapus User</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah anda yakin untuk menghapus user ini?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <a href="#" id="deleteUserButton" class="btn btn-danger">Hapus!</a>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" id="update-user-role" disabled>Update</button>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+        `);
+    }
+});
+</script>
+
+
 <?php destroysession(); ?>

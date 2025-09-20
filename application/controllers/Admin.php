@@ -19,6 +19,7 @@ class Admin extends CI_Controller
         $this->load->model('User_tryout_model', 'user_tryout');
         $this->load->model('Repop_tinymce_model', 'repop_tinymce');
         $this->load->model('Latsol_model', 'latsol');
+        $this->load->model('Paket_to_model', 'paket_to');
 
         $this->load->helper(array('url','download'));
         $this->loginUser = $this->user->getLoginUser();
@@ -304,10 +305,12 @@ class Admin extends CI_Controller
         echo json_encode($getrole);
     }
 
-    public function updateuserrole()
+        public function updateuserrole()
     {
-        $email = $this->input->post('email');
+                $email = $this->input->post('email');
         $role_id = $this->input->post('role_id');
+
+        print_r($email, $role_id);
 
         $user = $this->user->get('one', ['email' => $email]);
 
@@ -321,7 +324,131 @@ class Admin extends CI_Controller
             ];
 
             $this->user->update($data, ['email' => $email]);
-            $this->session->set_flashdata('success', 'Mengubah Role User');
+
+            if ($role_id == 3) {
+                $latsol_twk = $this->latsol->get('many', ['jenis'=>1]);
+                foreach ($latsol_twk as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+
+                $latsol_tiu = $this->latsol->get('many', ['jenis'=>2]);
+                foreach ($latsol_tiu as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+
+                $latsol_tkp = $this->latsol->get('many', ['jenis'=>3]);
+                foreach ($latsol_tkp as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+
+                $to_skd = $this->tryout->get('many', ['for_bimbel'=>1, 'tipe_tryout'=>'SKD']);
+                foreach ($to_skd as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+            } else if ($role_id == 4) {
+                $latsol_mtk = $this->latsol->get('many', ['jenis'=>4]);
+                foreach ($latsol_mtk as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+
+                $to_mtk = $this->tryout->get('many', ['for_bimbel'=>1, 'tipe_tryout'=>'nonSKD']);
+                foreach ($to_mtk as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+            } else if ($role_id == 5) {
+                $latsol = $this->latsol->getAll();
+                foreach ($latsol as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+
+                $to_bimbel = $this->tryout->get('many', ['for_bimbel'=>1]);
+                foreach ($to_bimbel as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                } 
+            } else if ($role_id == 6) {
+                $to_mtk = $this->tryout->get('many', ['for_bimbel'=>1, 'tipe_tryout'=>'nonSKD']);
+                foreach ($to_mtk as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+            } else if ($role_id == 7) {
+                $to_skd = $this->tryout->get('many', ['for_bimbel'=>1, 'tipe_tryout'=>'SKD']);
+                foreach ($to_skd as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+            } else if ($role_id == 8) {
+                $man_ic = $this->tryout->get('many', ['for_bimbel'=>2, 'tipe_tryout'=>'nonSKD']);
+                foreach ($man_ic as $l) {
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0
+                    ];
+
+                    $this->user_tryout->insert($data_user, $l['slug']);
+                }
+            }
+
+            $this->session->set_flashdata('success', 'Mengubah Role User '. $user['name']);
         }
         redirect('admin/role');
     }
@@ -332,6 +459,53 @@ class Admin extends CI_Controller
         $user = $this->user->get('one', ['id' => $id]);
 
         echo json_encode($user);
+    }
+
+    public function viewupdaterole($id)
+    {
+        $this->load->model('Kode_settings_model', 'kode_settings');
+        $this->load->model('Access_menu_model', 'access_menu');
+        $this->load->model('Access_sub_menu_model', 'access_sub_menu');
+
+        $parent_title = getSubmenuTitleById(2)['title'];
+        submenu_access(2);
+
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'admin/role'
+            ],
+            [
+                'title' => 'update role',
+                'href' => 'active'
+            ]
+        ];
+
+        $user = $this->user->get('one', ['id' => $id]);
+        $name = $user['name'];
+        $email = $user['email'];
+        $role = $user['role_id'];
+        $all_role = $this->role->getAll();
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'name' => $name,
+            'email' => $email,
+            'role' => $role,
+            'all_role' => $all_role,
+            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/viewupdaterole', $data);
+        $this->load->view('templates/user_footer');
+
     }
 
     public function hapusrole()
@@ -358,6 +532,30 @@ class Admin extends CI_Controller
         }
     }
 
+    public function hapususer($id)
+    {
+        $this->user->delete(['id' => $id]);
+
+        $this->session->set_flashdata('success', 'Menghapus User');
+        redirect('admin/role');
+    }
+    
+    public function hapuspeserta($id, $slug)
+    {
+        $this->user_tryout->delete(['id' => $id], $slug);
+
+        $this->session->set_flashdata('success', 'Menghapus Peserta');
+        redirect('admin/approval/' . $slug);
+    }
+
+    public function approvepeserta($id, $slug)
+    {
+        $this->user_tryout->update(['status' => 0], ['id' => $id], $slug);
+
+        $this->session->set_flashdata('success', 'Approve Peserta');
+        redirect('admin/approval/' . $slug);
+    }
+    
     public function tambahsoal($slug)
     {
         $submenu_parent = 3;
@@ -404,17 +602,30 @@ class Admin extends CI_Controller
             redirect('admin/soal' . $jenis . '/' . $slug);
         }
 
-        $data = [
-            'title' => $title,
-            'breadcrumb_item' => $breadcrumb_item,
-            'user' => $this->loginUser,
-            'sidebar_menu' => $this->sidebarMenu,
-            'parent_submenu' => $parent_title,
-            'tipe_soal' => $this->tipeSoal,
-            'tryout' => $tryout,
-            'bobot_nilai' => $this->bobot_nilai->get('one', ['tryout' => $slug]),
-            'bobot_nilai_tiap_soal' => $this->bobot_nilai_tiap_soal->get('one', ['id' => 1], $slug)
-        ];
+        if ($tryout['tipe_tryout'] == 'nonSKD') {
+            $data = [
+                'title' => $title,
+                'breadcrumb_item' => $breadcrumb_item,
+                'user' => $this->loginUser,
+                'sidebar_menu' => $this->sidebarMenu,
+                'parent_submenu' => $parent_title,
+                'tipe_soal' => $this->tipeSoal,
+                'tryout' => $tryout,
+                'bobot_nilai' => $this->bobot_nilai->get('one', ['tryout' => $slug]),
+                'bobot_nilai_tiap_soal' => $this->bobot_nilai_tiap_soal->get('one', ['id' => 1], $slug)
+            ];
+        } else {
+            $data = [
+                'title' => $title,
+                'breadcrumb_item' => $breadcrumb_item,
+                'user' => $this->loginUser,
+                'sidebar_menu' => $this->sidebarMenu,
+                'parent_submenu' => $parent_title,
+                'tipe_soal' => $this->tipeSoal,
+                'tryout' => $tryout,
+                'bobot_nilai' => $this->bobot_nilai->get('one', ['tryout' => $slug]),
+            ];
+        }
 
         if (!$this->input->post('cek_soal', true))
             $this->form_validation->set_rules('text_soal', 'Teks Soal', 'required|trim', [
@@ -2337,18 +2548,34 @@ class Admin extends CI_Controller
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
-            'tryout' => $this->tryout->getAllOrderByIdDesc(['id >' => 0])
+            'tryout_skd' => $this->tryout->get('many', ['tipe_tryout' => 'SKD']),
+            'tryout_mtk' => $this->tryout->get('many', ['tipe_tryout' => 'nonSKD']),
         ];
 
         $this->form_validation->set_rules('tryout', 'Tryout Name', 'required');
         $this->form_validation->set_rules('tipe_tryout', 'Tipe Tryout', 'required');
         $berbayar = htmlspecialchars($this->input->post('berbayar'));
+        $for_bimbel = htmlspecialchars($this->input->post('for_bimbel'));
+        $freemium = htmlspecialchars($this->input->post('freemium'));
 
         if ($berbayar == 1)
             $this->form_validation->set_rules('harga', 'Harga', 'required|integer');
 
         $tipe_tryout = $this->input->post('tipe_tryout');
         $lama_pengerjaan = $this->input->post('lama_pengerjaan');
+        
+        if($this->input->post('refferal') == 1) {
+            $raw_input = $this->input->post('kode_refferal');
+
+            // 1. Bersihkan tag HTML dan ambil baris per kode
+            $cleaned = strip_tags($raw_input, "<p>"); // biarkan <p> untuk sementara
+            preg_match_all('/<p[^>]*>(.*?)<\/p>/', $cleaned, $matches);
+        
+            $kode_array = array_filter(array_map('trim', $matches[1])); // Ambil isi dalam <p>, trim spasi
+        
+            // 2. Ubah ke JSON jika mau disimpan dalam satu field
+            $kode_json = json_encode($kode_array);
+        }
 
         if ($tipe_tryout == 'nonSKD') {
             $this->form_validation->set_rules('jumlah_soal', 'Jumlah Soal', 'required|numeric');
@@ -2385,6 +2612,28 @@ class Admin extends CI_Controller
             } else {
                 $desc = $this->input->post('ket_tryout');
                 $harga = htmlspecialchars($this->input->post('harga'));
+                
+                $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
+                $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
+                $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
+                $config['file_name'] = time();  // Nama file unik (timestamp)
+        
+                $this->load->library('upload', $config);
+        
+                // Load konfigurasi upload
+                $this->upload->initialize($config);
+        
+                if ($this->upload->do_upload('foto')) {
+                    // Jika upload berhasil, ambil informasi file yang di-upload
+                    $uploadData = $this->upload->data();
+                    
+                    // Dapatkan path file yang di-upload
+                    $imagePath = $uploadData['file_name'];
+                } else {
+                    $error = $this->upload->display_errors();
+                    $this->session->set_flashdata('error', $error);
+                    redirect('admin/tryout');
+                }
 
                 $data = [
                     'name' => $tryout_name,
@@ -2395,8 +2644,16 @@ class Admin extends CI_Controller
                     'lama_pengerjaan' => $lama_pengerjaan,
                     'harga' => $harga,
                     'hidden' => 1,
-                    'paid' => $berbayar
+                    'paid' => $berbayar,
+                    'for_bimbel' => $for_bimbel,
+                    'freemium' => $freemium,    
+                    'gambar' => $imagePath,
                 ];
+                
+                if ($this->input->post('refferal') == 1) {
+                    $data['kode_refferal'] = $kode_json;
+                    $data['harga_diskon'] = $this->input->post('diskon');
+                }
 
                 //INSERT TRYOUT
                 $this->tryout->insert($data);
@@ -2424,6 +2681,31 @@ class Admin extends CI_Controller
                     $pilihan = ['A', 'B', 'C', 'D', 'E'];
                     foreach ($pilihan as $p)
                         $this->kunci_tkp->insert(['pilihan' => $p], $slug);
+
+                    if ($for_bimbel == 1) {
+                        $user_3 = $this->user->get('many', ['role_id'=>3]);
+                        $user_7 = $this->user->get('many', ['role_id'=>7]);
+    
+                        foreach ($user_3 as $u) {
+                            $data = [
+                                'email' => $u['email'],
+                                'token' => 11111,
+                                'status' => 0
+                            ];
+                        
+                            $this->user_tryout->insert($data, $slug);
+                        }
+
+                        foreach ($user_7 as $u) {
+                            $data = [
+                                'email' => $u['email'],
+                                'token' => 11111,
+                                'status' => 0
+                            ];
+                        
+                            $this->user_tryout->insert($data, $slug);
+                        }
+                    }
                 } else {
                     //TABEL SOAL
                     $this->soal->createTablenonSKD($slug);
@@ -2450,6 +2732,57 @@ class Admin extends CI_Controller
 
                         $this->bobot_nilai->insert($data);
                     }
+
+                    if ($for_bimbel == 1) {
+                        $user_4 = $this->user->get('many', ['role_id'=>4]);
+                        $user_6 = $this->user->get('many', ['role_id'=>6]);
+
+                        foreach ($user_4 as $u) {
+                            $data = [
+                                'email' => $u['email'],
+                                'token' => 11111,
+                                'status' => 0
+                            ];
+                        
+                            $this->user_tryout->insert($data, $slug);
+                        }
+
+                        foreach ($user_6 as $u) {
+                            $data = [
+                                'email' => $u['email'],
+                                'token' => 11111,
+                                'status' => 0
+                            ];
+                        
+                            $this->user_tryout->insert($data, $slug);
+                        }
+                    } else if ($for_bimbel == 2) {
+                        $user_8 = $this->user->get('many', ['role_id'=>8]);
+
+                        foreach ($user_8 as $u) {
+                            $data = [
+                                'email' => $u['email'],
+                                'token' => 11111,
+                                'status' => 0
+                            ];
+                        
+                            $this->user_tryout->insert($data, $slug);
+                        }
+                    }
+                }
+
+                if ($for_bimbel == 1) {
+                    $user_5 = $this->user->get('many', ['role_id'=>5]);
+    
+                    foreach ($user_5 as $u) {
+                        $data = [
+                            'email' => $u['email'],
+                            'token' => 11111,
+                            'status' => 0
+                        ];
+                        
+                        $this->user_tryout->insert($data, $slug);
+                    }
                 }
 
                 $this->session->set_flashdata('success', 'Menambahkan Tryout Baru');
@@ -2461,7 +2794,7 @@ class Admin extends CI_Controller
     public function detailtryout($slug)
     {
         $this->load->model('Kode_settings_model', 'kode_settings');
-        $this->load->model('Midtrans_payment_model', 'midtrans_payment');
+        // $this->load->model('Midtrans_payment_model', 'midtrans_payment');
 
         $submenu_parent = 3;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
@@ -2480,8 +2813,12 @@ class Admin extends CI_Controller
             ]
         ];
 
-
-        $user_tryout = $this->user_tryout->getAll($slug);
+        if ($tryout['tipe_tryout'] == 'SKD') {
+            $user_tryout = $this->user_tryout->getRankingSKD($slug);
+        } else {
+            $user_tryout = $this->user_tryout->getRankingnonSKDAdmin($slug);
+        }
+   
         if (count($user_tryout) == 0) {
             $persentase = 0;
         } else {
@@ -2506,8 +2843,14 @@ class Admin extends CI_Controller
             'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
         ];
 
-        if ($tryout['paid'] == 1)
-            $data['pendapatan'] = $this->midtrans_payment->getPendapatan($slug);
+        if ($tryout['kode_refferal']) {
+            $ref = $this->user_tryout->get('many', ['refferal !=' => null], $slug);
+            $non_ref = $this->user_tryout->get('many', ['refferal' => null], $slug);
+    
+            $data['pendapatan'] = (count($non_ref) * $tryout['harga']) + (count($ref) * $tryout['harga_diskon']);
+        } elseif ($tryout['paid'] == 1) {
+            $data['pendapatan'] = count($user_tryout) * $tryout['harga'];
+        }
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
@@ -3412,6 +3755,20 @@ class Admin extends CI_Controller
                 redirect('admin/detailtryout/' . $tryout['slug']);
             }
         }
+        
+        if($this->input->post('refferal') == '1') {
+            $raw_input = $this->input->post('kode_refferal_edit');
+
+            // 1. Bersihkan tag HTML dan ambil baris per kode
+            $cleaned = strip_tags($raw_input, "<p>"); // biarkan <p> untuk sementara
+            preg_match_all('/<p[^>]*>(.*?)<\/p>/', $cleaned, $matches);
+        
+            $kode_array = array_filter(array_map('trim', $matches[1])); // Ambil isi dalam <p>, trim spasi
+        
+            // 2. Ubah ke JSON jika mau disimpan dalam satu field
+            $kode_json = json_encode($kode_array);
+        }
+
 
         if (!$berbayar)
             $harga = null;
@@ -3425,6 +3782,11 @@ class Admin extends CI_Controller
                 'harga' => $harga,
                 'updated_at' => $now
             ];
+            
+            if ($this->input->post('refferal') == 1) {
+                $data['kode_refferal'] = $kode_json;
+                $data['harga_diskon'] = $this->input->post('diskon');
+            }
 
             $this->tryout->update($data, ['id' => $id]);
             $this->session->set_flashdata('success', 'Mengubah Tryout');
@@ -4286,7 +4648,253 @@ class Admin extends CI_Controller
         }
         redirect('admin/detailtryout/' . $slug);
     }
+    
+    public function pendaftar() {
+        $parent_title = getSubmenuTitleById(22)['title'];
+        submenu_access(22);
 
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'active'
+            ]
+        ];
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'paket_to' => $this->paket_to->getAllOrderByIdDesc(),
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/paketto', $data);
+        $this->load->view('templates/user_footer');
+    }
+
+    public function detailpendaftar($slug) {
+        $submenu_parent = 22;
+        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
+        submenu_access($submenu_parent);
+        
+        $title = str_replace('_', ' ', $slug);
+
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'tryout'
+            ],
+            [
+                'title' => $title,
+                'href' => 'active'
+            ]
+        ];
+
+        $pendaftar = $this->paket_to->get('many', ['status !=' => 0],$slug);
+
+        foreach ($pendaftar as &$p) {
+            $this->db->where('email', $p['email']);
+            $query = $this->db->get('user');
+
+            $user = $query->row();
+            $p['nama'] = $user->name;
+            $p['no_wa'] = $user->no_wa;
+        }
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'pendaftar' => $pendaftar,
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/pendaftar', $data);
+        $this->load->view('templates/user_footer');
+
+    }
+
+    public function ubah_status_pendaftar() {
+        // Ambil data dari request POST
+        $id_pendaftar = $this->input->post('id_pendaftar');
+        $status = $this->input->post('status');
+        $nama_to = $this->input->post('nama_to');
+        $email = $this->input->post('email');
+    
+        // Buat nama tabel dinamis berdasarkan nama paket TO
+        $table_name = 'pendaftar_' . $nama_to;
+    
+        // Lakukan update status
+        $this->db->where('id', $id_pendaftar);
+        $updated = $this->db->update($table_name, ['status' => $status]);
+        
+        if ($status == 2) {
+            $data_user = [
+                'email'  => $email,
+                'token'  => 11111,
+                'status' => 0,
+                'freemium' => 1,
+            ];
+            
+            // Loop dari 1 sampai 8
+            for ($i = 1; $i <= 4; $i++) {
+                $slug = 'to_matematika_stis_eksklusif_' . $i; // nama tabel/slug
+            
+                $this->user_tryout->insert($data_user, $slug);
+            }
+            
+            $this->user_tryout->insert($data_user, 'focus_matematika_stis_series_1');
+            $this->user_tryout->insert($data_user, 'focus_matematika_stis_series_2');
+        }
+    
+        if ($updated) {
+            echo json_encode('success');
+        } else {
+            echo json_encode('failed');
+        }
+    }
+    
+    public function tambahpaket() {
+        $this->form_validation->set_rules('nama', 'Nama Tryout', 'required');
+        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required');
+
+        if ($this->form_validation->run() == false) {
+            $parent_title = getSubmenuTitleById(22)['title'];
+            submenu_access(22);
+
+            $breadcrumb_item = [
+                [
+                    'title' => $parent_title,
+                    'href' => 'active'
+                ]
+            ];
+
+            $data = [
+                'title' => $parent_title,
+                'breadcrumb_item' => $breadcrumb_item,
+                'user' => $this->loginUser,
+                'sidebar_menu' => $this->sidebarMenu,
+                'parent_submenu' => $parent_title,
+                'paket_to' => $this->paket_to->getAllOrderByIdDesc(),
+            ];
+
+            $this->load->view('templates/user_header', $data);
+            $this->load->view('templates/user_sidebar', $data);
+            $this->load->view('templates/user_topbar', $data);
+            $this->load->view('admin/paketto', $data);
+            $this->load->view('templates/user_footer');
+        } else {
+            // Konfigurasi upload
+            $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
+            $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
+            $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
+            $config['file_name'] = time();  // Nama file unik (timestamp)
+
+            $this->load->library('upload', $config);
+
+            // Load konfigurasi upload
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('foto')) {
+                // Jika upload berhasil, ambil informasi file yang di-upload
+                $uploadData = $this->upload->data();
+                
+                // Dapatkan path file yang di-upload
+                $imagePath = $uploadData['file_name'];
+
+                $nama = $this->input->post('nama');
+                $keterangan = $this->input->post('keterangan');
+    
+                // Simpan informasi gambar ke database (sesuaikan dengan struktur database Anda)
+                $data = [
+                    'nama' => $nama,
+                    'foto' => $imagePath,
+                    'keterangan' => $keterangan,
+                ];
+    
+                // Tampilkan pesan sukses
+                $this->paket_to->insert($data);
+                $this->paket_to->createPendaftar(create_slug($nama));
+
+                $this->session->set_flashdata('success', 'Menambahkan Tryout Baru');
+                redirect('admin/pendaftar');
+            } else {
+                // Jika upload gagal, tampilkan error
+                $error = $this->upload->display_errors();
+                $this->session->set_flashdata('error', $error);
+                redirect('admin/pendaftar');
+            }
+        }
+    }
+
+    public function toggle_freemium()
+    {
+        // Pastikan ini hanya dapat diakses melalui AJAX
+        if ($this->input->is_ajax_request()) {
+            // Ambil data dari request
+            $email = $this->input->post('email');
+            $toName = $this->input->post('toName');
+            $freemium = $this->input->post('freemium');
+
+            // Update database
+            $this->db->where('email', $email);
+            $update = $this->db->update('user_tryout_' . $toName, ['freemium' => $freemium]);
+
+            if ($update) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode(['status' => 'error']);
+            }
+        } else {
+            show_404();
+        }
+    }
+    
+    public function approval()
+    {
+        $parent_title = getSubmenuTitleById(23)['title'];
+        submenu_access(23);
+
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'active'
+            ]
+        ];
+
+        $all_to = $this->tryout->getAll();
+
+        $user_100_all = [];
+
+        foreach ($all_to as $to) {
+            $user_100 = $this->user_tryout->get('many', ['status' => 100], $to['slug']);
+            $user_100_all[$to['slug']] = $user_100; // simpan berdasarkan slug
+        }
+
+        $data = [
+            'title' => $parent_title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'user_100_all' => $user_100_all
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/approval', $data);
+        $this->load->view('templates/user_footer');
+    }
+    
     private function _testingemailsender($mail_transport_type)
     {
         $user = $this->loginUser;

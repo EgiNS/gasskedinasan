@@ -139,6 +139,13 @@ function form_error_message($key)
     return $message;
 }
 
+function form_error_user($key)
+{
+    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+
+    return $message;
+}
+
 function breadcumb($breadcumb_item)
 {
     $breadcumb = '<ol class="breadcrumb indigo lighten-6 first shadow-lg mb-4 bg-dark navbar-light mb-4 px-md-4">';
@@ -170,3 +177,10 @@ function load_model($model, $alias)
     $ci = get_instance();
     return $ci->load->model($model, $alias);
 }
+
+function create_slug($string) {
+    $string = strtolower($string);
+    $string = str_replace(' ', '_', $string);
+    $string = preg_replace('/[^a-z0-9_]/', '', $string);
+    return $string;
+} 

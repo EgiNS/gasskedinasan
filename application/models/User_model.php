@@ -51,8 +51,14 @@ class User_model extends CI_Model
     public function delete($key)
     {
         $result = $this->db->delete($this->table, $key);
+        // var_dump($result); exit;
         return ($result == true) ? true : false;
     }
+
+    // public function delete_user($id) {
+    //     $this->db->where('id', $id);
+    //     $this->db->delete('user');
+    // }
 
     public function getNumRows($data)
     {

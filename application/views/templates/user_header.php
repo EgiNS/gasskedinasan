@@ -40,6 +40,11 @@
 
     <!-- MIDTRANS -->
     <script type="text/javascript" src="<?= javascript_snap_url(); ?>" data-client-key="<?= client_key(); ?>"></script>
+    
+    <!-- SWEETALERT -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 </head>
 
 <body id="page-top" class="sidebar-toggled">

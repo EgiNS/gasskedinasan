@@ -33,6 +33,7 @@ class Tryout_model extends CI_Model
     public function get($count, $key, $select = '*')
     {
         $this->db->select($select);
+        $this->db->order_by('id', 'DESC');
         $result = $this->db->get_where($this->table, $key);
         if ($count === 'many')
             return $result->result_array();

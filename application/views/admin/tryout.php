@@ -1,5 +1,13 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/dist/css/tryoutcard.css'); ?>">
+<style>
+    @media (max-width: 768px) {
+    .solution_card {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+    }
+}
+</style>
 <div class="container-fluid">
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
@@ -20,50 +28,111 @@
     <?= form_error_message('lama_pengerjaan'); ?>
 
     <div class="row">
-        <?php if ($tryout) : ?>
-        <?php for ($i = 0; $i < ceil(count($tryout) / 5); $i++) : ?>
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="solution_cards_box">
-                <div class="owl-carousel">
-                    <?php for ($j = $i * 5; $j < $i * 5 + 5; $j++) : ?>
-                    <?php if (!empty($tryout[$j])) : ?>
-                    <div class="solution_card">
+        <?php if ($tryout_skd) : ?>
+            <h4 class="pl-3">TRYOUT SKD</h4>
+            <div class="d-flex flex-wrap justify-content-start solution_cards_box p-2">
+                <?php foreach ($tryout_skd as $item) : ?>
+                    <div class="solution_card m-2" style="flex: 1 1 calc(33.33% - 1rem); max-width: calc(33.33% - 1rem); box-sizing: border-box;">
                         <div class="hover_color_bubble"></div>
+
+                        <?php if ($item['gambar']) : ?>
+                            <img src="<?= base_url('assets/img/' . $item["gambar"]); ?>" class="mb-1" style="width: 100%;" alt="tryout">
+                        <?php endif; ?>
+
                         <div class="row align-items-center justify-content-start">
                             <div class="ml-2 so_top_icon">
                                 <img src="<?= base_url('assets/img/tryout.svg'); ?>" alt="tryout.svg">
                             </div>
                             <div class="mx-2 solu_title">
-                                <h3 class="font-weight-bold"
-                                    style="<?= ($tryout[$j]['hidden'] == 1 ? 'color: red;' : ''); ?>">
-                                    <?= $tryout[$j]['name']; ?></h3>
+                                <h3 class="font-weight-bold" style="<?= ($item['hidden'] == 1 ? 'color: red;' : ''); ?>">
+                                    <?= $item['name']; ?>
+                                </h3>
                             </div>
-                            <?php if ($tryout[$j]['paid'] == 1) : ?>
-                            <div class="col-auto badge badge-primary">
-                                <i class="fas fa-dollar text-gray-200"></i>
-                            </div>
+                            <?php if ($item['paid'] == 1) : ?>
+                                <div class="col-auto badge badge-primary">
+                                    <i class="fas fa-dollar text-gray-200"></i>
+                                </div>
                             <?php endif; ?>
                         </div>
+
                         <div>
-                            <p><?= $tryout[$j]['keterangan']; ?></p>
-                            <p><?= 'Status: ' . ($tryout[$j]['status'] == 1 ? 'Release' : ($tryout[$j]['status'] == 2 ? 'Drawn' : 'Not release yet')); ?>
+                            <?php if ($item['for_bimbel'] == 1) : ?>
+                                <span class="badge bg-warning text-white">Khusus Bimbel</span>
+                            <?php elseif ($item['for_bimbel'] == 2) : ?>
+                                <span class="badge bg-danger text-white">Khusus MAN IC</span>
+                            <?php endif; ?>
                         </div>
-                        <div class="solu_description fixed-bottom mb-5 ml-3">
-                            <a href="<?= base_url('admin/detailtryout/') . $tryout[$j]['slug']; ?>"
-                                class="text-decoration-none">Detail</a>
+
+                        <div>
+                            <p><?= $item['keterangan']; ?></p>
+                            <p><?= 'Status: ' . ($item['status'] == 1 ? 'Release' : ($item['status'] == 2 ? 'Drawn' : 'Not release yet')); ?></p>
+                        </div>
+
+                        <div class="solu_description mb-2">
+                            <a href="<?= base_url('admin/detailtryout/') . $item['slug']; ?>" class="text-decoration-none">Detail</a>
                         </div>
                     </div>
-                    <?php endif; ?>
-                    <?php endfor; ?>
-                </div>
+                <?php endforeach; ?>
             </div>
-        </div>
-        <?php endfor; ?>
         <?php else : ?>
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <h2 class="h2 mb-4 text-gray-800">Belum ada tryout yang tersedia</h2>
-        </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <h2 class="h2 mb-4 text-gray-800">Belum ada tryout yang tersedia</h2>
+            </div>
         <?php endif; ?>
+
+        <div class="d-flex mt-3 flex-column">
+            <h4 class="pl-3">TRYOUT MATEMATIKA</h4>
+            <?php if ($tryout_mtk) : ?>
+                <div class="d-flex flex-wrap justify-content-start solution_cards_box p-2">
+                    <?php foreach ($tryout_mtk as $item) : ?>
+                        <div class="solution_card m-2" style="flex: 1 1 calc(33.33% - 1rem); max-width: calc(33.33% - 1rem); box-sizing: border-box;">
+                            <div class="hover_color_bubble"></div>
+    
+                            <?php if ($item['gambar']) : ?>
+                                <img src="<?= base_url('assets/img/' . $item["gambar"]); ?>" class="mb-1" style="width: 100%;" alt="tryout">
+                            <?php endif; ?>
+    
+                            <div class="row align-items-center justify-content-start">
+                                <div class="ml-2 so_top_icon">
+                                    <img src="<?= base_url('assets/img/tryout.svg'); ?>" alt="tryout.svg">
+                                </div>
+                                <div class="mx-2 solu_title">
+                                    <h3 class="font-weight-bold" style="<?= ($item['hidden'] == 1 ? 'color: red;' : ''); ?>">
+                                        <?= $item['name']; ?>
+                                    </h3>
+                                </div>
+                                <?php if ($item['paid'] == 1) : ?>
+                                    <div class="col-auto badge badge-primary">
+                                        <i class="fas fa-dollar text-gray-200"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+    
+                            <div>
+                                <?php if ($item['for_bimbel'] == 1) : ?>
+                                    <span class="badge bg-warning text-white">Khusus Bimbel</span>
+                                <?php elseif ($item['for_bimbel'] == 2) : ?>
+                                    <span class="badge bg-danger text-white">Khusus MAN IC</span>
+                                <?php endif; ?>
+                            </div>
+    
+                            <div>
+                                <p><?= $item['keterangan']; ?></p>
+                                <p><?= 'Status: ' . ($item['status'] == 1 ? 'Release' : ($item['status'] == 2 ? 'Drawn' : 'Not release yet')); ?></p>
+                            </div>
+    
+                            <div class="solu_description mb-2">
+                                <a href="<?= base_url('admin/detailtryout/') . $item['slug']; ?>" class="text-decoration-none">Detail</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <h2 class="h2 mb-4 text-gray-800">Belum ada tryout yang tersedia</h2>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 </div>
@@ -79,7 +148,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="<?= base_url('admin/tryout'); ?>" method="post">
+                <form action="<?= base_url('admin/tryout'); ?>" method="post" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="form-group">
                             <input type="text" class="form-control" id="tryout" name="tryout"
@@ -88,6 +157,10 @@
                         <div class="form-group">
                             <textarea class="form-control" name="ket_tryout" id="ket_tryout" cols="10" rows="5"
                                 placeholder="Keterangan tryout... (opsional)"></textarea>
+                        </div>
+                        <div class="custom-file mt-1 mb-3">
+                                <input type="file" class="custom-file-input" id="customFile" name="foto">
+                                <label class="custom-file-label" for="customFile">Upload gambar</label>
                         </div>
                         <div class="form-group">
                             <select name="tipe_tryout" id="tipe_tryout" class="form-control">
@@ -106,7 +179,32 @@
                                 placeholder="Misal: 110" autocomplete="off" value="<?= set_value('jumlah_soal'); ?>">
                         </div>
                         <div class="form-group">
-                            <div class="form-check">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="1" id="freemium" name="freemium"
+                                        <?= (set_value('freemium') == "1" ? 'checked' : ''); ?>>
+                                    <label class="form-check-label" for="freemium">
+                                        Freemium ?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group d-flex">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="1" id="for_bimbel" name="for_bimbel"
+                                        <?= (set_value('for_bimbel') == "1" ? 'checked' : ''); ?>>
+                                    <label class="form-check-label">
+                                        Khusus Bimbel ?
+                                    </label>
+                                </div>
+                                <div class="form-check ml-5">
+                                    <input class="form-check-input" type="checkbox" value="2" id="for_bimbel" name="for_bimbel"
+                                        <?= (set_value('for_bimbel') == "2" ? 'checked' : ''); ?>>
+                                    <label class="form-check-label">
+                                        Khusus MAN IC ?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="1" id="berbayar" name="berbayar"
                                     <?= (set_value('berbayar') == "1" ? 'checked' : ''); ?>>
                                 <label class="form-check-label" for="berbayar">
@@ -118,6 +216,25 @@
                             <input type="number" class="form-control" id="harga" name="harga"
                                 placeholder="Harga: contoh 10000" autocomplete="off" value="<?= set_value('harga'); ?>"
                                 <?= (set_value('berbayar') ? '' : 'disabled'); ?>>
+                        </div>
+                         <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" id="refferal" name="refferal"
+                                    <?= (set_value('refferal') == "1" ? 'checked' : ''); ?>>
+                                <label class="form-check-label" for="refferal">
+                                    Kode Refferal ?
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-2" id="refferal-input" style="display: none;">
+                            <label for="kode_refferal">Masukkan Kode Refferal (Pisahkan dengan Enter)</label>
+                            <textarea name="kode_refferal" id="kode_refferal" class="form-control"><?= set_value('kode_refferal'); ?></textarea>
+                        </div>
+
+                        <div class="form-group mt-2" id="diskon-group" style="display: none;">
+                            <input type="number" class="form-control" id="diskon" name="diskon"
+                                placeholder="Harga dengan kode refferal" autocomplete="off" value="<?= set_value('diskon'); ?>">
                         </div>
                         <div class="form-group">
                             <label for="lama_pengerjaan">Lama Pengerjaan (dalam menit)</label>

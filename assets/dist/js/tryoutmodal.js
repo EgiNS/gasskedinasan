@@ -15,7 +15,7 @@ $(document).ready(function () {
         $("#tryout").val(data.name);
         $("#tryout").prop("disabled", true);
         tinymce.init({
-          selector: "textarea",
+          selector: "#ket_tryout",
           plugins: "autolink lists table lists",
           toolbar: "a11ycheck addcomment showcomments casechange checklist code export formatpainter pageembed permanentpen table tableofcontents numlist bullist",
           toolbar_mode: "floating",
@@ -56,6 +56,26 @@ $(document).ready(function () {
             $("#harga").attr("disabled", true);
             $("#harga").val("");
           }
+        }
+        if (data.kode_refferal != null) {
+          console.log("masuk ref")
+          $("#refferal").prop("checked", true);
+          let kodeArray = JSON.parse(data.kode_refferal);
+          let isiTinyMCE = kodeArray.map(kode => `<p>${kode}</p>`).join('');
+          tinymce.init({
+            selector: "#kode_refferal_edit",
+            plugins: "autolink lists table lists",
+            toolbar: "a11ycheck addcomment showcomments casechange checklist code export formatpainter pageembed permanentpen table tableofcontents numlist bullist",
+            toolbar_mode: "floating",
+            tinycomments_mode: "embedded",
+            tinycomments_author: "Author name",
+            setup: (editor) => {
+              editor.on("init", (e) => {
+                editor.setContent(isiTinyMCE);
+              });
+            },
+          });
+          $("#diskon").val(data.harga_diskon);
         }
       },
     });
@@ -104,4 +124,23 @@ $(document).ready(function () {
       $("#harga").attr("disabled", true);
     }
   });
+
+  function toggleRefferalInput() {
+    if ($('#refferal').is(':checked')) {
+        $('#refferal-input').slideDown();
+        $('#diskon-group').slideDown();
+    } else {
+        $('#refferal-input').slideUp();
+        $('#diskon-group').slideUp();
+    }
+  }
+
+  // Saat halaman pertama kali dimuat
+  toggleRefferalInput();
+
+  // Saat checkbox berubah
+  $('#refferal').change(function () {
+      toggleRefferalInput();
+  });
+  
 });
