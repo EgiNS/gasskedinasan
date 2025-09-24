@@ -1,69 +1,51 @@
-<!-- HAPUS DIV SUPAYA UJUNG SIDEBAR MENYESUAIKAN HALAMAN -->
-<!-- <div class="sidebar"> -->
-<!-- Sidebar -->
-<?php $company = company(); ?>
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
-
-    <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url(); ?>">
-        <div class="sidebar-brand-icon">
-            <img src="<?= base_url('assets/img/logo/') . $company['logo']; ?>" alt="" width="50" class="rounded-circle">
-        </div>
-        <div class="sidebar-brand-text text-uppercase mx-3"><?= $company['name']; ?></div>
-    </a>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- QUERY MENU -->
-    <?php $menu = sidebarmenu(['user_menu.id', 'user_menu.menu']); ?>
-
-    <!-- LOOPING MENU -->
-    <?php foreach ($menu as $m) : ?>
-    <!-- Tidak memunculkan menu Exam -->
-    <div class="sidebar-heading">
-        <?= $m['menu']; ?>
+<nav class="pc-sidebar">
+  <div class="navbar-wrapper">
+    <div class="m-header">
+      <a href="../dashboard/index.html" class="b-brand text-primary d-flex align-items-center">
+        <!-- ========   Change your logo from here   ============ -->
+        <img src="<?= base_url('assets/assets_lp/img/gass/logo0.png'); ?>" style="width: 50px;" alt="" class="" />
+        <p class="fs-4 fw-medium mt-3 text-black">GassEducation</p>
+      </a>
     </div>
+    <div class="navbar-content">
+      <ul class="pc-navbar">
 
-    <!-- SIAPKAN SUB_MENU SESUAI MENU -->
-    <?php $submenu = sidebarsubmenu($m['id']); ?>
+        <!-- QUERY MENU -->
+        <?php $menu = sidebarmenu(['user_menu.id', 'user_menu.menu']); ?>
 
-    <?php foreach ($submenu as $sm) : ?>
+        <?php foreach ($menu as $m) : ?>
 
-    <!-- SUBMENU -->
-    <?php if ($sidebar_menu == $m['menu'] && $sm['title'] == $parent_submenu) : ?>
-    <li class="nav-item active">
-        <?php else : ?>
-    <li class="nav-item">
-        <?php endif; ?>
-        <a class="nav-link pb-0" href="<?= base_url($sm['url']); ?>"><i
-                class="<?= $sm['icon']; ?>"></i><span><?= $sm['title']; ?></span></a>
-    </li>
+            <li class="pc-item pc-caption">
+            <label><?= $m['menu']; ?></label>
+            <i class="ti ti-apps"></i>
+            </li>
 
-    <?php endforeach; ?>
+            <!-- SIAPKAN SUB_MENU SESUAI MENU -->
+            <?php $submenu = sidebarsubmenu($m['id']); ?>
 
-    <hr class="sidebar-divider mt-3">
-    <?php endforeach; ?>
+            <?php foreach ($submenu as $sm) : ?>
 
+                <li class="pc-item">
+                <a href="<?= base_url($sm['url']); ?>" class="pc-link">
+                    <span class="pc-micon"><i class="<?= $sm['icon']; ?>"></i></span>
+                    <span class="pc-mtext"><?= $sm['title']; ?></span>
+                </a>
+                </li>
+            
+            <?php endforeach; ?>
+          <?php endforeach; ?>
 
-
-
-
-    <!-- Logout -->
-    <li class="nav-item">
-        <a class="nav-link" href="<?= base_url('auth/logout') ?>">
-            <i class="fas fa-fw fa-sign-out-alt"></i>
-            <span>Logout</span></a>
-    </li>
-
-
-    <!-- Divider -->
-    <hr class="sidebar-divider d-none d-md-block">
-
-    <!-- Sidebar Toggler (Sidebar) -->
-    <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </ul>
+      <div class="pc-navbar-card bg-primary rounded">
+        <h4 class="text-white">Explore full code</h4>
+        <p class="text-white opacity-75">Buy now to get full access of code files</p>
+        <a href="https://codedthemes.com/item/berry-bootstrap-5-admin-template/" target="_blank" class="btn btn-light text-primary">
+          Buy Now
+        </a>
+      </div>
+      <div class="w-100 text-center">
+        <div class="badge theme-version badge rounded-pill bg-light text-dark f-12"></div>
+      </div>
     </div>
-</ul>
-<!-- </div> -->
-<!-- End of Sidebar -->
+  </div>
+</nav>

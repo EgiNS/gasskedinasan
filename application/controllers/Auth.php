@@ -697,7 +697,7 @@ class Auth extends CI_Controller
                     ];
                     $this->session->set_userdata($data);
 
-                    $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
+                    // $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
 
                     //jika benar
                     if ($user['role_id'] == 1) {
