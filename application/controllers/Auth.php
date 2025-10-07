@@ -567,6 +567,8 @@ class Auth extends CI_Controller
 
         $logo = base_url('assets/img/logo/' . $company_settings['logo']);
 
+        log_message('debug', 'BISAA');
+
         if ($type == 'verify') {
             $subject = 'Account Verification';
 
@@ -577,12 +579,15 @@ class Auth extends CI_Controller
             //Ubah nama
             $message = str_replace('name-of-registration', $this->input->post('name'), $message);
         } else if ($type == 'forgot') {
+            log_message('debug', 'MASOKKKK');
             $subject = 'Reset Password';
 
             $link = base_url() . 'auth/resetpassword?email=' . $this->input->post('email', true) . '&token=' . urlencode($token);
 
             //Ambil file pesan email html
             $message = file_get_contents(base_url('assets/email/PasswordReset.html'));
+
+            log_message('debug', 'DAPATTT');
         }
 
         //Ubah href
@@ -600,9 +605,10 @@ class Auth extends CI_Controller
 
         // KIRIM EMAIL
         if ($this->email->send()) {
+            log_message('debug', 'Terkirim');
             return true;
         } else {
-            echo $this->email->print_debugger();
+            log_message('debug', $this->email->print_debugger());
             die;
         }
     }

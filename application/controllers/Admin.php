@@ -7,29 +7,39 @@ class Admin extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+    
+        // Load helper database connection
+        // $this->load->helper('db');
+        $this->ensure_db_connection();
+        
         is_logged_in();
-        $this->load->model('User_model', 'user');
-        $this->load->model('Role_model', 'role');
-        $this->load->model('Jawaban_model', 'jawaban');
-        $this->load->model('Kunci_tkp_model', 'kunci_tkp');
-        $this->load->model('Bobot_nilai_tiap_soal_model', 'bobot_nilai_tiap_soal');
-        $this->load->model('Bobot_nilai_model', 'bobot_nilai');
-        $this->load->model('Soal_model', 'soal');
-        $this->load->model('Tryout_model', 'tryout');
-        $this->load->model('User_tryout_model', 'user_tryout');
-        $this->load->model('Repop_tinymce_model', 'repop_tinymce');
-        $this->load->model('Latsol_model', 'latsol');
-        $this->load->model('Paket_to_model', 'paket_to');
-
-        $this->load->helper(array('url','download'));
-        $this->loginUser = $this->user->getLoginUser();
-        $this->tipeSoal = $this->soal->getAllTipeSoal();
-        $this->sidebarMenu = 'Admin';
+        
+        // ⚠️ JANGAN load model di constructor!
+        // ⚠️ JANGAN set property shared di constructor!
+        
         date_default_timezone_set('Asia/Jakarta');
+        
+        log_message('debug', '🔄 Constructor completed - No shared state');
+    }
+    
+    function ensure_db_connection()
+    {
+        $ci =& get_instance();
+        
+        if (!$ci->db->conn_id) {
+            $ci->db->reconnect();
+            return;
+        }
+        
+        $result = @$ci->db->simple_query('SELECT 1');
+        if (!$result) {
+            $ci->db->reconnect();
+        }
     }
 
     public function index()
     {
+        $this->_loadRequiredModels();
         $this->load->model('Midtrans_payment_model', 'midtrans_payment');
 
         $parent_title = getSubmenuTitleById(1)['title'];
@@ -102,6 +112,7 @@ class Admin extends CI_Controller
 
     public function role()
     {
+        $this->_loadRequiredModels();
         $this->load->model('Kode_settings_model', 'kode_settings');
         $this->load->model('Access_menu_model', 'access_menu');
         $this->load->model('Access_sub_menu_model', 'access_sub_menu');
@@ -155,6 +166,7 @@ class Admin extends CI_Controller
 
     public function roleaccess($role_id)
     {
+        $this->_loadRequiredModels();
         $submenu_parent = 2;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -197,6 +209,7 @@ class Admin extends CI_Controller
     //MENU CHANGE ACCESS
     public function menuchangeaccess()
     {
+        $this->_loadRequiredModels();
         $this->load->model('Sub_menu_model', 'sub_menu');
         $this->load->model('Access_menu_model', 'access_menu');
         $this->load->model('Access_sub_menu_model', 'access_sub_menu');
@@ -236,6 +249,7 @@ class Admin extends CI_Controller
     //SUBMENU CHANGE ACCESS
     public function submenuchangeaccess()
     {
+        $this->_loadRequiredModels();
         $this->load->model('Menu_model', 'menu');
         $this->load->model('Access_menu_model', 'access_menu');
         $this->load->model('Access_sub_menu_model', 'access_sub_menu');
@@ -270,6 +284,7 @@ class Admin extends CI_Controller
 
     public function updaterole($id)
     {
+        $this->_loadRequiredModels();
         $parent_title = getSubmenuTitleById(2)['title'];
 
         $data = [
@@ -299,15 +314,17 @@ class Admin extends CI_Controller
 
     public function getupdaterole()
     {
+        $this->_loadRequiredModels();
         $id = $this->input->post('id');
         $getrole = $this->role->get('one', ['id' => $id]);
 
         echo json_encode($getrole);
     }
 
-        public function updateuserrole()
+    public function updateuserrole()
     {
-                $email = $this->input->post('email');
+        $this->_loadRequiredModels();
+        $email = $this->input->post('email');
         $role_id = $this->input->post('role_id');
 
         print_r($email, $role_id);
@@ -455,6 +472,7 @@ class Admin extends CI_Controller
 
     public function getupdateuserrole()
     {
+        $this->_loadRequiredModels();
         $id = $this->input->post('id');
         $user = $this->user->get('one', ['id' => $id]);
 
@@ -463,6 +481,7 @@ class Admin extends CI_Controller
 
     public function viewupdaterole($id)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Kode_settings_model', 'kode_settings');
         $this->load->model('Access_menu_model', 'access_menu');
         $this->load->model('Access_sub_menu_model', 'access_sub_menu');
@@ -510,6 +529,7 @@ class Admin extends CI_Controller
 
     public function hapusrole()
     {
+        $this->_loadRequiredModels();
         $id = $this->input->post('dataPost');
 
         if ($id >= 1 && $id <= 2)
@@ -534,6 +554,7 @@ class Admin extends CI_Controller
 
     public function hapususer($id)
     {
+        $this->_loadRequiredModels();
         $this->user->delete(['id' => $id]);
 
         $this->session->set_flashdata('success', 'Menghapus User');
@@ -542,6 +563,7 @@ class Admin extends CI_Controller
     
     public function hapuspeserta($id, $slug)
     {
+        $this->_loadRequiredModels();
         $this->user_tryout->delete(['id' => $id], $slug);
 
         $this->session->set_flashdata('success', 'Menghapus Peserta');
@@ -550,29 +572,53 @@ class Admin extends CI_Controller
 
     public function approvepeserta($id, $slug)
     {
+        $this->_loadRequiredModels();
         $this->user_tryout->update(['status' => 0], ['id' => $id], $slug);
 
         $this->session->set_flashdata('success', 'Approve Peserta');
         redirect('admin/approval/' . $slug);
     }
     
+    private function _maintainDbConnection()
+    {
+        if (!$this->db->conn_id) {
+            $this->db->reconnect();
+            return;
+        }
+        
+        // Coba query sederhana, jika error maka reconnect
+        $result = @$this->db->simple_query('SELECT 1');
+        if (!$result) {
+            $this->db->reconnect();
+        }
+    }
+        
     public function tambahsoal($slug)
     {
+        // 🚀 ISOLATE: Setiap request load model sendiri-sendiri
+        $this->_loadRequiredModels();
+        
+        // 🚀 ISOLATE: Setiap request punya data sendiri
         $submenu_parent = 3;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
-
+    
         $latsol = substr($slug,0,6);
-        if ($latsol != 'latsol') {
-            $jenis = 'tryout';
-        } else {
-            $jenis = 'latsol';
-        }
-
+        $jenis = ($latsol != 'latsol') ? 'tryout' : 'latsol';
+    
         $tryout = $this->$jenis->get('one', ['slug' => $slug]);
         $title = 'Tambah Soal ' . $tryout['name'];
+        
+        // 🚀 ISOLATE: Hitung count untuk request ini saja
         $count_soal = $this->soal->getNumRows(['id >' => 0], $slug);
-
+        $display_number = $count_soal + 1;
+    
+        // Validasi jumlah soal maksimum
+        if ($count_soal == (int)$tryout['jumlah_soal']) {
+            $this->session->set_flashdata('error', 'Tidak dapat menambahkan soal baru karena jumlah soal tryout sudah lengkap');
+            redirect('admin/soal' . $jenis . '/' . $slug);
+        }
+    
         $breadcrumb_item = [
             [
                 'title' => $parent_title,
@@ -591,586 +637,734 @@ class Admin extends CI_Controller
                 'href' => 'active'
             ],
             [
-                'title' => 'No. ' . ($count_soal + 1),
+                'title' => 'No. ' . $display_number,
                 'href' => 'active'
             ]
         ];
-
-        $count_soal = $this->soal->getNumRows(['id >' => 0], $slug);
-        if ($count_soal == (int)$tryout['jumlah_soal']) {
-            $this->session->set_flashdata('error', 'Tidak dapat menambahkan soal baru karena jumlah soal tryout sudah lengkap');
-            redirect('admin/soal' . $jenis . '/' . $slug);
-        }
-
-        if ($tryout['tipe_tryout'] == 'nonSKD') {
-            $data = [
-                'title' => $title,
-                'breadcrumb_item' => $breadcrumb_item,
-                'user' => $this->loginUser,
-                'sidebar_menu' => $this->sidebarMenu,
-                'parent_submenu' => $parent_title,
-                'tipe_soal' => $this->tipeSoal,
-                'tryout' => $tryout,
-                'bobot_nilai' => $this->bobot_nilai->get('one', ['tryout' => $slug]),
-                'bobot_nilai_tiap_soal' => $this->bobot_nilai_tiap_soal->get('one', ['id' => 1], $slug)
-            ];
-        } else {
-            $data = [
-                'title' => $title,
-                'breadcrumb_item' => $breadcrumb_item,
-                'user' => $this->loginUser,
-                'sidebar_menu' => $this->sidebarMenu,
-                'parent_submenu' => $parent_title,
-                'tipe_soal' => $this->tipeSoal,
-                'tryout' => $tryout,
-                'bobot_nilai' => $this->bobot_nilai->get('one', ['tryout' => $slug]),
-            ];
-        }
-
-        if (!$this->input->post('cek_soal', true))
-            $this->form_validation->set_rules('text_soal', 'Teks Soal', 'required|trim', [
-                'required' => 'Teks soal wajib diisi.'
-            ]);
-
-        if ($this->input->post('cek_pilihan', true) == '1') {
-            $this->form_validation->set_rules('text_a', 'Pilihan A', 'required|trim', [
-                'required' => 'Pilihan A wajib diisi.'
-            ]);
-            $this->form_validation->set_rules('text_b', 'Pilihan B', 'required|trim', [
-                'required' => 'Pilihan B wajib diisi.'
-            ]);
-            $this->form_validation->set_rules('text_c', 'Pilihan C', 'required|trim', [
-                'required' => 'Pilihan C wajib diisi.'
-            ]);
-            $this->form_validation->set_rules('text_d', 'Pilihan D', 'trim');
-            $this->form_validation->set_rules('text_e', 'Pilihan E', 'trim');
-        }
-
-        if ($tryout['tipe_tryout'] == 'SKD') {
-            $this->form_validation->set_rules('tipe_soal', 'Tipe Soal', 'greater_than[0]', [
-                'greater_than' => 'Tipe soal wajib diisi.'
-            ]);
-
-            if ($this->input->post('tipe_soal') != 3)
-                $this->form_validation->set_rules('kunci_jawaban', 'Kunci Jawaban', 'alpha', [
-                    'alpha' => 'Kunci jawaban wajib diisi.'
-                ]);
-            else {
-                $this->form_validation->set_rules('nilai_a', 'Nilai A', 'greater_than[0]', [
-                    'greater_than' => 'Nilai A wajib diisi.'
-                ]);
-                $this->form_validation->set_rules('nilai_b', 'Nilai B', 'greater_than[0]', [
-                    'greater_than' => 'Nilai B wajib diisi.'
-                ]);
-                $this->form_validation->set_rules('nilai_c', 'Nilai C', 'greater_than[0]', [
-                    'greater_than' => 'Nilai C wajib diisi.'
-                ]);
-                $this->form_validation->set_rules('nilai_d', 'Nilai D', 'greater_than[0]', [
-                    'greater_than' => 'Nilai D wajib diisi.'
-                ]);
-                $this->form_validation->set_rules('nilai_e', 'Nilai E', 'greater_than[0]', [
-                    'greater_than' => 'Nilai E wajib diisi.'
-                ]);
-            }
-        } else if ($tryout['tipe_tryout'] == 'nonSKD') {
-            if (!$this->input->post('cek_kunci'))
-                $this->form_validation->set_rules('kunci_jawaban', 'Kunci Jawaban', 'alpha', [
-                    'alpha' => 'Kunci jawaban wajib diisi.'
-                ]);
-        }
-
+    
+        log_message('debug', 'AMANN SOAL ' . $display_number . ' 1 - ' . date('H:i:s'));
+    
+        // Prepare data untuk view
+        $data = $this->_prepareViewData($title, $breadcrumb_item, $tryout, $slug, $parent_title, $display_number);
+        
+        log_message('debug', 'SET DATA SELESAI SOAL ' . $display_number . ' - ' . date('H:i:s'));
+    
         $tinymce_content = ['text_soal', 'pembahasan', 'text_a', 'text_b', 'text_c', 'text_d', 'text_e'];
-        if ($this->form_validation->run() == false) {
-            $this->_tinymcerepop($tinymce_content);
-
-            $this->load->view('templates/user_header', $data);
-            $this->load->view('templates/user_sidebar', $data);
-            $this->load->view('templates/user_topbar', $data);
-            $this->load->view('admin/tambahsoal', $data);
-            $this->load->view('templates/user_footer');
+        // 🚀 PROSES: Pisahkan GET dan POST secara jelas
+        if ($this->input->server('REQUEST_METHOD') === 'POST') {
+            $this->_handlePostRequest($slug, $tryout, $data, $display_number);
         } else {
-
-            //INISIASI VARIABEL
-            $gambar_a = null;
-            $gambar_b = null;
-            $gambar_c = null;
-            $gambar_d = null;
-            $gambar_e = null;
-            $text_a = null;
-            $text_b = null;
-            $text_c = null;
-            $text_d = null;
-            $text_e = null;
-
-            //CONFIQ GAMBAR
-            $config['allowed_types'] = 'gif|jpg|png|jpeg';
-            $config['max_size']     = '1024';
-            $config['upload_path'] = './assets/img/soal/';
-            $this->load->library('upload', $config);
-
-            if ($tryout['tipe_tryout'] == 'SKD')
-                //TIPE SOAL
-                $tipe_soal = $this->input->post('tipe_soal', true);
-
-            //KUNCI JAWABAN
-            $kunci_jawaban = $this->input->post('kunci_jawaban', true);
-
-            //PEMBAHASAN GAMBAR
-            if ($this->input->post('cek_pembahasan', true)) {
-                if ($this->upload->do_upload('gambar_pembahasan'))
-                    $gambar_pembahasan = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error_gbr_pembahasan', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
+            $this->_handleGetRequest($data, $tinymce_content);
+        }
+    }
+    
+    private function _loadRequiredModels()
+    {
+        // 🚀 Load model hanya untuk request ini
+        static $loaded = false;
+        
+        if (!$loaded) {
+            $this->load->model('User_model', 'user');
+            $this->load->model('Role_model', 'role');
+            $this->load->model('Jawaban_model', 'jawaban');
+            $this->load->model('Kunci_tkp_model', 'kunci_tkp');
+            $this->load->model('Bobot_nilai_tiap_soal_model', 'bobot_nilai_tiap_soal');
+            $this->load->model('Bobot_nilai_model', 'bobot_nilai');
+            $this->load->model('Soal_model', 'soal');
+            $this->load->model('Tryout_model', 'tryout');
+            $this->load->model('Latsol_model', 'latsol');
+            $this->load->model('User_tryout_model', 'user_tryout');
+            $this->load->model('Repop_tinymce_model', 'repop_tinymce');
+            
+            $this->loginUser = $this->user->getLoginUser();
+            $this->sidebarMenu = 'Admin';
+            $this->tipeSoal = $this->soal->getAllTipeSoal();
+            
+            $loaded = true;
+            log_message('debug', '📚 Models loaded for this request');
+        }
+    }
+    
+    private function _handleGetRequest($data, $tinymce_content)
+    {
+        // 🚀 Hanya untuk menampilkan form
+        log_message('debug', '📄 GET Request - Displaying form');
+        
+        $this->_tinymcerepop($tinymce_content);
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/tambahsoal', $data);
+        $this->load->view('templates/user_footer');
+    }
+    
+    private function _handlePostRequest($slug, $tryout, $data, $display_number)
+    {
+        // 🚀 Hanya untuk proses submission
+        log_message('debug', '📨 POST Request - Processing submission for soal: ' . $display_number);
+        
+        // Setup validation rules
+        $this->_setupValidationRules($tryout, $display_number);
+        
+        log_message('debug', 'AMANN 2 SOAL ' . $display_number . ' - ' . date('H:i:s'));
+    
+        $tinymce_content = ['text_soal', 'pembahasan', 'text_a', 'text_b', 'text_c', 'text_d', 'text_e'];
+        
+        if ($this->form_validation->run() == false) {
+            // Validation failed - show form dengan error
+            log_message('debug', '❌ Validation failed for soal: ' . $display_number);
+            $this->_showFormWithErrors($data, $tinymce_content);
+        } else {
+            // Validation success - process data
+            log_message('debug', '✅ Validation passed for soal: ' . $display_number);
+            $this->_processSubmission($slug, $tryout, $tinymce_content, $display_number);
+        }
+    }
+    
+    private function _processSubmission($slug, $tryout, $tinymce_content, $expected_number)
+    {
+        // 🚀 FORCE fresh database connection
+        $this->db->reconnect();
+        
+        // 🚀 START TRANSACTION dengan isolation
+        $this->db->trans_start();
+        $this->db->query("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+        
+        try {
+            log_message('debug', '🟢 TRANSACTION START for expected number: ' . $expected_number);
+            
+            // 🚀 ATOMIC: Verify and get actual number
+            $current_count = $this->soal->getNumRows(['id >' => 0], $slug);
+            $actual_number = $current_count + 1;
+            
+            // 🚀 VERIFY: Pastikan number masih sesuai
+            if ($actual_number != $expected_number) {
+                throw new Exception("Number mismatch! Expected: {$expected_number}, Actual: {$actual_number}. Soal mungkin sudah ditambahkan oleh request lain.");
             }
-
-            //PEMBAHASAN TEKS
-            $pembahasan = $this->input->post('pembahasan', true);
-
-            $email_kunci_twk_tiu = 'kunci_jawaban_' . $slug . '@gmail.com';
-
+            
+            log_message('debug', '🔢 Verified number: ' . $actual_number);
+            
+            // 🚀 PROSES penyimpanan dengan $actual_number
+            $this->_saveSoalData($slug, $tryout, $actual_number, $tinymce_content);
+            
+            // 🚀 COMMIT transaction
+            $this->db->trans_commit();
+            
+            log_message('debug', '✅ TRANSACTION COMMITTED - Soal: ' . $actual_number);
+            log_message('debug', 'AMANN 8 SOAL ' . $actual_number);
+            
+            $this->session->set_flashdata('success', 'Soal nomor ' . $actual_number . ' berhasil disimpan!');
+            redirect('admin/tambahsoal/' . $slug);
+            
+        } catch (Exception $e) {
+            // 🚀 ROLLBACK jika error
+            $this->db->trans_rollback();
+            log_message('error', '❌ TRANSACTION FAILED: ' . $e->getMessage());
+            
+            $this->_tinymcerepop($tinymce_content);
+            $this->session->set_flashdata('error', $e->getMessage());
+            redirect('admin/tambahsoal/' . $slug);
+        }
+    }
+    
+    private function _setupValidationRules($tryout, $display_number)
+    {
+            $start_time = microtime(true);
+            if (!$this->input->post('cek_soal', true))
+                $this->form_validation->set_rules('text_soal', 'Teks Soal', 'required|trim', [
+                    'required' => 'Teks soal wajib diisi.'
+                ]);
+            $end_time = microtime(true);
+            log_message('debug', 'VALIDASI TEXT_SOAL SOAL ' . $display_number . ': ' . round(($end_time - $start_time) * 1000, 2) . ' ms - ' . date('H:i:s'));
+            
+            // VALIDASI 2: Pilihan Jawaban
+            $start_time = microtime(true);
+            if ($this->input->post('cek_pilihan', true) == '1') {
+                $this->form_validation->set_rules('text_a', 'Pilihan A', 'required|trim', [
+                    'required' => 'Pilihan A wajib diisi.'
+                ]);
+                $this->form_validation->set_rules('text_b', 'Pilihan B', 'required|trim', [
+                    'required' => 'Pilihan B wajib diisi.'
+                ]);
+                $this->form_validation->set_rules('text_c', 'Pilihan C', 'required|trim', [
+                    'required' => 'Pilihan C wajib diisi.'
+                ]);
+                $this->form_validation->set_rules('text_d', 'Pilihan D', 'trim');
+                $this->form_validation->set_rules('text_e', 'Pilihan E', 'trim');
+            }
+            $end_time = microtime(true);
+            log_message('debug', 'VALIDASI PILIHAN SOAL ' . $display_number . ': ' . round(($end_time - $start_time) * 1000, 2) . ' ms - ' . date('H:i:s'));
+            
+            // VALIDASI 3: Tipe Tryout SKD
+            $start_time = microtime(true);
             if ($tryout['tipe_tryout'] == 'SKD') {
-                //UNTUK NGECEK APAKAH JUMLAH SOAL PADA TIAP PAKET SOAL SUDAH PENUH
-                $jumlah_soal_twk = $this->soal->getNumRows(['tipe_soal' => 1], $slug);
-                $jumlah_soal_tiu = $this->soal->getNumRows(['tipe_soal' => 2], $slug);
-                $jumlah_soal_tkp = $this->soal->getNumRows(['tipe_soal' => 3], $slug);
-
-
-                if ($tipe_soal == 1) {
-                    if ($jumlah_soal_twk == 30) {
-                        $this->_tinymcerepop($tinymce_content);
-
-                        $this->session->set_flashdata('error', 'Maaf, jumlah soal TWK sudah 30 soal');
-                        redirect('admin/tambahsoal/' . $slug);
-                    } else {
-                        $nomor = $jumlah_soal_twk + 1;
-                        $token = 'twk-' . $this->grs();
-                    }
-                } else if ($tipe_soal == 2) {
-                    if ($jumlah_soal_tiu == 35) {
-                        $this->_tinymcerepop($tinymce_content);
-
-                        $this->session->set_flashdata('error', 'Maaf, jumlah soal TIU sudah 35 soal');
-                        redirect('admin/tambahsoal/' . $slug);
-                    } else {
-                        $nomor = $jumlah_soal_tiu + 31;
-                        $token = 'tiu-' . $this->grs();
-                    }
-                } else {
-                    if ($jumlah_soal_tkp == 45) {
-                        $this->_tinymcerepop($tinymce_content);
-
-                        $this->session->set_flashdata('error', 'Maaf, jumlah soal TKP sudah 45 soal');
-                        redirect('admin/tambahsoal/' . $slug);
-                    } else {
-                        $nomor = $jumlah_soal_tkp + 66;
-                        $token = 'tkp-' . $this->grs();
-                    }
-                }
-
-                //INSERT KUNCI JAWABAN
-                if ($tipe_soal != 3)
-                    $this->jawaban->update(
-                        [
-                            '`' . $nomor . '`' => $kunci_jawaban
-                        ],
-                        [
-                            'email' => $email_kunci_twk_tiu
-                        ],
-                        $slug
-                    );
+                $this->form_validation->set_rules('tipe_soal', 'Tipe Soal', 'greater_than[0]', [
+                    'greater_than' => 'Tipe soal wajib diisi.'
+                ]);
+            
+                if ($this->input->post('tipe_soal') != 3)
+                    $this->form_validation->set_rules('kunci_jawaban', 'Kunci Jawaban', 'alpha', [
+                        'alpha' => 'Kunci jawaban wajib diisi.'
+                    ]);
                 else {
-                    $A = $this->input->post('nilai_a');
-                    $B = $this->input->post('nilai_b');
-                    $C = $this->input->post('nilai_c');
-                    $D = $this->input->post('nilai_d');
-                    $E = $this->input->post('nilai_e');
-
-                    $nilai = [$A, $B, $C, $D, $E];
-                    $pilihan = ['A', 'B', 'C', 'D', 'E'];
-
-                    for ($i = 0; $i <= 4; $i++) {
-                        $n = $nilai[$i];
-                        $p = $pilihan[$i];
-                        $this->kunci_tkp->update(
+                    $this->form_validation->set_rules('nilai_a', 'Nilai A', 'greater_than[0]', [
+                        'greater_than' => 'Nilai A wajib diisi.'
+                    ]);
+                    $this->form_validation->set_rules('nilai_b', 'Nilai B', 'greater_than[0]', [
+                        'greater_than' => 'Nilai B wajib diisi.'
+                    ]);
+                    $this->form_validation->set_rules('nilai_c', 'Nilai C', 'greater_than[0]', [
+                        'greater_than' => 'Nilai C wajib diisi.'
+                    ]);
+                    $this->form_validation->set_rules('nilai_d', 'Nilai D', 'greater_than[0]', [
+                        'greater_than' => 'Nilai D wajib diisi.'
+                    ]);
+                    $this->form_validation->set_rules('nilai_e', 'Nilai E', 'greater_than[0]', [
+                        'greater_than' => 'Nilai E wajib diisi.'
+                    ]);
+                }
+            } else if ($tryout['tipe_tryout'] == 'nonSKD') {
+                if (!$this->input->post('cek_kunci'))
+                    $this->form_validation->set_rules('kunci_jawaban', 'Kunci Jawaban', 'alpha', [
+                        'alpha' => 'Kunci jawaban wajib diisi.'
+                    ]);
+            }
+            $end_time = microtime(true);
+            log_message('debug', 'VALIDASI TIPETRYOUT SOAL ' . $display_number . ': ' . round(($end_time - $start_time) * 1000, 2) . ' ms - ' . date('H:i:s'));
+    }
+    
+    private function _saveSoalData($slug, $tryout, $actual_number, $tinymce_content) 
+    {
+                     //INISIASI VARIABEL
+                    $gambar_a = null;
+                    $gambar_b = null;
+                    $gambar_c = null;
+                    $gambar_d = null;
+                    $gambar_e = null;
+                    $text_a = null;
+                    $text_b = null;
+                    $text_c = null;
+                    $text_d = null;
+                    $text_e = null;
+                    $gambar_pembahasan = null;
+        
+                    //CONFIQ GAMBAR
+                    $config['allowed_types'] = 'gif|jpg|png|jpeg';
+                    $config['max_size']     = '1024';
+                    $config['upload_path'] = './assets/img/soal/';
+                    $this->load->library('upload', $config);
+        
+                    if ($tryout['tipe_tryout'] == 'SKD')
+                        //TIPE SOAL
+                        $tipe_soal = $this->input->post('tipe_soal', true);
+        
+                    //KUNCI JAWABAN
+                    $kunci_jawaban = $this->input->post('kunci_jawaban', true);
+        
+                    //PEMBAHASAN GAMBAR
+                    if ($this->input->post('cek_pembahasan', true)) {
+                        if ($this->upload->do_upload('gambar_pembahasan'))
+                            $gambar_pembahasan = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error_gbr_pembahasan', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+                    }
+        
+                    //PEMBAHASAN TEKS
+                    $pembahasan = $this->input->post('pembahasan', true);
+        
+                    $email_kunci_twk_tiu = 'kunci_jawaban_' . $slug . '@gmail.com';
+                    
+                    log_message('debug', 'AMANN 3');
+        
+                    if ($tryout['tipe_tryout'] == 'SKD') {
+                        // $this->_maintainDbConnection();
+                        //UNTUK NGECEK APAKAH JUMLAH SOAL PADA TIAP PAKET SOAL SUDAH PENUH
+                        $jumlah_soal_twk = $this->soal->getNumRows(['tipe_soal' => 1], $slug);
+                        $jumlah_soal_tiu = $this->soal->getNumRows(['tipe_soal' => 2], $slug);
+                        $jumlah_soal_tkp = $this->soal->getNumRows(['tipe_soal' => 3], $slug);
+        
+        
+                        if ($tipe_soal == 1) {
+                            if ($jumlah_soal_twk == 30) {
+                                $this->_tinymcerepop($tinymce_content);
+        
+                                $this->session->set_flashdata('error', 'Maaf, jumlah soal TWK sudah 30 soal');
+                                redirect('admin/tambahsoal/' . $slug);
+                            } else {
+                                $nomor = $jumlah_soal_twk + 1;
+                                $token = 'twk-' . $this->grs();
+                            }
+                        } else if ($tipe_soal == 2) {
+                            if ($jumlah_soal_tiu == 35) {
+                                $this->_tinymcerepop($tinymce_content);
+        
+                                $this->session->set_flashdata('error', 'Maaf, jumlah soal TIU sudah 35 soal');
+                                redirect('admin/tambahsoal/' . $slug);
+                            } else {
+                                $nomor = $jumlah_soal_tiu + 31;
+                                $token = 'tiu-' . $this->grs();
+                            }
+                        } else {
+                            if ($jumlah_soal_tkp == 45) {
+                                $this->_tinymcerepop($tinymce_content);
+        
+                                $this->session->set_flashdata('error', 'Maaf, jumlah soal TKP sudah 45 soal');
+                                redirect('admin/tambahsoal/' . $slug);
+                            } else {
+                                $nomor = $jumlah_soal_tkp + 66;
+                                $token = 'tkp-' . $this->grs();
+                            }
+                        }
+        
+                        //INSERT KUNCI JAWABAN
+                        if ($tipe_soal != 3)
+                            $this->jawaban->update(
+                                [
+                                    '`' . $nomor . '`' => $kunci_jawaban
+                                ],
+                                [
+                                    'email' => $email_kunci_twk_tiu
+                                ],
+                                $slug
+                            );
+                        else {
+                            $A = $this->input->post('nilai_a');
+                            $B = $this->input->post('nilai_b');
+                            $C = $this->input->post('nilai_c');
+                            $D = $this->input->post('nilai_d');
+                            $E = $this->input->post('nilai_e');
+        
+                            $nilai = [$A, $B, $C, $D, $E];
+                            $pilihan = ['A', 'B', 'C', 'D', 'E'];
+        
+                            for ($i = 0; $i <= 4; $i++) {
+                                $n = $nilai[$i];
+                                $p = $pilihan[$i];
+                                $this->kunci_tkp->update(
+                                    [
+                                        '`' . $nomor . '`' => $n
+                                    ],
+                                    [
+                                        'pilihan' => $p
+                                    ],
+                                    $slug
+                                );
+                            }
+                        }
+                    } else if ($tryout['tipe_tryout'] == 'nonSKD') {
+                        // $this->_maintainDbConnection();
+                        $jumlah_soal = $this->soal->getNumRows(['id >' => 0], $slug);
+                        if ($jumlah_soal == $tryout['jumlah_soal']) {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $this->session->set_flashdata('error', 'Maaf, jumlah soal sudah maksimum');
+                            redirect('admin/tambahsoal/' . $slug);
+                        } else {
+                            $token = $this->grs(20);
+                            $nomor = $jumlah_soal + 1;
+                        }
+        
+                        if ($this->input->post('cek_kunci'))
+                            $kunci_jawaban = 'Z';
+        
+                        $this->jawaban->update(
                             [
-                                '`' . $nomor . '`' => $n
+                                '`' . $nomor . '`' => $kunci_jawaban
                             ],
                             [
-                                'pilihan' => $p
+                                'email' => $email_kunci_twk_tiu
                             ],
                             $slug
                         );
+                        
+                        log_message('debug', 'AMANN 4');
                     }
-                }
-            } else if ($tryout['tipe_tryout'] == 'nonSKD') {
-                $jumlah_soal = $this->soal->getNumRows(['id >' => 0], $slug);
-                if ($jumlah_soal == $tryout['jumlah_soal']) {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $this->session->set_flashdata('error', 'Maaf, jumlah soal sudah maksimum');
-                    redirect('admin/tambahsoal/' . $slug);
-                } else {
-                    $token = $this->grs(20);
-                    $nomor = $jumlah_soal + 1;
-                }
-
-                if ($this->input->post('cek_kunci'))
-                    $kunci_jawaban = 'Z';
-
-                $this->jawaban->update(
-                    [
-                        '`' . $nomor . '`' => $kunci_jawaban
-                    ],
-                    [
-                        'email' => $email_kunci_twk_tiu
-                    ],
-                    $slug
-                );
-            }
-
-            //----SOAL DAN PILIHAN JAWABAN DALAM BENTUK GAMBAR----
-            if ($this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '2') {
-
-                $text_soal = $this->input->post('text_soal', true);
-
-                // GAMBAR SOAL WAJIB DI SINI
-                if ($this->upload->do_upload('gambar_soal'))
-                    $gambar_soal = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_soal', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // A WAJIB
-                if ($this->upload->do_upload('gambar_a'))
-                    $gambar_a = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_a', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // B WAJIB
-                if ($this->upload->do_upload('gambar_b'))
-                    $gambar_b = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_b', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // C WAJIB
-                if ($this->upload->do_upload('gambar_c'))
-                    $gambar_c = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_c', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // D TIDAK WAJIB
-                if ($this->upload->do_upload('gambar_d'))
-                    $gambar_d = $this->upload->data("file_name");
-                else if (empty($_FILES['gambar_d']['name'])) {
-                    //
-                } else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_d', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // E TIDAK WAJIB
-                if ($this->upload->do_upload('gambar_e'))
-                    $gambar_e = $this->upload->data("file_name");
-                else if (empty($_FILES['gambar_e']['name'])) {
-                    //
-                } else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_e', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                if ($tryout['tipe_tryout'] == 'SKD')
-                    $data = [
-                        'id' => $nomor,
-                        'tipe_soal' => $tipe_soal,
-                        'text_soal' => $text_soal,
-                        'gambar_soal' => $gambar_soal,
-                        'gambar_a' => $gambar_a,
-                        'gambar_b' => $gambar_b,
-                        'gambar_c' => $gambar_c,
-                        'gambar_d' => $gambar_d,
-                        'gambar_e' => $gambar_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                else if ($tryout['tipe_tryout'] == 'nonSKD')
-                    $data = [
-                        'id' => $nomor,
-                        'text_soal' => $text_soal,
-                        'gambar_soal' => $gambar_soal,
-                        'gambar_a' => $gambar_a,
-                        'gambar_b' => $gambar_b,
-                        'gambar_c' => $gambar_c,
-                        'gambar_d' => $gambar_d,
-                        'gambar_e' => $gambar_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                $this->soal->insert($data, $slug);
-            }
-
-
-            //----SOAL DALAM BENTUK GAMBAR DAN PILIHAN DALAM BENTUK TEKS----
-            else if ($this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '1') {
-
-                $text_soal = $this->input->post('text_soal', true);
-
-                // GAMBAR WAJIB DI SINI
-                if ($this->upload->do_upload('gambar_soal'))
-                    $gambar_soal = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_soal', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                if ($this->input->post('text_a', true))
-                    $text_a = $this->input->post('text_a', true);
-
-                if ($this->input->post('text_b', true))
-                    $text_b = $this->input->post('text_b', true);
-
-                if ($this->input->post('text_c', true))
-                    $text_c = $this->input->post('text_c', true);
-
-                if ($this->input->post('text_d', true))
-                    $text_d = $this->input->post('text_d', true);
-
-                if ($this->input->post('text_e', true))
-                    $text_e = $this->input->post('text_e', true);
-
-                if ($tryout['tipe_tryout'] == 'SKD')
-                    $data = [
-                        'id' => $nomor,
-                        'tipe_soal' => $tipe_soal,
-                        'text_soal' => $text_soal,
-                        'gambar_soal' => $gambar_soal,
-                        'text_a' => $text_a,
-                        'text_b' => $text_b,
-                        'text_c' => $text_c,
-                        'text_d' => $text_d,
-                        'text_e' => $text_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                else if ($tryout['tipe_tryout'] == 'nonSKD')
-                    $data = [
-                        'id' => $nomor,
-                        'text_soal' => $text_soal,
-                        'gambar_soal' => $gambar_soal,
-                        'text_a' => $text_a,
-                        'text_b' => $text_b,
-                        'text_c' => $text_c,
-                        'text_d' => $text_d,
-                        'text_e' => $text_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                $this->soal->insert($data, $slug);
-            }
-
-            //----SOAL DALAM BENTUK TEKS DAN PILIHAN JAWABAN DALAM BENTUK GAMBAR----
-            else if (!$this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '2') {
-
-
-                $text_soal = $this->input->post('text_soal', true);
-
-                // A WAJIB
-                if ($this->upload->do_upload('gambar_a'))
-                    $gambar_a = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_a', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // B WAJIB
-                if ($this->upload->do_upload('gambar_b'))
-                    $gambar_b = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_b', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // C WAJIB
-                if ($this->upload->do_upload('gambar_c'))
-                    $gambar_c = $this->upload->data('file_name');
-                else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_c', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // D TIDAK WAJIB
-                if ($this->upload->do_upload('gambar_d'))
-                    $gambar_d = $this->upload->data("file_name");
-                else if (empty($_FILES['gambar_d']['name'])) {
-                    //
-                } else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_d', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                // E TIDAK WAJIB
-                if ($this->upload->do_upload('gambar_e'))
-                    $gambar_e = $this->upload->data("file_name");
-                else if (empty($_FILES['gambar_e']['name'])) {
-                    //
-                } else {
-                    $this->_tinymcerepop($tinymce_content);
-
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', 'Something wrong');
-                    $this->session->set_flashdata('error_gbr_e', $error);
-                    redirect('admin/tambahsoal/' . $slug);
-                }
-
-                if ($tryout['tipe_tryout'] == 'SKD')
-                    $data = [
-                        'id' => $nomor,
-                        'tipe_soal' => $tipe_soal,
-                        'text_soal' => $text_soal,
-                        'gambar_a' => $gambar_a,
-                        'gambar_b' => $gambar_b,
-                        'gambar_c' => $gambar_c,
-                        'gambar_d' => $gambar_d,
-                        'gambar_e' => $gambar_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                else if ($tryout['tipe_tryout'] == 'nonSKD')
-                    $data = [
-                        'id' => $nomor,
-                        'text_soal' => $text_soal,
-                        'gambar_a' => $gambar_a,
-                        'gambar_b' => $gambar_b,
-                        'gambar_c' => $gambar_c,
-                        'gambar_d' => $gambar_d,
-                        'gambar_e' => $gambar_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                $this->soal->insert($data, $slug);
-            }
-
-
-            //----SOAL DAN PILIHAN JAWABAN DALAM BENTUK TEKS----
-            else if (!$this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '1') {
-
-
-                $text_soal = $this->input->post('text_soal', true);
-
-                if ($this->input->post('text_a', true))
-                    $text_a = $this->input->post('text_a', true);
-
-                if ($this->input->post('text_b', true))
-                    $text_b = $this->input->post('text_b', true);
-
-                if ($this->input->post('text_c', true))
-                    $text_c = $this->input->post('text_c', true);
-
-                if ($this->input->post('text_d', true))
-                    $text_d = $this->input->post('text_d', true);
-
-                if ($this->input->post('text_e', true))
-                    $text_e = $this->input->post('text_e', true);
-
-                if ($tryout['tipe_tryout'] == 'SKD')
-                    $data = [
-                        'id' => $nomor,
-                        'tipe_soal' => $tipe_soal,
-                        'text_soal' => $text_soal,
-                        'text_a' => $text_a,
-                        'text_b' => $text_b,
-                        'text_c' => $text_c,
-                        'text_d' => $text_d,
-                        'text_e' => $text_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                else if ($tryout['tipe_tryout'] == 'nonSKD')
-                    $data = [
-                        'id' => $nomor,
-                        'text_soal' => $text_soal,
-                        'text_a' => $text_a,
-                        'text_b' => $text_b,
-                        'text_c' => $text_c,
-                        'text_d' => $text_d,
-                        'text_e' => $text_e,
-                        'gambar_pembahasan' => $gambar_pembahasan,
-                        'pembahasan' => $pembahasan,
-                        'token' => $token
-                    ];
-                $this->soal->insert($data, $slug);
-            }
-
-            $this->session->set_flashdata('success', 'Menambah Soal');
-            redirect('admin/tambahsoal/' . $slug);
+        
+                    //----SOAL DAN PILIHAN JAWABAN DALAM BENTUK GAMBAR----
+                    if ($this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '2') {
+                        // $this->_maintainDbConnection();
+        
+                        $text_soal = $this->input->post('text_soal', true);
+        
+                        // GAMBAR SOAL WAJIB DI SINI
+                        if ($this->upload->do_upload('gambar_soal'))
+                            $gambar_soal = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_soal', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // A WAJIB
+                        if ($this->upload->do_upload('gambar_a'))
+                            $gambar_a = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_a', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // B WAJIB
+                        if ($this->upload->do_upload('gambar_b'))
+                            $gambar_b = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_b', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // C WAJIB
+                        if ($this->upload->do_upload('gambar_c'))
+                            $gambar_c = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_c', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // D TIDAK WAJIB
+                        if ($this->upload->do_upload('gambar_d'))
+                            $gambar_d = $this->upload->data("file_name");
+                        else if (empty($_FILES['gambar_d']['name'])) {
+                            //
+                        } else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_d', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // E TIDAK WAJIB
+                        if ($this->upload->do_upload('gambar_e'))
+                            $gambar_e = $this->upload->data("file_name");
+                        else if (empty($_FILES['gambar_e']['name'])) {
+                            //
+                        } else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_e', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+                        
+                        log_message('debug', 'AMANN 5');
+        
+                        if ($tryout['tipe_tryout'] == 'SKD')
+                            $data = [
+                                'id' => $nomor,
+                                'tipe_soal' => $tipe_soal,
+                                'text_soal' => $text_soal,
+                                'gambar_soal' => $gambar_soal,
+                                'gambar_a' => $gambar_a,
+                                'gambar_b' => $gambar_b,
+                                'gambar_c' => $gambar_c,
+                                'gambar_d' => $gambar_d,
+                                'gambar_e' => $gambar_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        else if ($tryout['tipe_tryout'] == 'nonSKD')
+                            $data = [
+                                'id' => $nomor,
+                                'text_soal' => $text_soal,
+                                'gambar_soal' => $gambar_soal,
+                                'gambar_a' => $gambar_a,
+                                'gambar_b' => $gambar_b,
+                                'gambar_c' => $gambar_c,
+                                'gambar_d' => $gambar_d,
+                                'gambar_e' => $gambar_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        $this->soal->insert($data, $slug);
+                    }
+        
+        
+                    //----SOAL DALAM BENTUK GAMBAR DAN PILIHAN DALAM BENTUK TEKS----
+                    else if ($this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '1') {
+                        // $this->_maintainDbConnection();
+        
+                        $text_soal = $this->input->post('text_soal', true);
+        
+                        // GAMBAR WAJIB DI SINI
+                        if ($this->upload->do_upload('gambar_soal'))
+                            $gambar_soal = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_soal', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        if ($this->input->post('text_a', true))
+                            $text_a = $this->input->post('text_a', true);
+        
+                        if ($this->input->post('text_b', true))
+                            $text_b = $this->input->post('text_b', true);
+        
+                        if ($this->input->post('text_c', true))
+                            $text_c = $this->input->post('text_c', true);
+        
+                        if ($this->input->post('text_d', true))
+                            $text_d = $this->input->post('text_d', true);
+        
+                        if ($this->input->post('text_e', true))
+                            $text_e = $this->input->post('text_e', true);
+                            
+                        log_message('debug', 'AMANN 6');
+        
+                        if ($tryout['tipe_tryout'] == 'SKD')
+                            $data = [
+                                'id' => $nomor,
+                                'tipe_soal' => $tipe_soal,
+                                'text_soal' => $text_soal,
+                                'gambar_soal' => $gambar_soal,
+                                'text_a' => $text_a,
+                                'text_b' => $text_b,
+                                'text_c' => $text_c,
+                                'text_d' => $text_d,
+                                'text_e' => $text_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        else if ($tryout['tipe_tryout'] == 'nonSKD')
+                            $data = [
+                                'id' => $nomor,
+                                'text_soal' => $text_soal,
+                                'gambar_soal' => $gambar_soal,
+                                'text_a' => $text_a,
+                                'text_b' => $text_b,
+                                'text_c' => $text_c,
+                                'text_d' => $text_d,
+                                'text_e' => $text_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        $this->soal->insert($data, $slug);
+                    }
+        
+                    //----SOAL DALAM BENTUK TEKS DAN PILIHAN JAWABAN DALAM BENTUK GAMBAR----
+                    else if (!$this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '2') {
+                        // $this->_maintainDbConnection();
+        
+        
+                        $text_soal = $this->input->post('text_soal', true);
+        
+                        // A WAJIB
+                        if ($this->upload->do_upload('gambar_a'))
+                            $gambar_a = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_a', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // B WAJIB
+                        if ($this->upload->do_upload('gambar_b'))
+                            $gambar_b = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_b', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // C WAJIB
+                        if ($this->upload->do_upload('gambar_c'))
+                            $gambar_c = $this->upload->data('file_name');
+                        else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_c', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // D TIDAK WAJIB
+                        if ($this->upload->do_upload('gambar_d'))
+                            $gambar_d = $this->upload->data("file_name");
+                        else if (empty($_FILES['gambar_d']['name'])) {
+                            //
+                        } else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_d', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+        
+                        // E TIDAK WAJIB
+                        if ($this->upload->do_upload('gambar_e'))
+                            $gambar_e = $this->upload->data("file_name");
+                        else if (empty($_FILES['gambar_e']['name'])) {
+                            //
+                        } else {
+                            $this->_tinymcerepop($tinymce_content);
+        
+                            $error = $this->upload->display_errors();
+                            $this->session->set_flashdata('error', 'Something wrong');
+                            $this->session->set_flashdata('error_gbr_e', $error);
+                            redirect('admin/tambahsoal/' . $slug);
+                        }
+                        
+                        log_message('debug', 'AMANN 7');
+        
+                        if ($tryout['tipe_tryout'] == 'SKD')
+                            $data = [
+                                'id' => $nomor,
+                                'tipe_soal' => $tipe_soal,
+                                'text_soal' => $text_soal,
+                                'gambar_a' => $gambar_a,
+                                'gambar_b' => $gambar_b,
+                                'gambar_c' => $gambar_c,
+                                'gambar_d' => $gambar_d,
+                                'gambar_e' => $gambar_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        else if ($tryout['tipe_tryout'] == 'nonSKD')
+                            $data = [
+                                'id' => $nomor,
+                                'text_soal' => $text_soal,
+                                'gambar_a' => $gambar_a,
+                                'gambar_b' => $gambar_b,
+                                'gambar_c' => $gambar_c,
+                                'gambar_d' => $gambar_d,
+                                'gambar_e' => $gambar_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        $this->soal->insert($data, $slug);
+                    }
+        
+        
+                    //----SOAL DAN PILIHAN JAWABAN DALAM BENTUK TEKS----
+                    else if (!$this->input->post('cek_soal', true) && $this->input->post('cek_pilihan', true) == '1') {
+                        // $this->_maintainDbConnection();
+        
+        
+                        $text_soal = $this->input->post('text_soal', true);
+        
+                        if ($this->input->post('text_a', true))
+                            $text_a = $this->input->post('text_a', true);
+        
+                        if ($this->input->post('text_b', true))
+                            $text_b = $this->input->post('text_b', true);
+        
+                        if ($this->input->post('text_c', true))
+                            $text_c = $this->input->post('text_c', true);
+        
+                        if ($this->input->post('text_d', true))
+                            $text_d = $this->input->post('text_d', true);
+        
+                        if ($this->input->post('text_e', true))
+                            $text_e = $this->input->post('text_e', true);
+                            
+                        // log_message('debug', 'AMANN 8 SOAL ' . $next_number);
+        
+                        if ($tryout['tipe_tryout'] == 'SKD')
+                            $data = [
+                                'id' => $nomor,
+                                'tipe_soal' => $tipe_soal,
+                                'text_soal' => $text_soal,
+                                'text_a' => $text_a,
+                                'text_b' => $text_b,
+                                'text_c' => $text_c,
+                                'text_d' => $text_d,
+                                'text_e' => $text_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        else if ($tryout['tipe_tryout'] == 'nonSKD')
+                            $data = [
+                                'id' => $nomor,
+                                'text_soal' => $text_soal,
+                                'text_a' => $text_a,
+                                'text_b' => $text_b,
+                                'text_c' => $text_c,
+                                'text_d' => $text_d,
+                                'text_e' => $text_e,
+                                'gambar_pembahasan' => $gambar_pembahasan,
+                                'pembahasan' => $pembahasan,
+                                'token' => $token
+                            ];
+                        $this->soal->insert($data, $slug);
+                    }
+    }
+    
+    private function _prepareViewData($title, $breadcrumb_item, $tryout, $slug, $parent_title, $display_number)
+    {
+        $base_data = [
+            'title' => $title,
+            'breadcrumb_item' => $breadcrumb_item,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'tipe_soal' => $this->tipeSoal,
+            'tryout' => $tryout,
+            'display_number' => $display_number
+        ];
+        
+        if ($tryout['tipe_tryout'] == 'nonSKD') {
+            $base_data['bobot_nilai'] = $this->bobot_nilai->get('one', ['tryout' => $slug]);
+            $base_data['bobot_nilai_tiap_soal'] = $this->bobot_nilai_tiap_soal->get('one', ['id' => 1], $slug);
+        } else {
+            $base_data['bobot_nilai'] = $this->bobot_nilai->get('one', ['tryout' => $slug]);
         }
+        
+        return $base_data;
+    }
+    
+    private function _showFormWithErrors($data, $tinymce_content)
+    {
+        $this->_tinymcerepop($tinymce_content);
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/tambahsoal', $data);
+        $this->load->view('templates/user_footer');
     }
 
     //-----EDIT SOAL-----
     public function editsoal($token_edit)
     {
+        $this->_loadRequiredModels();
         $submenu_parent = 3;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -2023,6 +2217,7 @@ class Admin extends CI_Controller
 
     public function detailsoal($token)
     {
+        $this->_loadRequiredModels();
         $submenu_parent = 3;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -2107,6 +2302,7 @@ class Admin extends CI_Controller
 
     public function hapussoal($token, $slug = null)
     {
+        $this->_loadRequiredModels();
         if ($slug)
             $slug = $slug;
         else // Hapus soal dari halaman soal
@@ -2336,6 +2532,7 @@ class Admin extends CI_Controller
 
     public function userparadata($slug)
     {
+        $this->_loadRequiredModels();
         $id = $this->input->get('id');
         // User Tryout
         $user_tryout = $this->user_tryout->get('one', ['id' => $id], $slug);
@@ -2460,6 +2657,7 @@ class Admin extends CI_Controller
 
     public function nilaipeserta($slug)
     {
+        $this->_loadRequiredModels();
         $id = $this->input->get('id');
 
         $latsol = substr($slug,0,6);
@@ -2522,6 +2720,7 @@ class Admin extends CI_Controller
 
     public function generatetoken($slug)
     {
+        $this->_loadRequiredModels();
         $no_token =  $this->_randtoken();
         $email = $this->input->post('email');
 
@@ -2532,6 +2731,7 @@ class Admin extends CI_Controller
 
     public function tryout()
     {
+        $this->_loadRequiredModels();
         $parent_title = getSubmenuTitleById(3)['title'];
         submenu_access(3);
 
@@ -2793,6 +2993,7 @@ class Admin extends CI_Controller
 
     public function detailtryout($slug)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Kode_settings_model', 'kode_settings');
         // $this->load->model('Midtrans_payment_model', 'midtrans_payment');
 
@@ -2861,6 +3062,7 @@ class Admin extends CI_Controller
 
     public function rankingtryout($slug)
     {
+        $this->_loadRequiredModels();
         $submenu_parent = 3;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -2907,6 +3109,7 @@ class Admin extends CI_Controller
 
     public function pembahasantryout($slug)
     {
+        $this->_loadRequiredModels();
         $submenu_parent = 3;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -2972,6 +3175,7 @@ class Admin extends CI_Controller
 
     public function soaltryout($slug)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Kode_settings_model', 'kode_settings');
 
         $submenu_parent = 3;
@@ -3198,6 +3402,7 @@ class Admin extends CI_Controller
 
     public function generatedummysoal($slug)
     {
+        $this->_loadRequiredModels();
         $sub_menu_parent = 3;
         submenu_access($sub_menu_parent);
         
@@ -3312,6 +3517,7 @@ class Admin extends CI_Controller
 
     public function paymentlist()
     {
+        $this->_loadRequiredModels();
         $this->load->model('Midtrans_payment_model', 'midtrans_payment');
 
         $parent_title = getSubmenuTitleById(4)['title'];
@@ -3343,6 +3549,7 @@ class Admin extends CI_Controller
 
     public function settings()
     {
+        $this->_loadRequiredModels();
         $parent_title = getSubmenuTitleById(5)['title'];
         submenu_access(5);
 
@@ -3580,6 +3787,7 @@ class Admin extends CI_Controller
 
     public function hidetryout($slug)
     {
+        $this->_loadRequiredModels();
         $sub_menu_parent = 3;
         submenu_access($sub_menu_parent);
 
@@ -3606,6 +3814,7 @@ class Admin extends CI_Controller
 
     public function hapustryout()
     {
+        $this->_loadRequiredModels();
         $id = $this->input->post('id');
 
         $tryout = $this->tryout->get('one', ['id' => $id]);
@@ -3657,6 +3866,7 @@ class Admin extends CI_Controller
 
     public function hapuslatsol()
     {
+        $this->_loadRequiredModels();
         $id = $this->input->post('id');
 
         $latsol = $this->latsol->get('one', ['id' => $id]);
@@ -3706,6 +3916,7 @@ class Admin extends CI_Controller
 
     public function hapuspembahasantryout($id)
     {
+        $this->_loadRequiredModels();
         $tryout = $this->tryout->get('one', ['id' => $id]);
 
         // SET NULL PEMBAHASAN
@@ -3719,6 +3930,7 @@ class Admin extends CI_Controller
 
     public function updatetryout($id)
     {
+        $this->_loadRequiredModels();
         $tryout = $this->tryout->get('one', ['id' => $id]);
         $keterangan = $this->input->post('ket_tryout');
         $lama_pengerjaan = $this->input->post('lama_pengerjaan');
@@ -3796,6 +4008,7 @@ class Admin extends CI_Controller
 
     public function releasetryout($slug)
     {
+        $this->_loadRequiredModels();
         $sub_menu_parent = 3;
         submenu_access($sub_menu_parent);
         
@@ -3885,6 +4098,7 @@ class Admin extends CI_Controller
 
     public function getsoal()
     {
+        $this->_loadRequiredModels();
         $nomor = $this->input->post('nomor');
         $slug = $this->input->post('slug');
         $soal = $this->soal->get('one', ['id' => $nomor], $slug);
@@ -3896,6 +4110,7 @@ class Admin extends CI_Controller
 
     public function gettinymcevalue()
     {
+        $this->_loadRequiredModels();
         $name = $this->input->post("name");
         $this->load->model('Repop_tinymce_model', 'repop_tinymce');
         $all = $this->repop_tinymce->get('one', ['name' => $name]);
@@ -3906,6 +4121,7 @@ class Admin extends CI_Controller
 
     public function getpersentasestatus()
     {
+        $this->_loadRequiredModels();
         $slug = $this->input->post("slug");
         $count_user_tryout = $this->user_tryout->getNumRows(['id >' => 0], $slug);
 
@@ -3921,6 +4137,7 @@ class Admin extends CI_Controller
 
     public function bimbelskd() 
     {
+        $this->_loadRequiredModels();
         $parent_title = getSubmenuTitleById(15)['title'];
         $breadcrumb_item = [
             [
@@ -3949,6 +4166,7 @@ class Admin extends CI_Controller
 
     public function bimbelmtk() 
     {
+        $this->_loadRequiredModels();
         $parent_title = getSubmenuTitleById(17)['title'];
         $breadcrumb_item = [
             [
@@ -3977,6 +4195,7 @@ class Admin extends CI_Controller
 
     public function tambahlatsol() 
     {
+        $this->_loadRequiredModels();
         $jenis = $this->input->post('jenis');
         if ($jenis == 4) {
             $all_latsol = $this->latsol->get('many', ['jenis'=>4]);
@@ -4157,6 +4376,7 @@ class Admin extends CI_Controller
 
     public function detaillatsol($slug)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Kode_settings_model', 'kode_settings');
 
         $latsol = $this->latsol->get('one', ['slug' => $slug]);
@@ -4218,6 +4438,7 @@ class Admin extends CI_Controller
 
     public function soallatsol($slug)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Kode_settings_model', 'kode_settings');
 
         $tryout = $this->latsol->get('one', ['slug' => $slug]);
@@ -4448,6 +4669,7 @@ class Admin extends CI_Controller
 
     public function updatemateri($slug)
     {
+        $this->_loadRequiredModels();
         $latsol = $this->latsol->get('one', ['slug' => $slug]);
 
         $this->latsol->update(['materi' => null], ['id' => $id]);
@@ -4484,6 +4706,7 @@ class Admin extends CI_Controller
 
     public function hapusmateri($id)
     {
+        $this->_loadRequiredModels();
         $latsol = $this->latsol->get('one', ['id' => $id]);
 
         // SET NULL PEMBAHASAN
@@ -4516,6 +4739,7 @@ class Admin extends CI_Controller
 
     private function _phpMailTesting($email)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Company_settings_model', 'company_settings');
         $this->load->model('Email_settings_model', 'email_settings');
 
@@ -4555,6 +4779,7 @@ class Admin extends CI_Controller
 
     private function _smtpMailTesting($email)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Email_settings_model', 'email_settings');
         $this->load->model('Company_settings_model', 'company_settings');
 
@@ -4609,6 +4834,7 @@ class Admin extends CI_Controller
 
     public function inputpeserta($slug)
     {
+        $this->_loadRequiredModels();
         $this->load->model('Midtrans_payment_model', 'midtrans_payment');
         $email = $this->input->post('emailpeserta');
         $tryout = $this->tryout->get('one', ['slug' => $slug]);
@@ -4650,6 +4876,8 @@ class Admin extends CI_Controller
     }
     
     public function pendaftar() {
+        $this->_loadRequiredModels;
+        $this->load->model('Paket_to_model', 'paket_to');
         $parent_title = getSubmenuTitleById(22)['title'];
         submenu_access(22);
 
@@ -4677,6 +4905,8 @@ class Admin extends CI_Controller
     }
 
     public function detailpendaftar($slug) {
+        $this->_loadRequiredModels();
+        $this->load->model('Paket_to_model', 'paket_to');
         $submenu_parent = 22;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -4723,6 +4953,7 @@ class Admin extends CI_Controller
     }
 
     public function ubah_status_pendaftar() {
+        $this->_loadRequiredModels();
         // Ambil data dari request POST
         $id_pendaftar = $this->input->post('id_pendaftar');
         $status = $this->input->post('status');
@@ -4763,6 +4994,8 @@ class Admin extends CI_Controller
     }
     
     public function tambahpaket() {
+        $this->_loadRequiredModels();
+        $this->load->model('Paket_to_model', 'paket_to');
         $this->form_validation->set_rules('nama', 'Nama Tryout', 'required');
         $this->form_validation->set_rules('keterangan', 'Keterangan', 'required');
 
@@ -4837,6 +5070,7 @@ class Admin extends CI_Controller
 
     public function toggle_freemium()
     {
+        $this->_loadRequiredModels();
         // Pastikan ini hanya dapat diakses melalui AJAX
         if ($this->input->is_ajax_request()) {
             // Ambil data dari request
@@ -4860,6 +5094,7 @@ class Admin extends CI_Controller
     
     public function approval()
     {
+        $this->_loadRequiredModels();
         $parent_title = getSubmenuTitleById(23)['title'];
         submenu_access(23);
 
