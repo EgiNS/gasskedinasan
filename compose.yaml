@@ -1,0 +1,28 @@
+services:
+
+  db:
+    image: mysql:5.7
+    container_name: db_gasskedinasan
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: webgass_sistem_baru
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin_gasskedinasan
+    restart: always
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "8085:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:

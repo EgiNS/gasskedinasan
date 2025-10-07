@@ -1,0 +1,65 @@
+.judul-kartu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.nowrap th,
+.nowrap td {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 600px) {
+    .petasoal-vis {
+        visibility: hidden;
+        clear: both;
+        float: left;
+        display: none;
+    }
+
+}
+
+@media screen and (min-width: 600px) {
+    .hamburger {
+        visibility: hidden;
+        clear: both;
+        float: left;
+        display: none;
+    }
+
+    .petasoal-vis {
+        float: right;
+    }
+}
+
+.hamburger {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.hamburger .line {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: black;
+    margin-block: 10px;
+    border-radius: 4px;
+    transition: transform .5s;
+    opacity: .25s;
+}
+
+.hamburger.active .line:nth-child(1) {
+    transform: translateY(13px) rotate(45deg);
+}
+
+.hamburger.active .line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active .line:nth-child(3) {
+    transform: translateY(-13px) rotate(-45deg);
+}
