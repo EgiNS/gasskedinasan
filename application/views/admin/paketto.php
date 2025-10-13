@@ -33,13 +33,14 @@
   
     <div class="d-flex flex-row mb-4">
         <?php foreach($paket_to as $p) { ?>
-            <div class="card me-2" style="width: 16rem;">
+            <div class="card me-3" style="width: 20rem;">
                 <img src="<?= base_url('assets/img/' . $p["foto"]); ?>" class="card-img-top" alt="...">
                 <div class="card-body">
-                    <h5 class="card-title font-weight-bold"><?= $p['nama']; ?></h5>
+                    <p class="card-title fs-4"><?=  $p['nama']; ?></p>
+                    <h5 class="fw-bold">Rp. <?= $p['harga']; ?></h5>
                     <p class="card-text"><?= $p['keterangan']; ?></p>
                     
-                    <a href="<?=base_url("/admin/detailpendaftar/" . create_slug($p["nama"])); ?>" class="btn btn-primary">Lihat Pendaftar</a>
+                    <a href="<?=base_url("/admin/detailpendaftar/" .($p["id"])); ?>" class="btn btn-primary w-100">Lihat Pendaftar</a>
                 </div>
             </div>
         <?php } ?>

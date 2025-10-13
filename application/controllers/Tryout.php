@@ -1,6 +1,15 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+
+/**
+ * @property CI_Loader $load
+ * @property User_model $user
+ * @property Soal_model $soal
+ * @property Tryout_model $tryout
+ * @property User_tryout_model $user_tryout
+ * @property Paket_to_model $paket_to
+ */
 class Tryout extends CI_Controller
 {
     protected $loginUser, $tipeSoal, $sidebarMenu;
@@ -609,45 +618,30 @@ public function freemium()
         $parent_title = getSubmenuTitleById(21)['title'];
         submenu_access(21);
 
-        $breadcrumb_item = [
-            [
-                'title' => $parent_title,
-                'href' => 'active'
-            ]
-        ];
 
         $paket_to = $this->paket_to->getAll();
-        // $email = $this->loginUser['email'];
+    
 
         foreach ($paket_to as &$paket) {
-            // Buat nama tabel pendaftar berdasarkan nama paket
-            $pendaftar_table = 'pendaftar_' . create_slug($paket['nama']);
-
-            // if ($this->db->table_exists($pendaftar_table)) {
-            //     // Query untuk memeriksa apakah user terdaftar di paket ini
-            //     $this->db->where('email', $email);
-            //     $query = $this->db->get($pendaftar_table);
-                
-            //     if ($query->num_rows() > 0) {
-            //         // User ditemukan, ambil status
-            //         $pendaftar = $query->row();
-            //         $paket['status'] = $pendaftar->status; // 0 atau 1
-            //     } else {
-            //         $paket['status'] = 'not_registered'; // Belum terdaftar
-            //     }
-            // } else {
-                $paket['status'] = 'not_registered'; // Jika tabel pendaftar tidak ditemukan
-            // }
+        //     // Buat nama tabel pendaftar berdasarkan nama paket
+        $this->db->where('paket_to_id',$paket['id']);
+        $query = $this->db->get('pendaftar_to');
+        if ($query->num_rows() > 0){
+            $paket['status'] = '2';
+        }else {
+            $paket['status'] = 'not_registered'; 
         }
-
+        }
+        unset($paket);
         $data = [
             'title' => $parent_title,
-            'breadcrumb_item' => $breadcrumb_item,
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
             'paket_to' => $paket_to
         ];
+        // print_r($data["paket_to"]);
+        // exit;
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);

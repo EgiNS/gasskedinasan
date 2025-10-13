@@ -10,13 +10,13 @@
             <div class="row align-items-center">
               <div class="col">
                 <div class="page-header-title">
-                  <h5 class="m-b-10">Approval TO</h5>
+                  <h5 class="m-b-10">Pembayaran TO</h5>
                 </div>
               </div>
               <div class="col-auto">
                 <ul class="breadcrumb">
                   <li class="breadcrumb-item"><a href="<?= base_url('admin'); ?>">Home</a></li>
-                  <li class="breadcrumb-item" aria-current="page">Approval TO</li>
+                  <li class="breadcrumb-item" aria-current="page">Pembayaran TO</li>
                 </ul>
               </div>
             </div>

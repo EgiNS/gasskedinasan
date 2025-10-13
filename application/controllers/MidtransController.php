@@ -1,14 +1,22 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-// header('Access-Control-Allow-Origin: *');
-// header("Access-Control-Allow-Methods: GET, OPTIONS, POST, GET, PUT");
-// header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers", "X-Requested-With, content-type");
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
 header('HTTP/1.0 200 OK');
 
-class Snap extends CI_Controller
+/**
+ * @property CI_Loader $load
+ * @property CI_Input $input
+ * @property CI_DB_query_builder $db
+ * @property Midtrans $midtrans
+ * @property object $loginUser
+ * @property User_model $user
+ * @property Transaction_model $transaction
+ * @property Pendaftar_to_model $pendaftar_to
+ */
+class MidtransController extends CI_Controller
 {
 
 	/**
@@ -26,18 +34,21 @@ class Snap extends CI_Controller
 	 * map to /index.php/welcome/<method_name>
 	 * @see http://codeigniter.com/user_guide/general/urls.html
 	 */
-
-
+	protected $loginUser;
+	
 	public function __construct()
 	{
 		parent::__construct();
-	
+
+
+
 		$params = array('server_key' => server_key(), 'production' => is_production());
 		$this->load->library('midtrans/Midtrans', 'midtrans');
 		$this->midtrans->config($params);
-		$this->load->model('Midtrans_payment_model', 'midtrans_payment');
 		$this->load->helper('url');
 		$this->load->model('User_model', 'user');
+		$this->load->model('Transaction_model', 'transaction');
+		$this->load->model('Pendaftar_to_model','pendaftar_to');
 		$this->loginUser = $this->user->getLoginUser();
 		date_default_timezone_set('Asia/Jakarta');
 	}
@@ -51,15 +62,15 @@ class Snap extends CI_Controller
 	{
 		$paket_to_id = $this->input->post('id');
 		$packet_to = $this->db->get_where('paket_to', ['id' => $paket_to_id])->row();
-
 		$user = $this->loginUser;
-		$order_id = rand();
+		$order_id = 'ORDER-' . uniqid();
+		$gross_amount = (int)$packet_to->harga;
 		// // Required
 		$transaction_details = array(
 			'order_id' => $order_id,
-			'gross_amount' => (int)$packet_to->harga, // no decimal allowed for creditcard
+			'gross_amount' => (int)$packet_to->harga,
 		);
-	
+
 		$item1_details = array(
 			'id' => $packet_to->id,
 			'price' => (int)$packet_to->harga,
@@ -68,73 +79,73 @@ class Snap extends CI_Controller
 		);
 
 		$item_details = array($item1_details);
-		
+
 		$customer_details = array(
 			'first_name'    => $user->name,
 			'email'         => $user->email,
 			'phone'         => $user->no_wa
 		);
 
-		// // Data yang akan dikirim untuk request redirect_url.
-		$credit_card['secure'] = true;
-		// //ser save_card true to enable oneclick or 2click
-		$credit_card['save_card'] = true;
+		$credit_card = array(
+			'secure' => true,
+			'save_card' => true
+		);
 
-		$time = time();
 		$custom_expiry = array(
-			'start_time' => date("Y-m-d H:i:s O", $time),
+			'start_time' => date("Y-m-d H:i:s O", time()),
 			'unit' => 'day',
 			'duration'  => 1
 		);
 
-		$transaction_data = array(
+		$data = [
+			'user_id' => $user->id,
+			'order_id' => $order_id,
+			'gross_amount'=> $gross_amount,
+			 'transaction_time'   => date('Y-m-d H:i:s'),
+			'transaction_status' => 'pending'
+		];
+
+		$transaction_id = $this->transaction->insert($data);
+
+		$pendaftar_to_data = [
+			'user_id'=> $user->id,
+			'transaction_id' => $transaction_id,
+			'paket_to_id'=> $packet_to->id
+		];
+		$this->pendaftar_to->insert($pendaftar_to_data);
+		$params = array(
 			'transaction_details' => $transaction_details,
 			'item_details'       => $item_details,
 			'customer_details'   => $customer_details,
 			'credit_card'        => $credit_card,
 			'expiry'             => $custom_expiry
 		);
+		$snapToken = $this->midtrans->getSnapToken($params);
 
-		// $data = [
-		// 	'email' => $email,
-		// 	'order_id' => $order_id,
-		// 	'tryout' => $slug,
-		// 	'status_code' => 204 //status ongoing
-		// ];
-
-		// error_log(json_encode($transaction_data));
-		
-		$snapToken = $this->midtrans->getSnapToken($transaction_data);
-	
-		// $this->midtrans_payment->insert($data);
-
-		// error_log($snapToken);
 		echo $snapToken;
 	}
 
-	public function finish()
+	public function notification()
 	{
-		// success 200
-		// pending 201
-		// expire 202
-		// cancel 203
-		// ongoing 204
-		$result = json_decode($this->input->post('result_data'), true);
-		$email = $this->input->post('email');
-		$now = date("Y-m-d H:i:s O", time());
-
-		$data = [
-			'pdf_url' => $result['pdf_url'],
-			'updated_at' => $now
-		];
-
-		$update = $this->midtrans_payment->update($data, ['email' => $email, 'order_id' => $result['order_id']]);
-
-		if ($update)
-			$this->session->set_flashdata('success', 'melakukan pendaftaran tryout. Silakan lakukan pembayaran sebelum batas waktu berakhir');
-		else
-			$this->session->set_flashdata('error', 'Gagal melakukan pendaftaran tryout');
-
-		redirect(base_url('tryout/detail/' . $this->input->get('slug')));
-	}
+		$json = file_get_contents('php://input');
+		$notif = json_decode($json);
+		if($notif){
+			$data = [
+				'transaction_id'     => $notif->transaction_id ?? null,
+				'payment_type'       => $notif->payment_type ?? null,
+				'transaction_time'   => $notif->transaction_time ?? date('Y-m-d H:i:s'),
+				'bank'               => $notif->va_numbers[0]->bank ?? null,
+				'va_number'          => $notif->va_numbers[0]->va_number ?? null,
+				'pdf_url'            => $notif->pdf_url ?? null,
+				'status_code'        => $notif->status_code ?? null,
+				'fraud_status'       => $notif->fraud_status ?? null,
+				'transaction_status' => $notif->transaction_status ?? 'pending',
+				'updated_at'         => date('Y-m-d H:i:s'),
+				];
+			$this->transaction->updateByOrderId( $notif->order_id, $data);
+			http_response_code(200);
+		}else {
+			http_response_code(400);
+		}
+}
 }

@@ -1,6 +1,16 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * @property User_model $user
+ * @property Role_model $role
+ * @property Jawaban_model $jawaban
+ * @property Kunci_tkp_model $kunci_tkp
+ * @property Bobot_nilai_tiap_soal_model $bobot_nilai_tiap_soal
+ * @property Bobot_nilai_model $bobot_nilai
+ * @property CI_Loader $load
+ * @property Pendaftar_to_model $pendaftar_to
+ */
 class Admin extends CI_Controller
 {
     protected $loginUser, $tipeSoal, $sidebarMenu;
@@ -20,6 +30,7 @@ class Admin extends CI_Controller
         $this->load->model('Repop_tinymce_model', 'repop_tinymce');
         $this->load->model('Latsol_model', 'latsol');
         $this->load->model('Paket_to_model', 'paket_to');
+        $this->load->model('Pendaftar_to_model', 'pendaftar_to');
 
         $this->load->helper(array('url','download'));
         $this->loginUser = $this->user->getLoginUser();
@@ -4674,25 +4685,14 @@ class Admin extends CI_Controller
         $this->load->view('templates/user_footer');
     }
 
-    public function detailpendaftar($slug) {
+    public function detailpendaftar($id) {
         $submenu_parent = 22;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
-        
-        $title = str_replace('_', ' ', $slug);
 
-        $pendaftar = $this->paket_to->getAllPendaftar($slug);
 
-        foreach ($pendaftar as &$p) {
-            $this->db->where('email', $p['email']);
-            $query = $this->db->get('user');
 
-            $user = $query->row();
-            $p['nama'] = $user->name;
-            $p['no_wa'] = $user->no_wa;
-        }
-
-        
+        $pendaftar = $this->pendaftar_to->get_all_by_packet_to_id($id);        
         $data = [
             'title' => $parent_title,
             'user' => $this->loginUser,
@@ -4757,21 +4757,17 @@ class Admin extends CI_Controller
         
         $this->form_validation->set_rules('nama', 'Nama Tryout', 'required');
         $this->form_validation->set_rules('keterangan', 'Keterangan', 'required');
+        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
+            'numeric' => 'Hanya boleh diisi angka.'
+        ]);
         
         if ($this->form_validation->run() == false) {
             $parent_title = getSubmenuTitleById(22)['title'];
             submenu_access(22);
 
-            $breadcrumb_item = [
-                [
-                    'title' => $parent_title,
-                    'href' => 'active'
-                ]
-            ];
 
             $data = [
                 'title' => $parent_title,
-                'breadcrumb_item' => $breadcrumb_item,
                 'user' => $this->loginUser,
                 'sidebar_menu' => $this->sidebarMenu,
                 'parent_submenu' => $parent_title,
@@ -4799,23 +4795,17 @@ class Admin extends CI_Controller
                 // Jika upload berhasil, ambil informasi file yang di-upload
                 $uploadData = $this->upload->data();
                 
-                // Dapatkan path file yang di-upload
-                $imagePath = $uploadData['file_name'];
-
-                $nama = $this->input->post('nama');
-                $keterangan = $this->input->post('keterangan');
     
                 // Simpan informasi gambar ke database (sesuaikan dengan struktur database Anda)
                 $data = [
-                    'nama' => $nama,
-                    'foto' => $imagePath,
-                    'keterangan' => $keterangan,
+                    'nama' => $this->input->post('nama'),
+                    'foto' => $uploadData['file_name'],
+                    'harga' => $this->input->post('harga'),
+                    'keterangan' => $this->input->post('keterangan'),
                 ];
     
                 // Tampilkan pesan sukses
                 $this->paket_to->insert($data);
-                $this->paket_to->createPendaftar(create_slug($nama));
-
                 $this->session->set_flashdata('success', 'Menambahkan Tryout Baru');
                 redirect('admin/pendaftar');
             } else {
