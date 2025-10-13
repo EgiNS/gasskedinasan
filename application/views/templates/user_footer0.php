@@ -1,30 +1,55 @@
-<footer class="pc-footer">
-      <div class="footer-wrapper container-fluid">
-        <div class="row">
-          <div class="col-sm-6 my-1">
-            <p class="m-0">
-              Berry &#9829; crafted by Team
-              <a href="https://themeforest.net/user/codedthemes" target="_blank">CodedThemes</a>
-            </p>
-          </div>
-          <div class="col-sm-6 ms-auto my-1">
-            <ul class="list-inline footer-link mb-0 justify-content-sm-end d-flex">
-              <li class="list-inline-item"><a href="../index.html">Home</a></li>
-              <li class="list-inline-item"><a href="https://codedthemes.gitbook.io/berry-bootstrap/" target="_blank">Documentation</a></li>
-              <li class="list-inline-item"><a href="https://codedthemes.support-hub.io/" target="_blank">Support</a></li>
-            </ul>
-          </div>
+<!-- Footer -->
+<?php $company = company(); ?>
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Copyright &copy; <?= $company['name'] . ' ' . date('Y'); ?></span>
         </div>
-      </div>
-    </footer>
+    </div>
+</footer>
+<!-- End of Footer -->
 
-    <!-- Bootstrap core JavaScript-->
+</div>
+<!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="<?= base_url('auth/logout') ?>">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Bootstrap core JavaScript-->
 <script src="<?= base_url('assets/vendor/jquery/jquery.min.js'); ?>"></script>
-<script src="<?= base_url('assets/vendor/datatables2/dataTables.js'); ?>"></script>
-<script src="<?= base_url('assets/vendor/datatables2/dataTables.bootstrap5.js'); ?>"></script>
-<script src="<?= base_url('assets/vendor/jquery-easing/jquery.easing.min.js'); ?>"></script>
+<script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+<script src="<?= base_url('assets/vendor/datatables2/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?= base_url('assets/vendor/datatables2/dataTables.responsive.min.js'); ?>"></script>
+<script src="<?= base_url('assets/vendor/datatables2/dataTables.bootstrap4.min.js'); ?>"></script>
+<script src="<?= base_url('assets/vendor/datatables2/responsive.bootstrap4.min.js'); ?>"></script>
 
+<!-- Core plugin JavaScript-->
+<script src="<?= base_url('assets/vendor/jquery-easing/jquery.easing.min.js'); ?>"></script>
 
 <!-- Custom scripts for all pages-->
 <!-- METHOD LATEST_VERSION() UNTUK DESTROY COOKIE JAVASCRIPT SEHINGGA SELALU UPDATE PADA HALAMAN WEB SETIAP PERUBAHAN FILE JAVASCRIPT - METHOD TERDAPAT PADA HELPER -->
@@ -47,10 +72,14 @@
 <script src="<?= latest_version(base_url('assets/dist/js/chart-pie-persentasestatus.js')); ?>"></script>
 <script src="<?= latest_version(base_url('assets/dist/js/kode.js')); ?>"></script>
 
+<!-- SB-ADMIN-2 -->
+<script src="<?= latest_version(base_url('assets/js/sb-admin-2.js')); ?>"></script>
+
 <!-- SWEET ALERT -->
 <script src="<?= base_url('assets/swal/sweetalert2.all.min.js'); ?>"></script>
 <script src="<?= latest_version(base_url('assets/dist/js/scriptswal.js')); ?>"></script>
 
+<script src="<?= base_url('assets/vendor/owl-carousel/dist/owl.carousel.min.js'); ?>"></script>
 <script>
 $(document).ready(function() {
     var submitButton = $("button[type=submit], .submit");
@@ -86,9 +115,6 @@ $(document).ready(function() {
 });
 </script>
 <script>
-  if ($.fn.DataTable.isDataTable('#tabelwoi')) {
-  $('#tabelwoi').DataTable().destroy();
-}
 $('#tabelwoi').DataTable({
 
     "lengthMenu": [
@@ -107,53 +133,13 @@ $('#tabelwoi').DataTable({
     }],
     "scrollX": true
 });
+
 $('.custom-file-input').on('change', function() {
     let fileName = $(this).val().split('\\').pop();
     $(this).next('.custom-file-label').addClass("selected").html(fileName);
 });
 </script>
 
- <!-- Required Js -->
-<script src="<?= base_url('assets/js/plugins/popper.min.js'); ?>"></script>
-<script src="<?= base_url('assets/js/plugins/simplebar.min.js'); ?>"></script>
-<script src="<?= base_url('assets/js/plugins/bootstrap.min.js'); ?>"></script>
-<script src="<?= base_url('assets/js/icon/custom-font.js'); ?>"></script>
-<script src="<?= base_url('assets/js/script.js'); ?>"></script>
-<script src="<?= base_url('assets/js/theme.js'); ?>"></script>
-<script src="<?= base_url('assets/js/plugins/feather.min.js'); ?>"></script>
+</body>
 
-   
-<script>
-  layout_change('light');
-</script>
-   
-<script>
-  font_change('Roboto');
-</script>
- 
-<script>
-  change_box_container('false');
-</script>
- 
-<script>
-  layout_caption_change('true');
-</script>
-   
-<script>
-  layout_rtl_change('false');
-</script>
- 
-<script>
-  preset_change('preset-1');
-</script>
-
-
-
-    <!-- [Page Specific JS] start -->
-    <!-- Apex Chart -->
-<script src="<?= base_url('assets/js/plugins/apexcharts.min.js'); ?>"></script>
-<script src="<?= base_url('assets/js/pages/dashboard-default.js'); ?>"></script>
-    <!-- [Page Specific JS] end -->
-  </body>
-  <!-- [Body] end -->
 </html>

@@ -3027,6 +3027,7 @@ class Admin extends CI_Controller
             $persentase = round($persentase, 2);
         }
 
+
         $user = $this->loginUser;
 
         $data = [
@@ -5141,6 +5142,7 @@ class Admin extends CI_Controller
 
     public function getupdatetryout()
     {
+        $this->_loadRequiredModels();
         echo json_encode($this->tryout->get('one', ['id' => $_POST['id']]));
     }
 
