@@ -70,6 +70,6 @@ class User_model extends CI_Model
     public function getLoginUser()
     {
         $this->db->where(['email' => $this->session->userdata('email')]);
-        return $this->db->get($this->table)->row_array();
+        return $this->db->get($this->table)->row();
     }
 }

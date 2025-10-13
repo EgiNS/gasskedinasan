@@ -126,7 +126,7 @@ function error_message_file_input($key)
     $flashdata = $ci->session->flashdata($key);
 
     if (!empty($flashdata)) {
-        $message = '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">' . $flashdata . '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        $message = '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">' . $flashdata . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
 
         return $message;
     }
@@ -134,30 +134,31 @@ function error_message_file_input($key)
 
 function form_error_message($key)
 {
-    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 
     return $message;
 }
 
 function form_error_user($key)
 {
-    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 
     return $message;
 }
 
 function breadcumb($breadcumb_item)
 {
-    $breadcumb = '<ol class="breadcrumb indigo lighten-6 first shadow-lg mb-4 bg-dark navbar-light mb-4 px-md-4">';
+    $breadcumb = '';
     foreach ($breadcumb_item as $key => $value) {
         if ($value['href'] == 'active')
             // JIKA SUDAH DIAKHIR
             if ($key == count($breadcumb_item) - 1)
-                $breadcumb .= '<li class="breadcrumb-item font-weight-bold font-italic"><span class="text-uppercase active-1 mr-2">' . $value['title'] . '</span></li>';
+                $breadcumb .= '<li class="breadcrumb-item" aria-current="page">' . $value['title'] . '</li>';
             else
-                $breadcumb .= '<li class="breadcrumb-item font-weight-bold font-italic"><span class="text-uppercase active-1 mr-2">' . $value['title'] . '</span><i class="fafa fa fa-caret-right mr-md-0" aria-hidden="true"></i></li>';
+                $breadcumb .= '<li class="breadcrumb-item">' . $value['title'] . '</li>';
         else
-            $breadcumb .= '<li class="breadcrumb-item font-weight-bold font-italic"><a class="link-bci black-text text-uppercase" href="' . base_url($value['href']) . '"><span class="mr-2">' . $value['title'] . '</span></a><i class="fafa fa fa-caret-right mr-1 mr-md-0" aria-hidden="true"></i></li>';
+            // $breadcumb = '<li class="breadcrumb-item font-weight-bold font-italic"><a class="link-bci black-text text-uppercase" href="' . base_url($value['href']) . '"><span class="mr-2">' . $value['title'] . '</span></a><i class="fafa fa fa-caret-right mr-1 mr-md-0" aria-hidden="true"></i></li>';
+            $breadcumb .= '<li class="breadcrumb-item"><a href="' . base_url($value['href']) . '">' . $value['title'] . '</a></li>';
     }
     return $breadcumb;
 }

@@ -1,46 +1,202 @@
 $(function () {
-  // Set the date we're counting down to
-  var base_url = $(".base_url").data("baseurl");
-  var tryout = $("#tryout").data("tryout");
+    // Base URL dan data
+    var base_url = $(".base_url").data("baseurl");
+    var tryout = $("#tryout").data("tryout");
+    var user_id = $("#user_id").data("userid");
 
-  // HANYA BERLAKU PADA HALAMAN PENGERJAAN SOAL TRYOUT
-  if ($(".timer").length) {
-    var waktu = $("#time").data("waktu");
-    var countDownDate = new Date(waktu).getTime();
+    // Hanya berlaku pada halaman pengerjaan soal tryout
+    if ($(".timer").length) {
+        startSecureTimer();
+    }
 
-    var x = setInterval(function () {
-      now_php = $("#now").data("waktu");
+    // Fungsi utama timer dengan integrity checking
+    function startSecureTimer() {
+        // Data integrity dari server
+        var serverEndTime = new Date($("#time").data("waktu")).getTime();
+        var examStartTime = new Date($("#exam-start").data("start")).getTime();
+        var examDuration = $("#exam-duration").data("duration") * 1000; // Convert to milliseconds
 
-      var now = new Date(now_php).getTime();
+        console.log('Server End Time:', new Date(serverEndTime));
+        console.log('Exam Start Time:', new Date(examStartTime));
+        console.log('Exam Duration:', examDuration / 60000 + ' minutes');
 
-      var distance = countDownDate - now;
+        // Validasi data integrity
+        var calculatedEndTime = examStartTime + examDuration;
+        var timeDifference = Math.abs(calculatedEndTime - serverEndTime);
+        
+        console.log('Calculated End Time:', new Date(calculatedEndTime));
+        console.log('Time Difference:', timeDifference / 1000 + ' seconds');
 
-      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        // Tolerance 30 detik untuk perbedaan waktu server-client
+        if (timeDifference > 30000) {
+            handleTimeManipulation("Data integrity failed - Time difference: " + (timeDifference / 1000) + " seconds");
+            return;
+        }
 
-      document.getElementsByClassName("timer")[0].innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+        // Gunakan calculated end time untuk konsistensi
+        var countDownDate = calculatedEndTime;
+        
+        // Variables untuk integrity checking
+        var lastTimeCheck = Date.now();
+        var totalTimeDrift = 0;
+        var maxAllowedDrift = 60000; // 60 detik maksimal drift
+        var consecutiveBackwards = 0;
+        var maxConsecutiveBackwards = 3;
+        
+        // Update timer display
+        function updateTimerDisplay(hours, minutes, seconds, isWarning) {
+            var timerElement = document.getElementsByClassName("timer")[0];
+            timerElement.innerHTML = 
+                hours.toString().padStart(2, '0') + ":" + 
+                minutes.toString().padStart(2, '0') + ":" + 
+                seconds.toString().padStart(2, '0');
+            
+            // Update styling berdasarkan waktu
+            if (isWarning) {
+                timerElement.className = "btn btn-lg btn-warning timer";
+            } else {
+                timerElement.className = "btn btn-lg btn-primary timer";
+            }
+        }
 
-      // LAKUKAN RELOAD PADA CLASS WAKTU SEKARANG UNTUK MENGHINDARI USER MENGUBAH ZONA WAKTU
-      $(".now").load(location.href + " .now");
+        function updateTimer() {
+            var now = Date.now();
+            var distance = countDownDate - now;
 
-      if (distance < 0) {
-        clearInterval(x);
-        document.getElementsByClassName("timer")[0].innerHTML = "Waktu Habis";
-        $.ajax({
-          url: base_url + "exam/setselesai/" + tryout,
-          type: "post",
-          data: {
-            selesai: "sudah",
-          },
-          success: function () {
-            window.location.replace(base_url + "tryout/mytryout");
-          },
-        });
-      }
-      // SETIAP 1000 MILISECONDS ATAU SETIAP DETIK
-    }, 1000);
-  }
+            // Deteksi waktu mundur (user set time backwards)
+            if (now < lastTimeCheck) {
+                consecutiveBackwards++;
+                console.warn('Time went backwards! Consecutive:', consecutiveBackwards);
+                
+                if (consecutiveBackwards >= maxConsecutiveBackwards) {
+                    handleTimeManipulation("Time manipulation detected - multiple backwards jumps");
+                    return;
+                }
+                
+                // Adjust untuk small backwards jump (bisa karena system clock adjustment)
+                lastTimeCheck = now;
+                return;
+            } else {
+                consecutiveBackwards = 0; // Reset jika waktu normal
+            }
+
+            // Hitung time drift (jika timer berjalan terlalu lambat/cepat)
+            var expectedTime = lastTimeCheck + 1000;
+            var actualDrift = now - expectedTime;
+            
+            // Accumulate hanya excessive drift (lebih dari 100ms per detik)
+            if (actualDrift > 100) {
+                totalTimeDrift += (actualDrift - 100);
+            }
+            
+            console.log('Time drift - Current:', actualDrift + 'ms, Total:', totalTimeDrift + 'ms');
+
+            // Jika total drift melebihi batas, curang terdeteksi
+            if (totalTimeDrift > maxAllowedDrift) {
+                handleTimeManipulation("Excessive time drift: " + totalTimeDrift + "ms");
+                return;
+            }
+
+            lastTimeCheck = now;
+
+            // Hitung waktu tersisa
+            var hours = Math.floor(distance / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Tampilkan timer
+            var isWarning = distance < 300000; // 5 menit lagi (warning)
+            var isCritical = distance < 60000; // 1 menit lagi (critical)
+            
+            if (isCritical) {
+                updateTimerDisplay(hours, minutes, seconds, true);
+                document.getElementsByClassName("timer")[0].className = "btn btn-lg btn-danger timer";
+            } else if (isWarning) {
+                updateTimerDisplay(hours, minutes, seconds, true);
+            } else {
+                updateTimerDisplay(hours, minutes, seconds, false);
+            }
+
+            // Auto submit ketika waktu habis
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                handleTimeUp();
+            }
+        }
+
+        function handleTimeManipulation(reason) {
+            console.error('Time manipulation detected:', reason);
+            clearInterval(timerInterval);
+            
+            var timerElement = document.getElementsByClassName("timer")[0];
+            timerElement.innerHTML = "KECURANGAN TERDETEKSI";
+            timerElement.className = "btn btn-lg btn-danger timer";
+            
+            // Log the attempt
+            console.log('User attempted time manipulation:', {
+                user_id: user_id,
+                tryout: tryout,
+                reason: reason,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Submit dengan flag disqualification
+            setTimeout(function() {
+                $.ajax({
+                    url: base_url + "exam/setselesai/" + tryout,
+                    type: "post",
+                    data: {
+                        selesai: "sudah",
+                        disqualify: "time_manipulation",
+                        cheat_reason: reason,
+                        user_id: user_id
+                    },
+                    success: function (response) {
+                        console.log('Disqualified successfully');
+                        window.location.replace(base_url + "tryout/mytryout");
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to submit disqualification:', error);
+                        // Fallback - redirect anyway
+                        window.location.replace(base_url + "tryout/mytryout");
+                    }
+                });
+            }, 2000);
+        }
+
+        function handleTimeUp() {
+            console.log('Time up - submitting exam');
+            var timerElement = document.getElementsByClassName("timer")[0];
+            timerElement.innerHTML = "Waktu Habis";
+            timerElement.className = "btn btn-lg btn-secondary timer";
+            
+            $.ajax({
+                url: base_url + "exam/setselesai/" + tryout,
+                type: "post",
+                data: { 
+                    selesai: "sudah",
+                    user_id: user_id
+                },
+                success: function (response) {
+                    console.log('Exam submitted successfully');
+                    window.location.replace(base_url + "tryout/mytryout");
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to submit exam:', error);
+                    // Fallback - redirect anyway
+                    window.location.replace(base_url + "tryout/mytryout");
+                }
+            });
+        }
+
+        // Start the timer
+        var timerInterval = setInterval(updateTimer, 1000);
+        
+        // Initial update
+        updateTimer();
+        
+        console.log('Secure timer started successfully');
+    }
 
   $(".kerjakan").on("click", function (e) {
     e.preventDefault(); //Mematikan href

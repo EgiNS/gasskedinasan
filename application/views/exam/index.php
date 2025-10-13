@@ -8,14 +8,13 @@
     $now = time();
     ?>
 
-    <input type="text" id="time" data-waktu="<?= date('F d, Y H:i:s', $waktu); ?>" hidden>
-    <div class="now" hidden>
-        <input type="text" id="now" data-waktu="<?= date('F d, Y H:i:s'); ?>">
-    </div>
     <input type="text" id="id" value="<?= $this->session->flashdata('nomor'); ?>" hidden>
-    <input type="text" id="user_id" data-userid="<?= $user['id']; ?>" hidden>
-    <input type="text" id="jumlahsoal" data-id="<?= count($soal_lengkap); ?>" hidden>
-    <input type="text" id="tryout" data-tryout="<?= $tryout['slug']; ?>" hidden>
+    <input type="hidden" id="time" data-waktu="<?= date('F d, Y H:i:s', $waktu); ?>">
+    <input type="hidden" id="exam-start" data-start="<?= date('Y-m-d H:i:s', $jawaban['waktu_mulai']) ?>">
+    <input type="hidden" id="exam-duration" data-duration="<?= $tryout['lama_pengerjaan'] * 60 ?>">
+    <input type="hidden" id="user_id" data-userid="<?= $user['id']; ?>">
+    <input type="hidden" id="jumlahsoal" data-id="<?= count($soal_lengkap); ?>">
+    <input type="hidden" id="tryout" data-tryout="<?= $tryout['slug']; ?>">
 
     <?php
     $i = 1;
@@ -357,6 +356,12 @@
     </div>
 </div>
 </div>
+<script>
+    // Inject server time sekali saja saat page load
+    var SERVER_LOAD_TIME = <?= time() * 1000 ?>;
+    var CLIENT_LOAD_TIME = Date.now();
+    var TIME_OFFSET = SERVER_LOAD_TIME - CLIENT_LOAD_TIME;
+</script>
 <?php
 if (isset($_SESSION['message'])) {
     unset($_SESSION['message']);

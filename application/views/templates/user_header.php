@@ -42,14 +42,15 @@
 <link rel="stylesheet" href="<?= base_url('assets/css/style.css'); ?>" id="main-style-link" />
 <link rel="stylesheet" href="<?= base_url('assets/css/style-preset.css'); ?>" />
 
-
+<link href="<?= base_url('assets/vendor/datatables2/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet"/>
   </head>
   <!-- [Head] end -->
   <!-- [Body] Start -->
   <body>
     <!-- [ Pre-loader ] start -->
-<!-- <div class="loader-bg">
+<div class="loader-bg">
+  <input type="hidden" class="base_url" data-baseurl="<?= base_url(); ?>">
   <div class="loader-track">
     <div class="loader-fill"></div>
   </div>
-</div> -->
+</div>

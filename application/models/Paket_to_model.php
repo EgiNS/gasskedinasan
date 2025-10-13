@@ -46,9 +46,13 @@ class Paket_to_model extends CI_Model
         $tabel_pendaftar = 'pendaftar_' . $slug;
         $sql_tabel_pendaftar = "CREATE TABLE `$tabel_pendaftar` (
             `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `nama` VARCHAR(100) NOT NULL COLLATE 'utf8mb4_general_ci',
             `email` VARCHAR(100) NOT NULL COLLATE 'utf8mb4_general_ci',
-            `status` INT(11) NOT NULL DEFAULT '0',
+            `no_wa` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
+            `bukti` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
             `created_at` DATETIME NOT NULL DEFAULT current_timestamp(),
+            `status` INT(11) NOT NULL DEFAULT '0',
+            
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB";
 

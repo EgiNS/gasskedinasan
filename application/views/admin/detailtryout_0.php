@@ -1,36 +1,27 @@
-    <div class="pc-container">
-      <div class="pc-content">
-        <!-- [ breadcrumb ] start -->
-        <div class="page-header">
-          <div class="page-block">
-            <div class="row align-items-center">
-              <div class="col">
-                <div class="page-header-title">
-                  <h5 class="m-b-10"><?= $title; ?></h5>
-                </div>
-              </div>
-              <div class="col-auto">
-                <ul class="breadcrumb">
-                    <?= breadcumb($breadcrumb_item); ?>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- [ breadcrumb ] end -->
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
+    <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
-        <div class="grid">
+    <!-- Page Heading -->
+    <!-- BREADCUMB -->
+    <nav aria-label="breadcrumb" class="first">
+        <?= breadcumb($breadcrumb_item); ?>
+    </nav>
+
+    <div class="grid">
         <!-- EDIT TRYOUT -->
         <div class="btn-group mt-3">
-            <button type="button" class="btn rounded btn-primary btn-sm mb-3 tampilModalUbahTryout"
-                data-id="<?= $tryout['id']; ?>" data-bs-toggle="modal" data-bs-target="#newTryoutModal"><i
+            <button type="button" class="btn btn-primary btn-sm mb-3 tampilModalUbahTryout"
+                data-id="<?= $tryout['id']; ?>" data-toggle="modal" data-target="#newTryoutModal"><i
                     class="fas fa-pencil-alt">
                 </i> Edit Tryout</button>
         </div>
 
         <!-- CHANGE STATUS -->
         <div class="btn-group">
-            <button class="btn rounded btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 Change Status
             </button>
             <div class="dropdown-menu">
@@ -50,19 +41,19 @@
         <!-- RANKING -->
         <?php if ($tryout['status'] != 0) : ?>
         <div class="btn-group mt-3">
-            <a href="<?= base_url('admin/rankingtryout/' . $slug); ?>" class="btn rounded btn-primary btn-sm mb-3">Ranking</a>
+            <a href="<?= base_url('admin/rankingtryout/' . $slug); ?>" class="btn btn-primary btn-sm mb-3">Ranking</a>
         </div>
         <?php endif; ?>
 
         <!-- PEMBAHASAN -->
         <div class="btn-group mt-3">
             <a href="<?= base_url('admin/pembahasantryout/' . $slug); ?>"
-                class="btn btn-primary rounded btn-sm mb-3">Pembahasan</a>
+                class="btn btn-primary btn-sm mb-3">Pembahasan</a>
         </div>
 
         <!-- DELETE TRYOUT -->
         <div class="btn-group mt-3">
-            <button type="button" class="btn rounded btn-danger btn-sm mb-3 btn-delete-tryout" data-id="<?= $tryout['id']; ?>"
+            <button type="button" class="btn btn-danger btn-sm mb-3 btn-delete-tryout" data-id="<?= $tryout['id']; ?>"
                 data-kode="<?= $kode; ?>"><i class="fas fa-trash">
                 </i> Delete
                 Tryout</button>
@@ -71,25 +62,25 @@
     <!-- Card Content -->
     <div class="row">
         <div class="col-xl-3 col-md-6 mb-4" <?= ($tryout['paid'] == 0) ? 'hidden' : ''; ?>>
-                <div class="card border-start border-primary shadow h-100 py-2" style="border-left-width: 5px !important;">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Harga</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    <?= 'Rp ' . number_format((int)$tryout['harga'], 0, null, '.') . ',-'; ?></div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="ti ti-currency-dollar fs-1 text-gray-300"></i>
-                            </div>
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Harga</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <?= 'Rp ' . number_format((int)$tryout['harga'], 0, null, '.') . ',-'; ?></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-sack-dollar fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4" <?= ($tryout['paid'] == 0) ? 'hidden' : ''; ?>>
-            <div class="card border-start border-success shadow h-100 py-2" style="border-left-width: 5px !important;">
+            <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -107,7 +98,7 @@
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-start border-info shadow h-100 py-2" style="border-left-width: 5px !important;">
+            <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -136,7 +127,7 @@
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-start border-warning shadow h-100 py-2" style="border-left-width: 5px !important;">
+            <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -158,183 +149,185 @@
 
     </div>
 
-        <!-- [ Main Content ] start -->
-        <div class="row">
-          <!-- [ sample-page ] start -->
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-header">
-                <h5>Daftar Peserta</h5>
-              </div>
-              <div class="card-body">
-                <table id="tabelwoi" class="table table-striped projects nowrap table-responsive">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="vertical-align: middle;">Peringkat</th>
-                            <th class="text-center" style="vertical-align: middle;">Nama</th>
-                            <th class="text-center" style="vertical-align: middle;">Email</th>
-                            <th class="text-center" style="vertical-align: middle;">No.WA</th>
-                            <th class="text-center" style="vertical-align: middle;">Urutan Daftar</th>
-                            <th class="text-center" style="vertical-align: middle;">Bukti</th>
-                            <th class="text-center" style="vertical-align: middle;">Premium</th>
-                            <?php if ($tryout['kode_refferal']) : ?>
-                                <th class="text-center" style="vertical-align: middle;">Refferal</th>
-                            <?php endif ?>
-                            <th class="text-center" style="vertical-align: middle;">Pengerjaan</th>
-                            <th class="text-center" style="vertical-align: middle;">Kecurangan</th>
-                            <th class="text-center" style="vertical-align: middle;">Nilai</th>
-                            <th class="text-center" style="vertical-align: middle;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($all_user as $index => $au) : ?>
-                        <tr>
-                            <?php if ($tryout['tipe_tryout'] == "SKD") : ?>
-                                <?php if ($au['total'] != null && $au['twk'] >= 65 && $au['tiu'] >= 80 && $au['tkp'] >= 156) : ?>
-                                    <th class="text-center bg-success text-white"><?= $index + 1; ?></th>
-                                <?php else: ?>
-                                    <th class="text-center bg-danger text-white"><?= $index + 1; ?></th>
-                                <?php endif ?>
+    <div class="row">
+        <div class="col-lg">
+            <table id="tabelwoi" class="table table-striped projects nowrap table-responsive">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="vertical-align: middle;">Peringkat</th>
+                        <th class="text-center" style="vertical-align: middle;">Nama</th>
+                        <th class="text-center" style="vertical-align: middle;">Email</th>
+                        <th class="text-center" style="vertical-align: middle;">No.WA</th>
+                        <th class="text-center" style="vertical-align: middle;">Urutan Daftar</th>
+                        <th class="text-center" style="vertical-align: middle;">Bukti</th>
+                        <th class="text-center" style="vertical-align: middle;">Premium</th>
+                        <?php if ($tryout['kode_refferal']) : ?>
+                            <th class="text-center" style="vertical-align: middle;">Refferal</th>
+                        <?php endif ?>
+                        <th class="text-center" style="vertical-align: middle;">Pengerjaan</th>
+                        <th class="text-center" style="vertical-align: middle;">Kecurangan</th>
+                        <th class="text-center" style="vertical-align: middle;">Nilai</th>
+                        <?php if ($tryout['slug'] == 'focus_matematika_stis_series_1') : ?>
+                            <th class="text-center" style="vertical-align: middle;">IP</th>
+                        <?php endif ?>
+                        <th class="text-center" style="vertical-align: middle;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($all_user as $index => $au) : ?>
+                    <tr>
+                        <?php if ($tryout['tipe_tryout'] == "SKD") : ?>
+                            <?php if ($au['total'] != null && $au['twk'] >= 65 && $au['tiu'] >= 80 && $au['tkp'] >= 156) : ?>
+                                <th class="text-center bg-success text-white"><?= $index + 1; ?></th>
                             <?php else: ?>
-                                <th class="text-center"><?= $index + 1; ?></th>
+                                <th class="text-center bg-danger text-white"><?= $index + 1; ?></th>
                             <?php endif ?>
-                            <th class="text-center"><?= $au['name']; ?></th>
-                            <th class="text-center"><?= $au['email']; ?></th>
-                            <th class="text-center"><?= $au['no_wa']; ?></th>
-                            <th class="text-center"><?= $au['id']; ?></th>
-                            <?php if (isset($au['bukti'])) : ?>
-                                <td class="text-center">
-                                    <button class="btn btn-primary btn-sm lihat-gambar" 
-                                        data-src="<?= base_url('assets/img/' . $au['bukti']); ?>" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#imageModal">
-                                        Lihat
-                                    </button>
-                                </td>
-                                <td class="text-center">
+                        <?php else: ?>
+                            <th class="text-center"><?= $index + 1; ?></th>
+                        <?php endif ?>
+                        <th class="text-center"><?= $au['name']; ?></th>
+                        <th class="text-center"><?= $au['email']; ?></th>
+                        <th class="text-center"><?= $au['no_wa']; ?></th>
+                        <th class="text-center"><?= $au['id']; ?></th>
+                        <?php if (isset($au['bukti'])) : ?>
+                            <td class="text-center">
+                                <button class="btn btn-primary btn-sm lihat-gambar" 
+                                    data-src="<?= base_url('assets/img/' . $au['bukti']); ?>" 
+                                    data-toggle="modal" 
+                                    data-target="#imageModal">
+                                    Lihat
+                                </button>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" 
+                                    class="toggle-freemium" 
+                                    data-email="<?= $au['email']; ?>" 
+                                    data-toname="<?= $tryout['slug']; ?>"
+                                    <?= $au['freemium'] == 1 ? 'checked' : ''; ?>>
+                            </td>
+                        <?php else: ?>
+                            <th class="text-center">-</th>
+                            <td class="text-center">
+                                <?php if (isset($au['freemium'])) : ?>
                                     <input type="checkbox" 
                                         class="toggle-freemium" 
                                         data-email="<?= $au['email']; ?>" 
                                         data-toname="<?= $tryout['slug']; ?>"
-                                        <?= $au['freemium'] == 1 ? 'checked' : ''; ?>>
-                                </td>
-                            <?php else: ?>
-                                <th class="text-center">-</th>
-                                <td class="text-center">
-                                    <?php if (isset($au['freemium'])) : ?>
-                                        <input type="checkbox" 
-                                            class="toggle-freemium" 
-                                            data-email="<?= $au['email']; ?>" 
-                                            data-toname="<?= $tryout['slug']; ?>"
-                                            <?= $au['freemium'] == 1 ? 'checked' : ''; ?>>
-                                    <?php else: ?>
-                                        -
-                                    <?php endif; ?>
-                                </td>
-                            <?php endif; ?>
-                            
-                            <?php if ($tryout['kode_refferal']) : ?>
-                                <th class="text-center"><?= $au['refferal']; ?></th>
-                            <?php endif ?>
-                            
-                            <?php $ada = false;
-                                for ($i = 0; $i < count($jawaban); $i++) : ?>
-                            <?php if ($jawaban[$i]['email'] == $au['email']) : ?>
-                            <?php if ($jawaban[$i]['waktu_selesai']) : ?>
-                            <?php if (($jawaban[$i]['waktu_selesai'] - $jawaban[$i]['waktu_mulai']) <= 60 * $tryout['lama_pengerjaan']) : ?>
-                            <th class="text-center btn-success">Selesai</th>
-                            <th class="text-center"><a
-                                    href="<?= base_url('admin/userparadata/' . $slug) . '?id=' . $au['id']; ?>"
-                                    class="">Aman</a></th>
-                            <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
-                                <th class="text-center"><a
-                                        href="<?= base_url('admin/nilaipeserta/' . $slug) . '?id=' . $au['id']; ?>">Nilai</a>
-                                </th>
-                            <?php else : ?>
-                                <th class="text-center"><?= $au['nilai']; ?></th>
-                            <?php endif ?>
-                            </th>
-                            <?php $ada = true; ?>
-                            <?php else : ?>
-                            <th class="text-center text-success">Selesai</th>
-                            <th class="text-center btn-warning"><a
-                                    href="<?= base_url('admin/userparadata/' . $slug) . '?id=' . $au['id']; ?>"
-                                    class="">Terdeteksi</a></th>
-                            <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
-                                <th class="text-center"><a
-                                        href="<?= base_url('admin/nilaipeserta/' . $slug) . '?id=' . $au['id']; ?>">Nilai</a>
-                                </th>
-                            <?php else : ?>
-                                <th class="text-center"><?= $au['nilai']; ?></th>
-                            <?php endif ?>
-                            </th>
-                            <?php $ada = true; ?>
-                            <?php endif; ?>
-                            <?php else : ?>
-                            <th class="text-center btn-warning">Proses...</th>
-                            <th class="text-center">...</th>
-                            <th class="text-center">...</th>
-                            <?php $ada = true; ?>
-                            <?php endif; ?>
-                            <?php endif; ?>
-                            <?php endfor; ?>
-                            <?php if ($ada == false) : ?>
-                            <th class="text-center btn-danger">Belum</th>
-                            <th class="text-center">...</th>
-                            <th class="text-center">...</th>
-                            <?php endif; ?>
-                            
-                            <th class="text-center">
-                                <?php if($tryout['paid'] == 0): ?>
-                                    <a class="btn btn-danger btn-sm generate-new-token" data-email="<?= $au['email']; ?>"
-                                        data-tryout="<?= $slug; ?>">Generate New Token</a>
+                                         <?= $au['freemium'] == 1 ? 'checked' : ''; ?>>
                                 <?php else: ?>
-                                    <button class="btn btn-danger rounded btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="<?= $au['id']; ?>" data-slug="<?= $tryout['slug'] ?>">
-                                        Hapus peserta
-                                    </button>
+                                    -
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
+                        
+                        <?php if ($tryout['kode_refferal']) : ?>
+                            <th class="text-center"><?= $au['refferal']; ?></th>
+                        <?php endif ?>
+                        
+                        <?php $ada = false;
+                            for ($i = 0; $i < count($jawaban); $i++) : ?>
+                        <?php if ($jawaban[$i]['email'] == $au['email']) : ?>
+                        <?php if ($jawaban[$i]['waktu_selesai']) : ?>
+                        <?php if (($jawaban[$i]['waktu_selesai'] - $jawaban[$i]['waktu_mulai']) <= 60 * $tryout['lama_pengerjaan']) : ?>
+                        <th class="text-center btn-success">Selesai</th>
+                        <th class="text-center"><a
+                                href="<?= base_url('admin/userparadata/' . $slug) . '?id=' . $au['id']; ?>"
+                                class="">Aman</a></th>
+                        <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
+                            <th class="text-center"><a
+                                    href="<?= base_url('admin/nilaipeserta/' . $slug) . '?id=' . $au['id']; ?>">Nilai</a>
+                            </th>
+                        <?php else : ?>
+                            <th class="text-center"><?= $au['nilai']; ?></th>
+                        <?php endif ?>
+                        </th>
+                        <?php $ada = true; ?>
+                        <?php else : ?>
+                        <th class="text-center btn-success">Selesai</th>
+                        <th class="text-center btn-warning"><a
+                                href="<?= base_url('admin/userparadata/' . $slug) . '?id=' . $au['id']; ?>"
+                                class="">Terdeteksi</a></th>
+                        <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
+                            <th class="text-center"><a
+                                    href="<?= base_url('admin/nilaipeserta/' . $slug) . '?id=' . $au['id']; ?>">Nilai</a>
+                            </th>
+                        <?php else : ?>
+                            <th class="text-center"><?= $au['nilai']; ?></th>
+                        <?php endif ?>
+                        </th>
+                        <?php $ada = true; ?>
+                        <?php endif; ?>
+                        <?php else : ?>
+                        <th class="text-center btn-warning">Proses...</th>
+                        <th class="text-center">...</th>
+                        <th class="text-center">...</th>
+                        <?php $ada = true; ?>
+                        <?php endif; ?>
+                        <?php endif; ?>
+                        <?php endfor; ?>
+                        <?php if ($ada == false) : ?>
+                        <th class="text-center btn-danger">Belum</th>
+                        <th class="text-center">...</th>
+                        <th class="text-center">...</th>
+                        <?php endif; ?>
 
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title" id="exampleModalLabel">Hapus Peserta</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    Apakah anda yakin untuk menghapus peserta ini?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                    <a href="#" id="deleteUserButton" class="btn btn-danger">Hapus!</a>
-                                                </div>
+                       <?php if ($tryout['slug'] == 'focus_matematika_stis_series_1') : ?>
+                            <th class="text-center" style="vertical-align: middle;"><?= $au['ip']; ?></th>
+                        <?php endif ?>
+                        
+                        <th class="text-center">
+                            <?php if($tryout['paid'] == 0): ?>
+                                <a class="btn btn-danger btn-sm generate-new-token" data-email="<?= $au['email']; ?>"
+                                    data-tryout="<?= $slug; ?>">Generate New Token</a>
+                            <?php else: ?>
+                                <button type="button" class="badge badge-danger" data-toggle="modal" data-target="#exampleModal" data-id="<?= $au['id']; ?>" data-slug="<?= $tryout['slug'] ?>">
+                                    Hapus peserta
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Hapus Peserta</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Apakah anda yakin untuk menghapus peserta ini?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                <a href="#" id="deleteUserButton" class="btn btn-danger">Hapus!</a>
                                             </div>
                                         </div>
                                     </div>
-                                <?php endif; ?>
-                            </th>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <!-- [ sample-page ] end -->
+                                </div>
+                            <?php endif; ?>
+                        </th>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-        <!-- [ Main Content ] end -->
-      </div>
     </div>
 
-    <!-- Modal -->
+</div>
+<!-- /.container-fluid -->
+
+
+<!-- Modal -->
 <div class="modal fade" id="newTryoutModal" tabindex="-1" aria-labelledby="newTryoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="newTryoutModalLabel">Add New Tryout</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="newTryoutModalLabel">Add New Tryout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body p-0">
+            <div class="modal-body">
                 <form action="<?= base_url('admin/tryout'); ?>" method="post">
                     <div class="modal-body">
                         <div class="form-group">
@@ -407,10 +400,12 @@
 
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-0">
+        <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="imageModalLabel">Gambar Bukti</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="imageModalLabel">Gambar Bukti</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body text-center">
                 <img id="imageModalSrc" src="" class="img-fluid" alt="Bukti">
@@ -428,7 +423,7 @@
         $(document).on('click', '.lihat-gambar', function () {
             // Ambil URL gambar dari data-src
             const imageSrc = $(this).data('src');
-            console.log(imageSrc);
+            
             // Setel atribut src di dalam modal
             $('#imageModalSrc').attr('src', imageSrc);
         });
@@ -491,5 +486,8 @@
     });
 </script>
 
+
+</div>
+<!-- End of Main Content -->
 <script src="<?= base_url('assets/tinymce/tinymce.min.js'); ?>"></script>
 <?php destroysession(); ?>
