@@ -311,7 +311,6 @@
         </div>
     </div>
 </div>
-
 <script src="<?= base_url('assets/tinymce/tinymce.min.js'); ?>"></script>
 
 <?php destroysession(); ?>

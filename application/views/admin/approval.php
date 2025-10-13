@@ -1,12 +1,28 @@
-<div class="container-fluid">
+<div class="pc-container">
+
+<div class="pc-content">
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
     <!-- Page Heading -->
-    <!-- BREADCUMB -->
-    <nav aria-label="breadcrumb" class="first">
-        <?= breadcumb($breadcrumb_item); ?>
-    </nav>
+            <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="page-header-title">
+                  <h5 class="m-b-10">Pembayaran TO</h5>
+                </div>
+              </div>
+              <div class="col-auto">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="<?= base_url('admin'); ?>">Home</a></li>
+                  <li class="breadcrumb-item" aria-current="page">Pembayaran TO</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
     <div class="row">
         <div class="col-lg">
@@ -100,6 +116,7 @@
 
 </div>
 
+</div>
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

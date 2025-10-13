@@ -126,7 +126,7 @@ function error_message_file_input($key)
     $flashdata = $ci->session->flashdata($key);
 
     if (!empty($flashdata)) {
-        $message = '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">' . $flashdata . '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        $message = '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">' . $flashdata . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
 
         return $message;
     }
@@ -134,14 +134,14 @@ function error_message_file_input($key)
 
 function form_error_message($key)
 {
-    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 
     return $message;
 }
 
 function form_error_user($key)
 {
-    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+    $message = form_error($key, '<div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 
     return $message;
 }

@@ -36,13 +36,7 @@
           <?php endforeach; ?>
 
       </ul>
-      <div class="pc-navbar-card bg-primary rounded">
-        <h4 class="text-white">Explore full code</h4>
-        <p class="text-white opacity-75">Buy now to get full access of code files</p>
-        <a href="https://codedthemes.com/item/berry-bootstrap-5-admin-template/" target="_blank" class="btn btn-light text-primary">
-          Buy Now
-        </a>
-      </div>
+      
       <div class="w-100 text-center">
         <div class="badge theme-version badge rounded-pill bg-light text-dark f-12"></div>
       </div>

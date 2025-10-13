@@ -1,6 +1,16 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * @property User_model $user
+ * @property Role_model $role
+ * @property Jawaban_model $jawaban
+ * @property Kunci_tkp_model $kunci_tkp
+ * @property Bobot_nilai_tiap_soal_model $bobot_nilai_tiap_soal
+ * @property Bobot_nilai_model $bobot_nilai
+ * @property CI_Loader $load
+ * @property Pendaftar_to_model $pendaftar_to
+ */
 class Admin extends CI_Controller
 {
     protected $loginUser, $tipeSoal, $sidebarMenu;
@@ -3027,7 +3037,6 @@ class Admin extends CI_Controller
             $persentase = round($persentase, 2);
         }
 
-
         $user = $this->loginUser;
 
         $data = [
@@ -4882,16 +4891,8 @@ class Admin extends CI_Controller
         $parent_title = getSubmenuTitleById(22)['title'];
         submenu_access(22);
 
-        $breadcrumb_item = [
-            [
-                'title' => $parent_title,
-                'href' => 'active'
-            ]
-        ];
-
         $data = [
             'title' => $parent_title,
-            'breadcrumb_item' => $breadcrumb_item,
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
@@ -4905,46 +4906,28 @@ class Admin extends CI_Controller
         $this->load->view('templates/user_footer');
     }
 
-    public function detailpendaftar($slug) {
+    public function detailpendaftar($id) {
         $this->_loadRequiredModels();
         $this->load->model('Paket_to_model', 'paket_to');
         $submenu_parent = 22;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
-        
-        $title = str_replace('_', ' ', $slug);
 
-        $breadcrumb_item = [
-            [
-                'title' => $parent_title,
-                'href' => 'tryout'
-            ],
-            [
-                'title' => $title,
-                'href' => 'active'
-            ]
-        ];
 
-        $pendaftar = $this->paket_to->get('many', ['status !=' => 0],$slug);
 
-        foreach ($pendaftar as &$p) {
-            $this->db->where('email', $p['email']);
-            $query = $this->db->get('user');
-
-            $user = $query->row();
-            $p['nama'] = $user->name;
-            $p['no_wa'] = $user->no_wa;
-        }
-
+        $pendaftar = $this->pendaftar_to->get_all_by_packet_to_id($id);        
         $data = [
             'title' => $parent_title,
-            'breadcrumb_item' => $breadcrumb_item,
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
             'pendaftar' => $pendaftar,
         ];
-
+        $data['page_scripts'] = [
+            "$(document).ready(function () {
+                $('#tabelwoi').DataTable();
+            });"
+        ];
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
@@ -4997,23 +4980,19 @@ class Admin extends CI_Controller
     public function tambahpaket() {
         $this->_loadRequiredModels();
         $this->load->model('Paket_to_model', 'paket_to');
+        
         $this->form_validation->set_rules('nama', 'Nama Tryout', 'required');
         $this->form_validation->set_rules('keterangan', 'Keterangan', 'required');
-
+        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
+            'numeric' => 'Hanya boleh diisi angka.'
+        ]);
+        
         if ($this->form_validation->run() == false) {
             $parent_title = getSubmenuTitleById(22)['title'];
             submenu_access(22);
 
-            $breadcrumb_item = [
-                [
-                    'title' => $parent_title,
-                    'href' => 'active'
-                ]
-            ];
-
             $data = [
                 'title' => $parent_title,
-                'breadcrumb_item' => $breadcrumb_item,
                 'user' => $this->loginUser,
                 'sidebar_menu' => $this->sidebarMenu,
                 'parent_submenu' => $parent_title,
@@ -5041,29 +5020,23 @@ class Admin extends CI_Controller
                 // Jika upload berhasil, ambil informasi file yang di-upload
                 $uploadData = $this->upload->data();
                 
-                // Dapatkan path file yang di-upload
-                $imagePath = $uploadData['file_name'];
-
-                $nama = $this->input->post('nama');
-                $keterangan = $this->input->post('keterangan');
     
                 // Simpan informasi gambar ke database (sesuaikan dengan struktur database Anda)
                 $data = [
-                    'nama' => $nama,
-                    'foto' => $imagePath,
-                    'keterangan' => $keterangan,
+                    'nama' => $this->input->post('nama'),
+                    'foto' => $uploadData['file_name'],
+                    'harga' => $this->input->post('harga'),
+                    'keterangan' => $this->input->post('keterangan'),
                 ];
     
                 // Tampilkan pesan sukses
                 $this->paket_to->insert($data);
-                $this->paket_to->createPendaftar(create_slug($nama));
-
                 $this->session->set_flashdata('success', 'Menambahkan Tryout Baru');
                 redirect('admin/pendaftar');
             } else {
                 // Jika upload gagal, tampilkan error
                 $error = $this->upload->display_errors();
-                $this->session->set_flashdata('error', $error);
+                $this->session->set_flashdata('foto', $error);
                 redirect('admin/pendaftar');
             }
         }

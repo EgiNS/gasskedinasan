@@ -1,6 +1,6 @@
 $(document).ready(function () {
   var base_url = $(".base_url").data("baseurl");
-  console.log(base_url)
+  // console.log(base_url)
 
   if ($("#repoptinymce").length) {
     const key = { 0: "text_soal", 1: "pembahasan", 2: "text_a", 3: "text_b", 4: "text_c", 5: "text_d", 6: "text_e" };

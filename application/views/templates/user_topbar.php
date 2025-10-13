@@ -8,7 +8,7 @@
       </a>
     </li>
     <li class="pc-h-item pc-sidebar-popup">
-      <a href="#" class="pc-head-link head-link-secondary ms-0" id="mobile-collapse">
+      <a  class="pc-head-link head-link-secondary ms-0" id="mobile-collapse">
         <i class="ti ti-menu-2"></i>
       </a>
     </li>
@@ -111,7 +111,7 @@
               <i class="ti ti-user"></i>
               <span>Social Profile</span>
             </a>
-            <a href="../pages/login-v1.html" class="dropdown-item">
+            <a href="<?= base_url('auth/logout'); ?>" class="dropdown-item">
               <i class="ti ti-logout"></i>
               <span>Logout</span>
             </a>
