@@ -21,7 +21,10 @@ class Jawaban_model extends CI_Model
         $table = $this->table . $slug;
 
         if (is_array($select)) {
-            $select = implode(', ', array_map(fn($s) => "t1.$s", $select));
+          $select = implode(', ', array_map(function($s) {
+    return "t1.$s";
+}, $select));
+
         }
 
         $sql = "SELECT $select

@@ -82,7 +82,8 @@ class Tryout extends CI_Controller
         $this->load->model('Jawaban_model', 'jawaban');
 
         $user = $this->loginUser;
-        $terdaftar = $this->user_tryout->get('one', ['email' => $user['email']], $slug) == null ? false : true;
+        $terdaftar = $this->user_tryout->get('one', ['email' => $user->email], $slug) == null ? false : true;
+        
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
 
@@ -94,21 +95,21 @@ class Tryout extends CI_Controller
             'parent_submenu' => $parent_title,
             'tryout' => $tryout,
             'slug' => $slug,
-            'user_tryout' => $this->user_tryout->get('one', ['email' => $user['email']], $slug),
+            // 'user_tryout' => $this->user_tryout->get('one', ['email' => $user['email']], $slug),
             'soal_nomor_satu' => $this->soal->get('one', ['id' => 1], $slug),
-            'payment_fail' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 201, 'tryout' => $slug]),
-            'payment_success' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 200, 'tryout' => $slug]),
+            // 'payment_fail' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 201, 'tryout' => $slug]),
+            // 'payment_success' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 200, 'tryout' => $slug]),
             'soal_starting_three' => $soal_starting_three,
-            'terdaftar' => $terdaftar
+            'terdaftar' => false
         ];
-
+        
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
         $this->load->view('tryout/detail', $data);
         $this->load->view('templates/user_footer');
 
-        $jawaban_user = $this->jawaban->get('one', ['email' => $user['email']], $slug);
+        $jawaban_user = $this->jawaban->get('one', ['email' => $user->email], $slug);
 
         if ($jawaban_user)
             if ($jawaban_user['waktu_mulai'] != null && $jawaban_user['waktu_selesai'] == null)

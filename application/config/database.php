@@ -75,10 +75,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'webgass_sistem_baru',
+	'hostname' =>  getenv('DB_HOST') ?: $_ENV['DB_HOST'],
+	'username' =>  getenv('DB_USERNAME')?: $_ENV['DB_USERNAME'],
+	'password' => getenv('DB_PASSWORD') ?: $_ENV['DB_PASSWORD'],
+	'database' => getenv('DB_DATABASE')?: $_ENV['DB_DATABASE'],
+	'port'     => getenv('DB_PORT')?: $_ENV['DB_PORT'],
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

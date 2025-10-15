@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/dist/css/tryoutcard.css'); ?>">
 <style>
     @media (max-width: 768px) {
@@ -8,15 +7,31 @@
     }
 }
 </style>
-<div class="container-fluid">
+<div class="pc-container">
+    <div class="pc-content">
+
+
 
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
     <!-- BREADCUMB -->
-    <nav aria-label="breadcrumb" class="first">
-        <?= breadcumb($breadcrumb_item); ?>
-    </nav>
+    <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="page-header-title">
+                  <h5 class="m-b-10">Tryout</h5>
+                </div>
+              </div>
+              <div class="col-auto">
+                <ul class="breadcrumb">
+                  <?= breadcumb($breadcrumb_item); ?>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="row">
                 <div class="d-flex mt-3 flex-column">
@@ -24,7 +39,7 @@
             <?php if ($tryout_skd) : ?>
                 <div class="d-flex flex-wrap justify-content-start solution_cards_box p-2">
                     <?php foreach ($tryout_skd as $item) : ?>
-                        <div class="solution_card m-2" style="flex: 1 1 calc(33.33% - 1rem); max-width: calc(33.33% - 1rem); box-sizing: border-box;">
+                        <div class="solution_card m-2" style="flex: 1 1 calc(25% - 1rem); max-width: calc(25% - 1rem); box-sizing: border-box;">
                             <div class="hover_color_bubble"></div>
 
                             <?php if ($item['gambar']) : ?>
@@ -57,14 +72,15 @@
                     <h2 class="h2 mb-4 text-gray-800">Belum ada tryout yang tersedia</h2>
                 </div>
             <?php endif; ?>
-        </div>
+            </div>
+
 
         <div class="d-flex mt-3 flex-column">
             <h4 class="pl-3 mt-2">TRYOUT MATEMATIKA</h4>
             <?php if ($tryout_mtk) : ?>
                 <div class="d-flex flex-wrap justify-content-start solution_cards_box p-2">
                     <?php foreach ($tryout_mtk as $item) : ?>
-                        <div class="solution_card m-2" style="flex: 1 1 calc(33.33% - 1rem); max-width: calc(33.33% - 1rem); box-sizing: border-box;">
+                        <div class="solution_card m-2" style="flex: 1 1 calc(25% - 1rem); max-width: calc(25% - 1rem); box-sizing: border-box;">
                             <div class="hover_color_bubble"></div>
 
                             <?php if ($item['gambar']) : ?>
@@ -100,7 +116,7 @@
         </div>
     </div>
 </div>
-</div>
+    </div>
 
 <!-- Modal -->
 <div class="modal fade" id="newTryoutModal" tabindex="-1" aria-labelledby="newTryoutModalLabel" aria-hidden="true">

@@ -1,22 +1,35 @@
-    <div class="container-fluid">
-    <link rel="stylesheet" href="<?= base_url('assets/dist/css/blink.css'); ?>">
+    <div class="pc-container">
+        <div class="pc-content">
+        <link rel="stylesheet" href="<?= base_url('assets/dist/css/blink.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/dist/css/bounce.css'); ?>">
 
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
-    <!-- Page Heading -->
+        <!-- Page Heading -->
     <!-- BREADCUMB -->
-    <nav aria-label="breadcrumb" class="first">
-        <?= breadcumb($breadcrumb_item); ?>
-    </nav>
-
+    <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="page-header-title">
+                  <h5 class="m-b-10">Detail Tryout</h5>
+                </div>
+              </div>
+              <div class="col-auto">
+                <ul class="breadcrumb">
+                  <?= breadcumb($breadcrumb_item); ?>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
     <form id="payment-form" method="post" action="<?= base_url('midtrans/snap/finish?slug=' . $tryout['slug']); ?>">
         <input type="hidden" name="result_type" id="result-type" value="">
         <input type="hidden" name="result_data" id="result-data" value="">
-        <input type="hidden" name="email" id="email" value="<?= $user['email']; ?>">
-    </form>
-    <div class="row">
+        <input type="hidden" name="email" id="email" value="<?= $user->email; ?>">
+    </form> 
+        <div class="row mt-3">
         <div class="col-lg">
             <div class="card bg-dark text-white">
                 <img class="card-img" style="opacity: 80%;" src="<?= base_url('assets/img/Kalkulus.png'); ?>"
@@ -27,7 +40,7 @@
                         <div class="col-lg-8 mb-3">
                             <div class="bg-dark">
                                 <div class="card-header text-center">
-                                    <h3 class="card-title font-weight-bold" style="color: black;">Preview Soal</h3>
+                                    <h3 class="card-title font-weight-bold">Preview Soal</h3>
                                 </div>
                                 <div class="card-body">
                                     <?php $i = 0;
@@ -36,7 +49,7 @@
                                     <?php if (substr($sst['text_soal'], 0, 3) == '<p>') : ?>
                                     <?php if ($i == 2) : ?>
                                     <?= '<p>' . $sst['id'] . '. ' . substr($sst['text_soal'], 3); ?>
-                                    <a href="#" class="badge badge-primary more"> more</a>
+                                    <a href="#" class="btn btn-link p-0 more">more</a>
                                     <?php else : ?>
                                     <?= '<p>' . $sst['id'] . '. ' . substr($sst['text_soal'], 3); ?>
 
@@ -45,7 +58,7 @@
                                     <?php if ($i == 2) : ?>
                                     <p class="card-text">
                                         <?= $sst['id'] . '. ' . $sst['text_soal'] . '...'; ?> <a href="#"
-                                            class="badge badge-primary more"> more</a>
+                                            class="badge bg-primary more"> more</a>
                                     </p>
                                     <?php else : ?>
                                     <p class="card-text">
@@ -95,7 +108,7 @@
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body text-white">
                                     <?php if ($tryout['paid'] == 1) : ?>
                                     <h5 class="card-title">Mulai dari</h5>
                                     <h3 class="card-title font-weight-bold">
@@ -110,7 +123,7 @@
                                             <p class="card-text"><?= $tryout['keterangan']; ?></p>
                                         <?php endif; ?>
                                     <?php endif; ?>
-                                    <h5 class="font-weight-bold">Pengerjaan <?= $tryout['lama_pengerjaan']; ?> menit
+                                    <h5 class="font-weight-bold text-white">Pengerjaan <?= $tryout['lama_pengerjaan']; ?> menit
                                     </h5>
                                 </div>
                             </div>
@@ -121,7 +134,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+        <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -143,9 +156,7 @@
                     <input type="file" class="custom-file-input" id="customFile" required>
                     <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
-                
-                <span>Komen kalimat apapun dan tag 5 teman kamu
-</span>
+                <span>Komen kalimat apapun dan tag 5 teman kamu</span>
                 <div class="custom-file mt-1 mb-3">
                     <input type="file" class="custom-file-input" id="customFile" required>
                     <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
@@ -178,15 +189,18 @@
                     id="free-pay"
                     class="btn btn-primary   daftar-tryout daftarTryoutBtn disabled"
                     data-harga="<?= $tryout['harga']; ?>" data-tryout="<?= $tryout['name']; ?>"
-                    data-slug="<?= $tryout['slug']; ?>" data-name="<?= $user['name']; ?>"
-                    data-email="<?= $user['email']; ?>" data-phone="<?= $user['no_wa']; ?>"
+                    data-slug="<?= $tryout['slug']; ?>" data-name="<?= $user->name; ?>"
+                    data-email="<?= $user->email; ?>" data-phone="<?= $user->no_wa; ?>"
                     disabled>
                     Daftar Tryout
                 </a>
             </div>
             </div>
-        </div>
+                    </div>
     </div>
+
+
+
 
     <div class="modal fade" id="freemiumModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -199,8 +213,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                            <p>Silakan lakukan pembayaran sebesar: <span class="font-weight-bold"><?= !is_null($tryout['harga']) ? number_format($tryout['harga'], 0, ',', '.') : ''; ?>
-</span> <br>
+                            <p>Silakan lakukan pembayaran sebesar: <span class="font-weight-bold"><?= !is_null($tryout['harga']) ? number_format($tryout['harga'], 0, ',', '.') : ''; ?></span> <br>
                             dalam waktu 24 jam dari sekarang untuk pembelian TO Freemium.
                             
                             </p>
@@ -221,12 +234,12 @@
                                 </li>
                             </ul>
                             
-                            <!--Alternatif pembayaran:-->
-                            <!--<ul>-->
-                            <!--    <li>-->
-                            <!--        Melalui <span class="font-weight-bold">Alfamart/Alfamidi</span> untuk mengisi saldo <span class="font-weight-bold"> DANA</span> ke nomor +6283140434133.-->
-                            <!--    </li>-->
-                            <!--</ul>-->
+                            Alternatif pembayaran:
+                            <ul>
+                               <li>
+                                   Melalui <span class="font-weight-bold">Alfamart/Alfamidi</span> untuk mengisi saldo <span class="font-weight-bold"> DANA</span> ke nomor +6283140434133.
+                               </li>
+                            </ul>
                             </div>
                     <form action="<?= base_url('tryout/freemium'); ?>" method="post"  enctype="multipart/form-data"                                                                                                                                                                      >
                         <input type="text" hidden name="slug" value="<?= $tryout['slug']; ?>">
@@ -260,7 +273,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
     <div class="modal fade" id="pembayaranModal" tabindex="-1" aria-hidden="true"> 
         <div class="modal-dialog">
@@ -289,13 +302,13 @@
                               No. HP: 087828344971
                                 </li>
                             </ul>
-                            
-                            <!--Alternatif pembayaran:-->
-                            <!--<ul>-->
-                            <!--    <li>-->
-                            <!--        Melalui <span class="font-weight-bold">Alfamart/Alfamidi</span> untuk mengisi saldo <span class="font-weight-bold"> DANA</span> ke nomor +6283140434133.-->
-                            <!--    </li>-->
-                            <!--</ul>-->
+
+                            Alternatif pembayaran:
+                            <ul>
+                                <li>
+                                    Melalui <span class="font-weight-bold">Alfamart/Alfamidi</span> untuk mengisi saldo <span class="font-weight-bold"> DANA</span> ke nomor +6283140434133.
+                                </li>
+                            </ul>
                         <div class="custom-file mt-1 mb-3">
                             <input type="file" class="custom-file-input" id="customFile" name="bukti" required>
                             <label class="custom-file-label" for="customFile">Upload bukti</label>
@@ -308,7 +321,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> 
 
     <style>
         .disabled {
@@ -361,10 +374,8 @@
             });
         });
     </script>
-
 </div>
-<!-- /.container-fluid -->
-
 </div>
+
 
 <?php destroysession(); ?>
