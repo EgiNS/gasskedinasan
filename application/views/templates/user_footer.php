@@ -20,10 +20,8 @@
 
     <!-- Bootstrap core JavaScript-->
 <!-- Bootstrap core JavaScript-->
-<script src="<?= base_url('assets/vendor/jquery/jquery.min.js'); ?>"></script>
 <script src="<?= base_url('assets/vendor/datatables2/dataTables.js'); ?>"></script>
 <script src="<?= base_url('assets/vendor/datatables2/dataTables.bootstrap5.js'); ?>"></script>
-<script src="<?= base_url('assets/vendor/jquery-easing/jquery.easing.min.js'); ?>"></script>
 
 
 <!-- Custom scripts for all pages-->
@@ -122,17 +120,6 @@ $('.custom-file-input').on('change', function() {
 <script src="<?= base_url('assets/js/theme.js'); ?>"></script>
 <script src="<?= base_url('assets/js/plugins/feather.min.js'); ?>"></script>
 
-
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.js"></script>
-
-   <?php if (isset($page_scripts)) : ?>
-      <?php foreach ($page_scripts as $script) : ?>
-        <script>
-          <?= $script; ?>
-        </script>
-      <?php endforeach; ?>
-    <?php endif; ?>
 <script>
   layout_change('light');
 </script>

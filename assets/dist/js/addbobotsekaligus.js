@@ -94,6 +94,7 @@ $(document).ready(function () {
 
   $("#lock-bobot").on("click", function (e) {
     e.preventDefault(); //Mematikan href
+        $("#bobotSoalModal").modal("hide");
     const admin_kode = $(this).data("kode");
     Swal.fire({
       title: "<b>Perhatian!</b>",
@@ -102,7 +103,9 @@ $(document).ready(function () {
       focusConfirm: false,
       confirmButtonText: "OK",
     }).then((result) => {
-      if (result.isConfirmed) kode();
+      if (result.isConfirmed) {
+        kode();
+      }
     });
 
     function kode() {
@@ -121,6 +124,9 @@ $(document).ready(function () {
             $("#lock-bobot").addClass("d-none");
             $(".unlock-bobot").removeClass("d-none");
             $("form button[type=button], input[type=number], input[type=checkbox]").removeAttr("disabled");
+                    setTimeout(() => {
+          $("#bobotSoalModal").modal("show");
+        }, 200); 
           } else {
             Swal.showValidationMessage(`Kode salah`);
           }

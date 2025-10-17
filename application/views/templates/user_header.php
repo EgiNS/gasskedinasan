@@ -43,6 +43,9 @@
 <link rel="stylesheet" href="<?= base_url('assets/css/style-preset.css'); ?>" />
 
 <link href="<?= base_url('assets/vendor/datatables2/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet"/>
+
+<script src="<?= base_url('assets/vendor/jquery/jquery.min.js'); ?>"></script>
+<script src="<?= base_url('assets/vendor/jquery-easing/jquery.easing.min.js'); ?>"></script>
   </head>
   <!-- [Head] end -->
   <!-- [Body] Start -->
