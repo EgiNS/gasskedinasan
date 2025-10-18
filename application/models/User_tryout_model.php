@@ -22,17 +22,45 @@ class User_tryout_model extends CI_Model
         return $this->db->get($this->table . $slug)->result_array();
     }
 
-    public function get($count, $key, $slug, $select = '*')
-    {
-        $this->db->select($select);
-        $result = $this->db->get_where($this->table . $slug, $key);
-        if ($count === 'many')
-            return $result->result_array();
-        else if ($count === 'one')
-            return $result->row_array();
-        else
-            return false;
+    public function get($count, $key, $slug, $select = '*', $user = null)
+{
+    $table = $this->table . $slug;
+    $this->db->select($select);
+
+    // Ambil semua kolom dari tabel
+    $fields = $this->db->list_fields($table);
+
+    // Default kondisi
+    $where = [];
+
+    if (isset($key['user_id'])) {
+        // Kalau tabel punya kolom user_id
+        if (in_array('user_id', $fields)) {
+            $where['user_id'] = $key['user_id'];
+        }
+        // Kalau gak ada user_id tapi ada email dan user object dikirim
+        else if (in_array('email', $fields) && isset($user->email)) {
+            $where['email'] = $user->email;
+        } 
+        // Kalau gak ada dua-duanya, return kosong
+        else {
+            return [];
+        }
+    } else {
+        $where = $key; // kalau pakai key lain
     }
+
+    $result = $this->db->get_where($table, $where);
+
+    if ($count === 'many') {
+        return $result->result_array();
+    } else if ($count === 'one') {
+        return $result->row_array();
+    } else {
+        return false;
+    }
+}
+
 
     public function update($data, $key, $slug)
     {
@@ -60,7 +88,8 @@ class User_tryout_model extends CI_Model
         $tabel_user_tryout = $this->table . $slug;
         $sql_tabel_user_tryout = "CREATE TABLE `$tabel_user_tryout` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
-            `email` varchar(256) NOT NULL,
+            `user_id` int(11) NOT NULL,
+            `transaction_id` int(11) DEFAULT NULL,
             `token` int(11) DEFAULT NULL,
             `status` int(11) DEFAULT 0,
             `freemium` int(11) DEFAULT 0,
@@ -70,7 +99,10 @@ class User_tryout_model extends CI_Model
             `tiu` int(11) DEFAULT NULL,
             `tkp` int(11) DEFAULT NULL,
             `total` int(11) DEFAULT NULL,
-             PRIMARY KEY (`id`)
+             PRIMARY KEY (`id`),
+             CONSTRAINT `fk_user_tryout_user_{$slug}` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
+             CONSTRAINT `fk_user_tryout_transaction_{$slug}` FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON DELETE CASCADE
+             
         ) ENGINE=InnoDB";
 
         $this->db->query($sql_tabel_user_tryout);
@@ -98,20 +130,33 @@ class User_tryout_model extends CI_Model
     {
         // $query = "SELECT * FROM `user_tryout` JOIN `user` ON `user_tryout`.`email` = `user`.`email` ORDER BY `user_tryout`.`total` DESC, `user_tryout`.`tkp` DESC, `user_tryout`.`tiu` DESC, `user_tryout`.`twk` DESC;";
 
-        $query = "
-            SELECT u.*, ut.*
-        FROM user AS u
+    // Cek apakah kolom 'user_id' ada di tabel
+$checkColumn = $this->db->query("SHOW COLUMNS FROM user_tryout_{$slug} LIKE 'user_id'");
+$useUserId = $checkColumn->num_rows() > 0;
+
+if ($useUserId) {
+    $joinField = 'user_id';
+    $onClause = 'u.id = ut.user_id';
+} else {
+    $joinField = 'email';
+    $onClause = 'u.email = ut.email';
+}
+
+$query = "
+    SELECT u.*, ut.*
+    FROM user AS u
+    JOIN (
+        SELECT t1.*
+        FROM user_tryout_{$slug} t1
         JOIN (
-            SELECT t1.*
-            FROM user_tryout_{$slug} t1
-            JOIN (
-                SELECT email, MIN(id) AS min_id
-                FROM user_tryout_{$slug}
-                GROUP BY email
-            ) t2 ON t1.email = t2.email AND t1.id = t2.min_id
-        ) ut ON u.email = ut.email
-        ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
-        ";
+            SELECT {$joinField}, MIN(id) AS min_id
+            FROM user_tryout_{$slug}
+            GROUP BY {$joinField}
+        ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
+    ) ut ON {$onClause}
+    ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
+";
+
 
         return $this->db->query($query)->result_array();
     }
