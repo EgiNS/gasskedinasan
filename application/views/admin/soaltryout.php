@@ -1,13 +1,26 @@
-<div class="container-fluid">
+<div class="pc-container">
+<div class="pc-content">
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
     <!-- Page Heading -->
 
     <!-- BREADCUMB -->
-    <nav aria-label="breadcrumb" class="first">
-        <?= breadcumb($breadcrumb_item); ?>
-    </nav>
-
+          <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Detail Tryout</h5>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <ul class="breadcrumb">
+                                <?= breadcumb($breadcrumb_item); ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
     <?php
     $tipe_soal = ['TWK', 'TIU', 'TKP'];
     $slug = $this->uri->segment(3);
@@ -109,8 +122,6 @@
     </div>
 
 </div>
-<!-- /.container-fluid -->
-
 </div>
 <!-- End of Main Content -->
 

@@ -23,7 +23,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/gasseducation_upgrade/';
+$config['base_url'] = getenv('BASE_URL')?: $_ENV['BASE_URL'];
 
 /*
 |--------------------------------------------------------------------------

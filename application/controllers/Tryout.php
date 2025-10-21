@@ -4,11 +4,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * @property CI_Loader $load
+ * @property CI_Input $input
+ * @property Midtrans $midtrans
  * @property User_model $user
  * @property Soal_model $soal
  * @property Tryout_model $tryout
  * @property User_tryout_model $user_tryout
  * @property Paket_to_model $paket_to
+ * @property CI_Session $session
+ * @property Jawaban_model $jawaban
+ * @property Latsol_model $latsol
+ * @property Kunci_tkp_model $kunci_tkp
+ * @property Bobot_nilai_tiap_soal_model $bobot_nilai_tiap_soal
+ * @property Bobot_nilai_model $bobot_nilai
+ * @property Transaction_model $transaction
+ * 
  */
 class Tryout extends CI_Controller
 {
@@ -24,7 +34,10 @@ class Tryout extends CI_Controller
         $this->load->model('User_tryout_model', 'user_tryout');
         $this->load->model('Soal_model', 'soal');
         $this->load->model('Latsol_model', 'latsol');
-
+        $this->load->model('Transaction_model', 'transaction');
+        $this->load->library('midtrans/Midtrans', 'midtrans');
+        $params = array('server_key' => server_key(), 'production' => is_production());
+        $this->midtrans->config($params);
         $this->loginUser = $this->user->getLoginUser();
         $this->tipeSoal = $this->soal->getAllTipeSoal();
         $this->sidebarMenu = 'Tryout';
@@ -48,8 +61,8 @@ class Tryout extends CI_Controller
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
-            'tryout_skd' => $this->tryout->get('many', ['tipe_tryout' => 'SKD','hidden' => 0, 'for_bimbel' => 0]),
-            'tryout_mtk' => $this->tryout->get('many', ['tipe_tryout' => 'nonSKD','hidden' => 0, 'for_bimbel' => 0]),
+            'tryout_skd' => $this->tryout->get('many', ['tipe_tryout' => 'SKD', 'hidden' => 0, 'for_bimbel' => 0]),
+            'tryout_mtk' => $this->tryout->get('many', ['tipe_tryout' => 'nonSKD', 'hidden' => 0, 'for_bimbel' => 0]),
         ];
 
         $this->load->view('templates/user_header', $data);
@@ -82,7 +95,8 @@ class Tryout extends CI_Controller
         $this->load->model('Jawaban_model', 'jawaban');
 
         $user = $this->loginUser;
-        $terdaftar = $this->user_tryout->get('one', ['email' => $user['email']], $slug) == null ? false : true;
+        // $terdaftar = $this->user_tryout->get('one', ['email' => $user->email], $slug) == null ? false : true;
+
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
 
@@ -94,21 +108,23 @@ class Tryout extends CI_Controller
             'parent_submenu' => $parent_title,
             'tryout' => $tryout,
             'slug' => $slug,
-            'user_tryout' => $this->user_tryout->get('one', ['email' => $user['email']], $slug),
+            'user_tryout' => $this->user_tryout->get('one', ['id' => $user->id], $slug),
             'soal_nomor_satu' => $this->soal->get('one', ['id' => 1], $slug),
-            'payment_fail' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 201, 'tryout' => $slug]),
-            'payment_success' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 200, 'tryout' => $slug]),
+            // 'payment_fail' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 201, 'tryout' => $slug]),
+            // 'payment_success' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 200, 'tryout' => $slug]),
             'soal_starting_three' => $soal_starting_three,
-            'terdaftar' => $terdaftar
+            'terdaftar' => false
         ];
+
+        print_r($data['user_tryout']);
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/detail', $data);
+        $this->load->view('tryout/detail/index', $data);
         $this->load->view('templates/user_footer');
 
-        $jawaban_user = $this->jawaban->get('one', ['email' => $user['email']], $slug);
+        $jawaban_user = $this->jawaban->get('one', ['email' => $user->email], $slug);
 
         if ($jawaban_user)
             if ($jawaban_user['waktu_mulai'] != null && $jawaban_user['waktu_selesai'] == null)
@@ -117,7 +133,7 @@ class Tryout extends CI_Controller
 
     public function nilai($slug)
     {
-        $latsol = substr($slug,0,6);
+        $latsol = substr($slug, 0, 6);
 
         if ($latsol != 'latsol') {
             $jenis = 'tryout';
@@ -162,7 +178,7 @@ class Tryout extends CI_Controller
         ];
 
         $email = $this->session->userdata('email');
-        $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+        $pengerjaan = $this->user_tryout->getNumRows(['email' => $email], $slug);
 
         $user_tryout = $this->user_tryout->get('one', ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
         $all_nilai = $this->user_tryout->get('many', ['email' => $email], $slug);
@@ -299,7 +315,7 @@ class Tryout extends CI_Controller
 
     public function answeranalysis($slug)
     {
-        $latsol = substr($slug,0,6);
+        $latsol = substr($slug, 0, 6);
 
         if ($latsol != 'latsol') {
             $tryout = $this->tryout->get('one', ['slug' => $slug]);
@@ -356,7 +372,7 @@ class Tryout extends CI_Controller
         $email = $this->session->userdata('email');
         $email_kunci_jawaban = 'kunci_jawaban_' . $slug . '@gmail.com';
 
-        $last = $this->jawaban->getLastRow(['email'=>$email], $slug);
+        $last = $this->jawaban->getLastRow(['email' => $email], $slug);
         $data = [
             'title' => $title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -465,12 +481,13 @@ class Tryout extends CI_Controller
             'parent_submenu' => $parent_title
         ];
 
-        $all_tryout = $this->tryout->get('many', ['for_bimbel'=>0]);
+        $all_tryout = $this->tryout->get('many', ['for_bimbel' => 0]);
         $tryout = [];
         $mytryout = [];
+        
 
         foreach ($all_tryout as $to) {
-            $user_tryout = $this->user_tryout->get('one', ['email' => $user['email']], $to['slug']);
+            $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $to['slug'], '*', $user);
             if ($user_tryout) {
                 array_push($tryout, $to);
                 array_push($mytryout, $user_tryout);
@@ -479,11 +496,12 @@ class Tryout extends CI_Controller
 
         $data['tryout'] = $tryout;
         $data['mytryout'] = $mytryout;
+        
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/mytryout', $data);
+        $this->load->view('tryout/mytryout/index', $data);
         $this->load->view('templates/user_footer');
     }
 
@@ -528,65 +546,137 @@ class Tryout extends CI_Controller
         }
     }
 
-public function freemium()
+    public function freemium()
     {
-        $email = $this->loginUser['email'];
-        $slug = $this->input->post('slug');
-        $user_tryout = $this->user_tryout->get('one', ['email' => $email], $slug);
-        if ($user_tryout)
-            $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
-        else {
-            $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
-            $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
-            $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
-            $config['file_name'] = time();  // Nama file unik (timestamp)
-    
-            $this->load->library('upload', $config);
-    
-            // Load konfigurasi upload
-            $this->upload->initialize($config);
-    
-            if ($this->upload->do_upload('bukti')) {
-                // Jika upload berhasil, ambil informasi file yang di-upload
-                $uploadData = $this->upload->data();
-                
-                // Dapatkan path file yang di-upload
-                $imagePath = $uploadData['file_name'];
-            } else {
-                $error = $this->upload->display_errors();
-                $this->session->set_flashdata('error', $error);
-                redirect('tryout/detail/' . $slug);
-            }   
 
-            $data = [
-                'email' => $email,
-                'token' => 11111,
-                'status' => 100,
-                'freemium' => 1,
-                'bukti' => $imagePath
-            ];
-            
-            $kode_refferal = $this->input->post('kode_refferal');
-            $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $order_id = 'ORDER-' . uniqid();
+        $user = $this->loginUser;
+        $id = $this->input->post('id');
+        $kode_refferal = $this->input->post('kode_refferal');
+        $tryout = $this->tryout->get('one', ['id' => $id]);
 
-            if ($kode_refferal) {
-                $kode_refferal_valid = json_decode($tryout['kode_refferal'], true);
-                $is_valid = false;
+        // Ubah string JSON jadi array PHP
+        $kode_refferal_list = json_decode($tryout['kode_refferal'], true);
 
-                if (in_array($kode_refferal, $kode_refferal_valid)) {
-                    $is_valid = true;
-                }
-
-                if ($is_valid) {
-                    $data['refferal'] = $kode_refferal;
-                }
-            }
-
-
-            $this->user_tryout->insert($data, $slug);
-            $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
-            redirect('tryout/detail/' . $slug);
+        // Jika decode gagal (misal null), fallback ke array kosong
+        if (!is_array($kode_refferal_list)) {
+            $kode_refferal_list = [];
         }
+        
+        $gross_amount = in_array($kode_refferal, $kode_refferal_list)
+            ? (int)$tryout['harga_diskon']
+            : (int)$tryout['harga'];
+        
+        $transaction_details = array(
+            'order_id' => $order_id,
+            'gross_amount' => $gross_amount,
+        );
+
+        $item1_details = array(
+            'price' => $gross_amount,
+            'quantity' => 1,
+            'name' => $tryout['name']
+        );
+
+        $item_details = array($item1_details);
+
+        $customer_details = array(
+            'first_name'    => $user->name,
+            'email'         => $user->email,
+            'phone'         => $user->no_wa
+        );
+
+        $credit_card = array(
+            'secure' => true,
+            'save_card' => true
+        );
+
+        $custom_expiry = array(
+            'start_time' => date("Y-m-d H:i:s O", time()),
+            'unit' => 'day',
+            'duration'  => 1
+        );
+        $data = [
+            'user_id' => $user->id,
+            'order_id' => $order_id,
+            'gross_amount' => $gross_amount,
+            'transaction_time'   => date('Y-m-d H:i:s'),
+            'transaction_status' => 'pending'
+        ];
+        $transaction_id = $this->transaction->insert($data);
+
+        $this->user_tryout->insert([
+            'token' => 11111,
+            'status' => 0,
+            'freemium' => 1,
+            'user_id' => $user->id,
+            'transaction_id' => $transaction_id
+        ], $tryout['slug']);
+        $params = array(
+            'transaction_details' => $transaction_details,
+            'item_details'       => $item_details,
+            'customer_details'   => $customer_details,
+            'credit_card'        => $credit_card,
+            'expiry'             => $custom_expiry
+        );
+        $snapToken = $this->midtrans->getSnapToken($params);
+
+        echo $snapToken;
+        // $user_tryout = $this->user_tryout->get('one', ['email' => $email], $slug);
+        // if ($user_tryout)
+        //     $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
+        // else {
+        //     $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
+        //     $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
+        //     $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
+        //     $config['file_name'] = time();  // Nama file unik (timestamp)
+
+        //     $this->load->library('upload', $config);
+
+        //     // Load konfigurasi upload
+        //     $this->upload->initialize($config);
+
+        //     if ($this->upload->do_upload('bukti')) {
+        //         // Jika upload berhasil, ambil informasi file yang di-upload
+        //         $uploadData = $this->upload->data();
+
+        //         // Dapatkan path file yang di-upload
+        //         $imagePath = $uploadData['file_name'];
+        //     } else {
+        //         $error = $this->upload->display_errors();
+        //         $this->session->set_flashdata('error', $error);
+        //         redirect('tryout/detail/' . $slug);
+        //     }   
+
+        //     $data = [
+        //         'email' => $email,
+        //         'token' => 11111,
+        //         'status' => 100,
+        //         'freemium' => 1,
+        //         'bukti' => $imagePath
+        //     ];
+
+        //     $kode_refferal = $this->input->post('kode_refferal');
+        //     $tryout = $this->tryout->get('one', ['slug' => $slug]);
+
+        //     if ($kode_refferal) {
+        //         $kode_refferal_valid = json_decode($tryout['kode_refferal'], true);
+        //         $is_valid = false;
+
+        //         if (in_array($kode_refferal, $kode_refferal_valid)) {
+        //             $is_valid = true;
+        //         }
+
+        //         if ($is_valid) {
+        //             $data['refferal'] = $kode_refferal;
+        //         }
+        //     }
+
+
+        //     $this->user_tryout->insert($data, $slug);
+        //     $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+        //     redirect('tryout/detail/' . $slug);
+        // }
     }
     // public function pembayaranmanual()
     // {
@@ -613,24 +703,25 @@ public function freemium()
 
     //     // $this->user_tryout->insert($data, $slug);
     // }
-    
-    public function paketto() {
+
+    public function paketto()
+    {
         $parent_title = getSubmenuTitleById(21)['title'];
         submenu_access(21);
 
 
         $paket_to = $this->paket_to->getAll();
-    
+
 
         foreach ($paket_to as &$paket) {
-        //     // Buat nama tabel pendaftar berdasarkan nama paket
-        $this->db->where('paket_to_id',$paket['id']);
-        $query = $this->db->get('pendaftar_to');
-        if ($query->num_rows() > 0){
-            $paket['status'] = '2';
-        }else {
-            $paket['status'] = 'not_registered'; 
-        }
+            //     // Buat nama tabel pendaftar berdasarkan nama paket
+            $this->db->where('paket_to_id', $paket['id']);
+            $query = $this->db->get('pendaftar_to');
+            if ($query->num_rows() > 0) {
+                $paket['status'] = '2';
+            } else {
+                $paket['status'] = 'not_registered';
+            }
         }
         unset($paket);
         $data = [
@@ -650,7 +741,8 @@ public function freemium()
         $this->load->view('templates/user_footer');
     }
 
-    public function daftar_paket_to() {
+    public function daftar_paket_to()
+    {
         $nama_to = $this->input->post('nama');
 
         //slug
@@ -662,7 +754,7 @@ public function freemium()
             echo json_encode(['status' => 'failed', 'message' => 'Harap lengkapi nomor WhatsApp terlebih dahulu melalui menu Edit Profile.']);
             return;
         }
-        
+
         $data = [
             'email' => $this->loginUser['email'],
         ];
@@ -672,11 +764,12 @@ public function freemium()
         // Berikan response dalam bentuk JSON (untuk AJAX)
         echo json_encode(['status' => 'success']);
     }
-    
-    public function daftar_bukti_paket() {
+
+    public function daftar_bukti_paket()
+    {
         $email = $this->loginUser['email'];
         $slug = 'fast_mtk_stis';
-        
+
         $user_tryout = $this->paket_to->get('one', ['email' => $email], $slug);
         if ($user_tryout['status'] == 2)
             $this->session->set_flashdata('error', "Anda sudah terdaftar pada paket ini");
@@ -685,38 +778,38 @@ public function freemium()
             $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
             $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
             $config['file_name'] = time();  // Nama file unik (timestamp)
-    
+
             $this->load->library('upload', $config);
-    
+
             // Load konfigurasi upload
             $this->upload->initialize($config);
-    
+
             if ($this->upload->do_upload('bukti')) {
                 // Jika upload berhasil, ambil informasi file yang di-upload
                 $uploadData = $this->upload->data();
-                
+
                 // Dapatkan path file yang di-upload
                 $imagePath = $uploadData['file_name'];
             } else {
                 $error = $this->upload->display_errors();
                 $this->session->set_flashdata('error', $error);
                 redirect('tryout/paketto');
-            }   
+            }
 
             $data = [
                 'bukti' => $imagePath,
                 'status' => 1,
             ];
         }
-         
-        $this->paket_to->update($data,['email' => $email], $slug);   
+
+        $this->paket_to->update($data, ['email' => $email], $slug);
         $this->session->set_flashdata('success', "melakukan pembayaran pada paket TO ini");
-        redirect('tryout/paketto/');   
+        redirect('tryout/paketto/');
     }
 
     private function _checkaccesstotryout($status, $token_soal_pertama, $slug)
     {
-        $latsol = substr($slug,0,6);
+        $latsol = substr($slug, 0, 6);
         if ($latsol != 'latsol') {
             $jenis = 'tryout';
         } else {
@@ -736,7 +829,7 @@ public function freemium()
                         redirect('tryout/mytryout');
                     }
                 } else {
-                    if ($tryout['jenis']==4) {
+                    if ($tryout['jenis'] == 4) {
                         redirect('bimbel/bimbelmtk');
                     } else {
                         redirect('bimbel/kategori/' . $tryout['jenis']);
