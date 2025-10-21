@@ -1,231 +1,182 @@
-    <div class="pc-container">
-        <link rel="stylesheet" href="<?= base_url('assets/dist/css/blink.css'); ?>">
+    <div class="container-fluid">
+    <link rel="stylesheet" href="<?= base_url('assets/dist/css/blink.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/dist/css/bounce.css'); ?>">
 
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
-      <div class="pc-content">
-        <!-- [ breadcrumb ] start -->
-        <div class="page-header">
-          <div class="page-block">
-            <div class="row align-items-center">
-              <div class="col">
-                <div class="page-header-title">
-                  <h5 class="m-b-10"><?= $title?></h5>
-                </div>
-              </div>
-              <div class="col-auto">
-                <ul class="breadcrumb">
-                  <?= breadcumb($breadcrumb_item); ?>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- [ breadcrumb ] end -->
+    <!-- Page Heading -->
+    <!-- BREADCUMB -->
+    <nav aria-label="breadcrumb" class="first">
+        <?= breadcumb($breadcrumb_item); ?>
+    </nav>
 
-
-        <form id="payment-form" method="post" action="<?= base_url('midtrans/snap/finish?slug=' . $tryout['slug']); ?>">
+    <form id="payment-form" method="post" action="<?= base_url('midtrans/snap/finish?slug=' . $tryout['slug']); ?>">
         <input type="hidden" name="result_type" id="result-type" value="">
         <input type="hidden" name="result_data" id="result-data" value="">
         <input type="hidden" name="email" id="email" value="<?= $user->email; ?>">
-        </form>
+    </form>
+    <div class="row">
+        <div class="col-lg">
+            <div class="card bg-dark text-white">
+                <img class="card-img" style="opacity: 80%;" src="<?= base_url('assets/img/Kalkulus.png'); ?>"
+                    alt="Card image">
+                <div class="card-img-overlay">
+                    <div class="row justify-content-center">
+                        <?php if ($soal_starting_three != null) : ?>
+                        <div class="col-lg-8 mb-3">
+                            <div class="bg-dark">
+                                <div class="card-header text-center">
+                                    <h3 class="card-title font-weight-bold" style="color: black;">Preview Soal</h3>
+                                </div>
+                                <div class="card-body">
+                                    <?php $i = 0;
+                                        foreach ($soal_starting_three as $sst) : ?>
 
-        <!-- [ Main Content ] start -->
-        <div class="row">
-          <!-- [ sample-page ] start -->
-          <div class="col-sm-12 row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card mt-3 rounded-4">
-                <div class="card-header">
-                    <h5>Preview soal</h5>
-                </div>
-                <div class="card-body">
-                    <?php if ($soal_starting_three != null) : ?>
-                        <?php $i = 0;
-                                    foreach ($soal_starting_three as $sst) : ?>
+                                    <?php if (substr($sst['text_soal'], 0, 3) == '<p>') : ?>
+                                    <?php if ($i == 2) : ?>
+                                    <?= '<p>' . $sst['id'] . '. ' . substr($sst['text_soal'], 3); ?>
+                                    <a href="#" class="badge badge-primary more"> more</a>
+                                    <?php else : ?>
+                                    <?= '<p>' . $sst['id'] . '. ' . substr($sst['text_soal'], 3); ?>
 
-                                        <?php if (substr($sst['text_soal'], 0, 3) == '<p>') : ?>
-                                        <?php if ($i == 2) : ?>
-                                        <?= '<p>' . $sst['id'] . '. ' . substr($sst['text_soal'], 3); ?>
-                                        <a href="#" class="badge text-bg-primary more"> more</a>
-                                        <?php else : ?>
-                                        <?= '<p>' . $sst['id'] . '. ' . substr($sst['text_soal'], 3); ?>
+                                    <?php endif; ?>
+                                    <?php else : ?>
+                                    <?php if ($i == 2) : ?>
+                                    <p class="card-text">
+                                        <?= $sst['id'] . '. ' . $sst['text_soal'] . '...'; ?> <a href="#"
+                                            class="badge badge-primary more"> more</a>
+                                    </p>
+                                    <?php else : ?>
+                                    <p class="card-text">
+                                        <?= $sst['id'] . '. ' . $sst['text_soal'] . '...'; ?>
+                                    </p>
 
-                                        <?php endif; ?>
-                                        <?php else : ?>
-                                        <?php if ($i == 2) : ?>
-                                        <p class="card-text">
-                                            <?= $sst['id'] . '. ' . $sst['text_soal'] . '...'; ?> <a href="#"
-                                                class="badge text-bg-primary more"> more</a>
-                                        </p>
-                                        <?php else : ?>
-                                        <p class="card-text">
-                                            <?= $sst['id'] . '. ' . $sst['text_soal'] . '...'; ?>
-                                        </p>
-
-                                        <?php endif; ?>
-                                        <?php endif; ?>
-                                        <?php $i++;
-                                    endforeach; ?>
-                    <?php endif; ?>
-                </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-            <div class="card shadow-lg border-0 mt-3 rounded-4 overflow-hidden">
-                <!-- Header -->
-                <div class="card-header bg-gradient text-white text-center py-4" 
-                    style="background: linear-gradient(135deg, #007bff, #6610f2);">
-                <h4 class="mb-0 fw-bold"><?= $tryout['name']; ?></h4>
-                </div>
-
-                <!-- Body -->
-                <div class="card-body p-4">
-                <?php if ($terdaftar) : ?>
-                    <div class="alert alert-success text-center fw-bold">
-                    Anda sudah terdaftar.<br>Tryout bisa diakses di <em>My Tryout</em>.<br>
-                    Jangan lupa bergabung ke grup belajarnya! 📚
-                    </div>
-                <?php else : ?>
-                    <div class="d-grid gap-2 mb-3">
-                    <?php if ($tryout['kode_refferal']) : ?>
-                        <button type="button" class="btn btn-primary rounded-pill" 
-                                data-bs-toggle="modal" data-bs-target="#refferalModal">
-                        <i class="bi bi-star-fill me-1"></i> Daftar Premium
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <i class="bi bi-person-plus me-1"></i> Daftar Gratis
-                        </button>
-
-                    <?php else : ?>
-                        <?php if ($tryout['paid'] == 0) : ?>
-                        <?php if ($tryout['freemium'] == 1) : ?>
-                            <button type="button" class="btn btn-primary rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Daftar Gratis
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                            Daftar Pemium
-                            </button>
-                        <?php else : ?>
-                            <button type="button" class="btn btn-primary rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Daftar Gratis
-                            </button>
-                        <?php endif; ?>
-                        <?php else : ?>
-                        <button type="button" class="btn btn-primary rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                            Daftar
-                        </button>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                    </div>
-                <?php endif; ?>
-
-                <hr>
-
-                <!-- Informasi Harga -->
-                <div class="text-center mb-3">
-                    <?php if ($tryout['paid'] == 1) : ?>
-                    <h6 class="text-muted mb-1">Mulai dari</h6>
-                    <h2 class="fw-bold text-primary mb-2">
-                        <?= 'Rp ' . number_format($tryout['harga'], 0, null, '.') . ',-'; ?>
-                    </h2>
-                    <?php else : ?>
-                    <?php if ($tryout['freemium'] == 0) : ?>
-                        <h2 class="fw-bold text-success mb-2">GRATIS 🎉</h2>
-                    <?php else : ?>
-                        <div class="alert alert-warning small text-center" role="alert">
-                        Silakan <strong>Daftar Premium</strong> untuk mendapatkan
-                        <em>answer analysis</em> & pembahasan lengkap!
+                                    <?php endif; ?>
+                                    <?php endif; ?>
+                                    <?php $i++;
+                                        endforeach; ?>
+                                </div>
+                            </div>
                         </div>
-                    <?php endif; ?>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Keterangan -->
-                <p class="text-muted text-center mb-3"><?= $tryout['keterangan']; ?></p>
-
-                <!-- Durasi -->
-                <div class="text-center">
-                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill shadow-sm">
-                    ⏱ Pengerjaan <?= $tryout['lama_pengerjaan']; ?> menit
-                    </span>
-                </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="card-footer text-center bg-light">
-                <small class="text-muted">✨ Siap menguji kemampuanmu hari ini!</small>
+                        <?php endif; ?>
+                        <div class="col-lg-4">
+                            <div class="card bg-dark text-center">
+                                <div class="card-header">
+                                    <?php if ($terdaftar) : ?>
+                                        <p class="text-dark font-weight-bold">Anda sudah terdaftar, tryout bisa diakses melalui menu My Tryout. Jangan lupa bergabung ke grup belajarnya!</p>
+                                    <?php else : ?>
+                                        <?php if ($tryout['kode_refferal']) : ?>
+                                            <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#refferalModal">
+                                                Daftar Premium
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-block" data-toggle="modal" data-target="#exampleModal">
+                                                        Daftar Gratis
+                                                    </button>
+                                        <?php else :?>
+                                            <?php if ($tryout['paid'] == 0) : ?>
+                                                <?php if ($tryout['freemium'] == 1) : ?>
+                                                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#exampleModal">
+                                                        Daftar Gratis
+                                                    </button>
+                                                    <button type="button" class="btn btn-secondary btn-block" data-toggle="modal" data-target="#freemiumModal">
+                                                        Daftar Freemium
+                                                    </button>
+                                                <?php else : ?>
+                                                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#exampleModal">
+                                                        Daftar Gratis
+                                                    </button>
+                                                <?php endif; ?>
+                                            <?php else : ?>
+                                                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#freemiumModal">
+                                                        Daftar
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="card-body">
+                                    <?php if ($tryout['paid'] == 1) : ?>
+                                    <h5 class="card-title">Mulai dari</h5>
+                                    <h3 class="card-title font-weight-bold">
+                                        <?= 'Rp ' . number_format($tryout['harga'], 0, null, '.') . ',-'; ?></h3>
+                                    <p class="card-text"><?= $tryout['keterangan']; ?></p>
+                                    <?php else : ?>
+                                        <?php if ($tryout['freemium'] == 0) : ?>
+                                            <h3 class="card-title font-weight-bold">GRATIS</h3>
+                                            <p class="card-text"><?= $tryout['keterangan']; ?></p>
+                                        <?php else : ?>
+                                            <p class="alert alert-secondary" role="alert">Silakan <span class="font-weight-bold">Daftar Premium</span> untuk mendapatkan akses answer analysis dan pembahasan!</p>
+                                            <p class="card-text"><?= $tryout['keterangan']; ?></p>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    <h5 class="font-weight-bold">Pengerjaan <?= $tryout['lama_pengerjaan']; ?> menit
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            </div>
-
-          </div>
-          <!-- [ sample-page ] end -->
         </div>
-        <!-- [ Main Content ] end -->
-      </div>
+    </div>
 
-      <!-- Modal -->
+    <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Unggah Bukti Persyaratan TO</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <span>Follow instagram/Tiktok gasskedinasan</span>
                 <div class="custom-file mt-1 mb-3">
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
+                    <input type="file" class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
                 
                 <span>Like postingan Feed di Instagram/Tiktok</span>
                 <div class="custom-file mt-1 mb-3">
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
+                    <input type="file" class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
                 
                 <span>Komen kalimat apapun dan tag 5 teman kamu
 </span>
                 <div class="custom-file mt-1 mb-3">
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
+                    <input type="file" class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
 
                 <span>Share ke 5 grup kamu</span>
                 <div class="custom-file mt-1">
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
+                    <input type="file" multiple class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
                 <div class="custom-file mt-1">
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
+                    <input type="file" class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
                 <div class="custom-file mt-1">
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
+                    <input type="file" class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
                 <div class="custom-file mt-1">
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
+                    <input type="file" class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
                 <div class="custom-file mt-1">
-                    <input type="file" class="custom-file-input form-control" id="customFile" required>
-                    <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
+                    <input type="file" class="custom-file-input" id="customFile" required>
+                    <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label>
                 </div>
             </div>
             <div class="modal-footer">
                 <a href="#"
                     id="free-pay"
-                    class="btn btn-primary daftar-tryout daftarTryoutBtn disabled"
+                    class="btn btn-primary   daftar-tryout daftarTryoutBtn disabled"
                     data-harga="<?= $tryout['harga']; ?>" data-tryout="<?= $tryout['name']; ?>"
                     data-slug="<?= $tryout['slug']; ?>" data-name="<?= $user->name; ?>"
                     data-email="<?= $user->email; ?>" data-phone="<?= $user->no_wa; ?>"
@@ -242,7 +193,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title font-weight-bold" id="exampleModalLabel">Pendaftaran Tryout Premium</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -280,8 +233,8 @@
                     <form action="<?= base_url('tryout/freemium'); ?>" method="post"  enctype="multipart/form-data"                                                                                                                                                                      >
                         <input type="text" hidden name="slug" value="<?= $tryout['slug']; ?>">
                         <div class="custom-file mt-1 mb-3">
+                            <input type="file" class="custom-file-input" id="customFile" name="bukti" required>
                             <label class="custom-file-label" for="customFile">Upload bukti pembayaran</label>
-                            <input type="file" class="custom-file-input form-control" id="customFile" name="bukti" required>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -298,7 +251,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Masukkan Kode Refferal</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <p>Isikan "-" jika tidak ada</p>
@@ -317,7 +270,7 @@
                 <form action="<?= base_url('tryout/freemium'); ?>" method="post" enctype="multipart/form-data">
                     <div class="modal-header">
                         <h5 class="modal-title font-weight-bold">Pendaftaran Tryout</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="slug" value="<?= $tryout['slug']; ?>">
@@ -346,8 +299,8 @@
                             <!--    </li>-->
                             <!--</ul>-->
                         <div class="custom-file mt-1 mb-3">
+                            <input type="file" class="custom-file-input" id="customFile" name="bukti" required>
                             <label class="custom-file-label" for="customFile">Upload bukti</label>
-                            <input type="file" class="custom-file-input form-control" id="customFile" name="bukti" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -411,6 +364,9 @@
         });
     </script>
 
-    </div>
+</div>
+<!-- /.container-fluid -->
 
-    <?php destroysession(); ?>
+</div>
+
+<?php destroysession(); ?>

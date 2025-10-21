@@ -45,6 +45,7 @@ $(document).ready(function () {
     var tryout = $(this).data("tryout");
     var slug = $(this).data("slug");
     var email = $(this).data("email");
+    $("#exampleModal").modal("hide");
     Swal.fire({
       title: "Apakah Anda Yakin",
       html: '<b>untuk melakukan pendaftaran <span style="color: red;">' + tryout + "</span> ?</b>",

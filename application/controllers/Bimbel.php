@@ -110,7 +110,7 @@ class Bimbel extends CI_Controller
         $mytryout = [];
 
         foreach ($all_tryout as $to) {
-            $user_tryout = $this->user_tryout->get('one', ['email' => $user['email']], $to['slug']);
+            $user_tryout = $this->user_tryout->get('one', ['email' => $user->email], $to['slug']);
             if ($user_tryout) {
                 array_push($tryout, $to);
                 array_push($mytryout, $user_tryout);
