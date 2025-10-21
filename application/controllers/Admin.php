@@ -871,9 +871,13 @@ class Admin extends CI_Controller
                     //KUNCI JAWABAN
                     $kunci_jawaban = $this->input->post('kunci_jawaban', true);
         
+                    // var_dump($this->upload->do_upload('gambar_pembahasan'));
+                    // var_dump($this->upload->do_upload('gambar_a'));
+                    // var_dump($this->upload->do_upload('gambar_b'));die;
+
                     //PEMBAHASAN GAMBAR
                     if ($this->input->post('cek_pembahasan', true)) {
-                        if ($this->upload->do_upload('gambar_pembahasan'))
+                        if ($this->upload->do_upload('gambar_pembahasan')) 
                             $gambar_pembahasan = $this->upload->data('file_name');
                         else {
                             $this->_tinymcerepop($tinymce_content);

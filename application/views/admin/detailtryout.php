@@ -1,5 +1,8 @@
     <div class="pc-container">
-      <div class="pc-content">
+    <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
+    <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
+      
+    <div class="pc-content">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
           <div class="page-block">

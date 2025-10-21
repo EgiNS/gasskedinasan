@@ -255,7 +255,7 @@ class Tryout extends CI_Controller
 
         $soal_pertama = $this->soal->get('one', ['id' => 1], $slug);
 
-        $user_tryout = $this->user_tryout->get('one', ['email' => $data['user']['email']], $slug);
+        $user_tryout = $this->user_tryout->get('one', ['email' => $data['user']->email], $slug);
 
         $this->_checkaccesstotryout($user_tryout['status'], $soal_pertama['token'], $slug);
 

@@ -1,29 +1,16 @@
-    <div class="pc-container">
-
+<!-- Begin Page Content -->
+<div class="container-fluid">
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
-      <div class="pc-content">
-        <!-- [ breadcrumb ] start -->
-        <div class="page-header">
-          <div class="page-block">
-            <div class="row align-items-center">
-              <div class="col">
-                <div class="page-header-title">
-                  <h5 class="m-b-10"><?= $title ?></h5>
-                </div>
-              </div>
-              <div class="col-auto">
-                <ul class="breadcrumb">
-                  <?= breadcumb($breadcrumb_item); ?>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- [ breadcrumb ] end -->
+    <!-- Page Heading -->
+    <nav aria-label="breadcrumb" class="first">
+        <?= breadcumb($breadcrumb_item); ?>
+    </nav>
 
-            <div class="mt-3">
+    <div class="row">
+        <div class="col-lg">
+            <div>
                 <h6>Start Time :
                     <button type="button" class="btn btn-primary"
                         disabled><?= date('d F Y - H:i:s', $jawaban['waktu_mulai']); ?>
@@ -51,18 +38,12 @@
             <?php if ($terdeteksi == true) : ?>
             <div class="alert alert-danger alert-dismissible fade show col-sm-12 mt-2" role="alert">
                 <?= 'Waktu pengerjaan tryout melebihi <b>' . ($jawaban['waktu_selesai'] - $jawaban['waktu_mulai'] - 60 * $tryout['lama_pengerjaan']) . ' detik</b> dari waktu yang ditentukan.'; ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
             </div>
             <?php endif; ?>
-            
-
-        <!-- [ Main Content ] start -->
-        <div class="row">
-          <!-- [ sample-page ] start -->
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <table class="table table-striped table-responsive nowrap projects">
+            <br>
+            <table class="table table-striped table-responsive nowrap projects">
                 <thead>
                     <tr>
                         <th class="text-center">id</th>
@@ -98,13 +79,11 @@
                 </tbody>
             </table>
             <?= $this->pagination->create_links(); ?>
-              </div>
-            </div>
-          </div>
-          <!-- [ sample-page ] end -->
         </div>
-        <!-- [ Main Content ] end -->
-      </div>
     </div>
+</div>
+<!-- /.container-fluid -->
 
-    <?php destroysession(); ?>
+</div>
+<!-- End of Main Content -->
+<?php destroysession(); ?>
