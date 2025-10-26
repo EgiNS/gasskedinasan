@@ -81,9 +81,16 @@
                                                 <?php if ($sudah_bayar) : ?>
                                                     <p class="text-white font-weight-bold">Anda sudah terdaftar, tryout bisa diakses melalui menu My Tryout. Jangan lupa bergabung ke grup belajarnya!</p>
                                                 <?php else : ?>
-                                                    <p class="text-white font-weight-bold">Anda sudah terdaftar, namun belum melakukan pembayaran. Silahkan melanjutkan pembayaran untuk dapat mengerjakan tryout.</p>
+                                                    <?php if ($freemium) : ?>
+                                                        <p class="text-white font-weight-bold">Anda sudah terdaftar sebagai peserta freemium, namun belum melakukan pembayaran. Silahkan melanjutkan pembayaran untuk dapat mengerjakan tryout.</p>
                                                         <button class="btn btn-primary" data-id="<?= $user_tryout['id'] ?>" id="continue-payment">Lanjutkan Pembayaran</button>
-                                                
+
+                                                    <?php else : ?>
+                                                        <p class="text-white font-weight-bold">Anda sudah terdaftar sebagai peserta. tryout bisa diakses melalui menu My Tryout. Jangan lupa bergabung ke grup belajarnya!</p>
+                                                        <p class="text-white font-weight-bold">Untuk mendapatkan analisis hasil tryout, silahkan melakukan pembayaran.</p>
+                                                        <button class="btn btn-primary" data-id="<?= $tryout['id'] ?>" id="upgrade-freemium">Lanjutkan Pembayaran</button>    
+                                                    <?php endif; ?>
+
 
                                                 <?php endif; ?>
                                             <?php else : ?>
@@ -160,31 +167,39 @@
 
             <script>
                 $(document).ready(function() {
-                    $('#customFile').on('change', function() {
-                        // Cek apakah ada file yang diupload
-                        if ($(this).val()) {
-                            // Hapus kelas 'disabled' untuk mengaktifkan tombol
+
+                    $(document).on('change', '.upload-bukti', function() {
+                        console.log('File diubah:', $(this).attr('name') || 'tanpa name');
+
+                        let semuaTerisi = true;
+                        $('.upload-bukti').each(function() {
+                            if (!$(this).val()) {
+                                semuaTerisi = false;
+                            }
+                        });
+
+                        console.log('Semua terisi:', semuaTerisi);
+
+                        if (semuaTerisi) {
                             $('.daftarTryoutBtn').removeClass('disabled');
                         } else {
-                            // Tambahkan kelas 'disabled' jika file belum diunggah
                             $('.daftarTryoutBtn').addClass('disabled');
                         }
                     });
 
-                    const kodeValid = <?= json_encode(json_decode($tryout['kode_refferal'] ?? '[]')); ?>;
-                    const hargaAsli = <?= (int)$tryout['harga']; ?>;
-                    const hargaDiskon = <?= (int)$tryout['harga_diskon']; ?>;
+
+
 
 
                     // Optional: preview nama file saat upload
-                    $('#customFile').on('change', function() {
-                        const fileName = $(this).val().split('\\').pop();
-                        $(this).next('.custom-file-label').html(fileName);
-                    });
+                    // $('#customFile').on('change', function() {
+                    //     const fileName = $(this).val().split('\\').pop();
+                    //     $(this).next('.custom-file-label').html(fileName);
+                    // });
 
 
                     $(document).on('click', '#cekRefferalBtn', function() {
-                        console.log('cek refferal');
+
                         const kode = $('#kodeRefferalInput').val().trim();
                         let valid = kodeValid.includes(kode);
 
@@ -203,19 +218,24 @@
                         $('#pembayaranModal').modal('show');
                     });
                 });
-                
+
                 $(document).on('click', '#daftarBtn', function(e) {
                     e.preventDefault();
                     const id = $(this).data('id');
-                                            const kode = $('#kodeRefferalInput').val().trim();
+                    const kode = $('#kodeRefferalInput').val().trim();
                     console.log('Daftar button clicked for ID:', id);
                     $.ajax({
-                        url : '<?= base_url("tryout/freemium") ?>',
+                        url: '<?= base_url("tryout/freemium") ?>',
                         type: 'POST',
-                        data: { id: id, kode_refferal: kode },
-                        headers: { "Accept": "application/json" },
+                        data: {
+                            id: id,
+                            kode_refferal: kode
+                        },
+                        headers: {
+                            "Accept": "application/json"
+                        },
                         success: function(data) {
-                             $('#pembayaranModal').modal('hide');
+                            $('#pembayaranModal').modal('hide');
                             console.log(data);
                             snap.pay(data)
                         },
@@ -227,19 +247,49 @@
                 $(document).on('click', '#continue-payment', function(e) {
                     e.preventDefault();
 
-                    const id = <?= $user_tryout['id']; ?>;
+                    const id = $(this).data('id');
+                    const slug = '<?= $tryout['slug']; ?>';
                     console.log('Continue payment for ID:', id);
                     $.ajax({
-                        url : '<?= base_url("tryout/continuepayment/") ?>' + id,
+                        url: '<?= base_url("tryout/continuepayment/") ?>' + id,
                         type: 'POST',
-                        data: { slug: '<?= $tryout['slug']; ?>' },
-                        headers: { "Accept": "application/json" },
+                        data: {
+                            slug: slug
+                        },
+                        headers: {
+                            "Accept": "application/json"
+                        },
                         success: function(data) {
                             console.log(data);
                             snap.pay(data)
                         },
                         error: function(jqXHR) {
                             console.error('Continue payment error:', jqXHR.responseText);
+                        }
+                    })
+                });
+
+                $(document).on('click', '#upgrade-freemium', function(e) {
+                    e.preventDefault();
+                    const id = $(this).data('id');
+                    console.log('Upgrade freemium button clicked', id);
+                    console.log('Upgrade freemium for ID:', id);
+                    $.ajax({
+                        url: '<?= base_url("tryout/upgradefreemium/") ?>',
+                        type: 'POST',
+                        headers: {
+                            "Accept": "application/json"
+                        },
+                        data: {
+                            'id': id
+
+                        },
+                        success: function(data) {
+                            console.log(data);
+                            snap.pay(data)
+                        },
+                        error: function(jqXHR) {
+                            console.error('Upgrade freemium error:', jqXHR.responseText);
                         }
                     })
                 });

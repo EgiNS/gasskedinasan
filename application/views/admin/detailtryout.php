@@ -213,37 +213,27 @@
                             <th class="text-center"><?= $au['email']; ?></th>
                             <th class="text-center"><?= $au['no_wa']; ?></th>
                             <th class="text-center"><?= $au['id']; ?></th>
-                            <?php if (isset($au['bukti'])) : ?>
+                            <?php if (isset($au['transaction_id'])) : ?>
                                 <td class="text-center">
-                                    <button class="btn btn-primary btn-sm lihat-gambar" 
-                                        data-src="<?= base_url('assets/img/' . $au['bukti']); ?>" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#imageModal">
-                                        Lihat
-                                    </button>
-                                </td>
-                                <td class="text-center">
-                                    <input type="checkbox" 
-                                        class="toggle-freemium" 
-                                        data-email="<?= $au['email']; ?>" 
-                                        data-toname="<?= $tryout['slug']; ?>"
-                                        <?= $au['freemium'] == 1 ? 'checked' : ''; ?>>
+                                    <input type="checkbox" checked disabled>
                                 </td>
                             <?php else: ?>
-                                <th class="text-center">-</th>
-                                <td class="text-center">
-                                    <?php if (isset($au['freemium'])) : ?>
-                                        <input type="checkbox" 
+                                <th class="text-center">
+                                    <input type="checkbox" disabled>
+                                </th>
+                            <?php endif; ?>
+                            <td class="text-center">
+                                    <?php if ($au['freemium'] == 1) : ?>
+                                        <!-- <input type="checkbox" 
                                             class="toggle-freemium" 
                                             data-email="<?= $au['email']; ?>" 
                                             data-toname="<?= $tryout['slug']; ?>"
-                                            <?= $au['freemium'] == 1 ? 'checked' : ''; ?>>
+                                            <?= $au['freemium'] == 1 ? 'checked' : ''; ?>> -->
+                                            <input type="checkbox" checked disabled>
                                     <?php else: ?>
-                                        -
+                                        <input type="checkbox" disabled>
                                     <?php endif; ?>
                                 </td>
-                            <?php endif; ?>
-                            
                             <?php if ($tryout['kode_refferal']) : ?>
                                 <th class="text-center"><?= $au['refferal']; ?></th>
                             <?php endif ?>
