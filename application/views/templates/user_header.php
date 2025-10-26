@@ -33,7 +33,8 @@
 <link rel="stylesheet" href="<?= base_url('assets/fonts/feather.css'); ?>" />
 
 <!-- [Font Awesome Icons] -->
-<link rel="stylesheet" href="<?= base_url('assets/fonts/fontawesome.css'); ?>" />
+  <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome-free/css/all.css'); ?>" />
+
 
 <!-- [Material Icons] -->
 <link rel="stylesheet" href="<?= base_url('assets/fonts/material.css'); ?>" />

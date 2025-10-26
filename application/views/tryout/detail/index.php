@@ -78,7 +78,14 @@
                                     <div class="card bg-dark text-center">
                                         <div class="card-header">
                                             <?php if ($terdaftar) : ?>
-                                                <p class="text-dark font-weight-bold">Anda sudah terdaftar, tryout bisa diakses melalui menu My Tryout. Jangan lupa bergabung ke grup belajarnya!</p>
+                                                <?php if ($sudah_bayar) : ?>
+                                                    <p class="text-white font-weight-bold">Anda sudah terdaftar, tryout bisa diakses melalui menu My Tryout. Jangan lupa bergabung ke grup belajarnya!</p>
+                                                <?php else : ?>
+                                                    <p class="text-white font-weight-bold">Anda sudah terdaftar, namun belum melakukan pembayaran. Silahkan melanjutkan pembayaran untuk dapat mengerjakan tryout.</p>
+                                                        <button class="btn btn-primary" data-id="<?= $user_tryout['id'] ?>" id="continue-payment">Lanjutkan Pembayaran</button>
+                                                
+
+                                                <?php endif; ?>
                                             <?php else : ?>
                                                 <?php if ($tryout['kode_refferal']) : ?>
                                                     <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal" data-bs-target="#refferalModal">
@@ -214,6 +221,25 @@
                         },
                         error: function(jqXHR) {
                             console.error('Pay error:', jqXHR.responseText);
+                        }
+                    })
+                });
+                $(document).on('click', '#continue-payment', function(e) {
+                    e.preventDefault();
+
+                    const id = <?= $user_tryout['id']; ?>;
+                    console.log('Continue payment for ID:', id);
+                    $.ajax({
+                        url : '<?= base_url("tryout/continuepayment/") ?>' + id,
+                        type: 'POST',
+                        data: { slug: '<?= $tryout['slug']; ?>' },
+                        headers: { "Accept": "application/json" },
+                        success: function(data) {
+                            console.log(data);
+                            snap.pay(data)
+                        },
+                        error: function(jqXHR) {
+                            console.error('Continue payment error:', jqXHR.responseText);
                         }
                     })
                 });

@@ -1,6 +1,14 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/** 
+* @property  CI_Loader $load
+* @property  CI_Form_validation $form_validation
+* @property  CI_Input $input
+* @property  User_model $user
+* @property  CI_Upload $upload
+* @property  CI_Session $session    
+*/
 class User extends CI_Controller
 {
     protected $loginUser, $sidebarMenu;
@@ -149,7 +157,7 @@ class User extends CI_Controller
             $new_password = $this->input->post('new_password1', true);
 
             //cek apakah current password sama dengan yang di database
-            if (!password_verify($current_password, $data['user']['password'])) {
+            if (!password_verify($current_password, $data['user']->password)) {
                 $this->session->set_flashdata('error', 'Wrong current password!');
                 redirect('user/changepassword');
             } else {
@@ -162,9 +170,9 @@ class User extends CI_Controller
                     //password sudah ok
                     $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
 
-                    $email = $data['user']['email'];
+                    $id = $data['user']->id;
 
-                    $this->user->update(['password' => $password_hash], ['email' => $email]);
+                    $this->user->update(['password' => $password_hash], ['id' => $id]);
 
                     $this->session->set_flashdata('success', 'Mengubah Password!');
                     redirect('user/changepassword');

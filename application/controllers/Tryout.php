@@ -95,11 +95,12 @@ class Tryout extends CI_Controller
         $this->load->model('Jawaban_model', 'jawaban');
 
         $user = $this->loginUser;
-        // $terdaftar = $this->user_tryout->get('one', ['email' => $user->email], $slug) == null ? false : true;
+    
 
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
-
+        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $slug);
+        $sudah_bayar = $this->transaction->selectById($user_tryout['transaction_id']);    
         $data = [
             'title' => 'Detail ' . $title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -107,16 +108,13 @@ class Tryout extends CI_Controller
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
             'tryout' => $tryout,
+            'user_tryout' => $user_tryout,
             'slug' => $slug,
-            'user_tryout' => $this->user_tryout->get('one', ['id' => $user->id], $slug),
             'soal_nomor_satu' => $this->soal->get('one', ['id' => 1], $slug),
-            // 'payment_fail' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 201, 'tryout' => $slug]),
-            // 'payment_success' => $this->midtrans_payment->get('one', ['email' => $user['email'], 'status_code' => 200, 'tryout' => $slug]),
             'soal_starting_three' => $soal_starting_three,
-            'terdaftar' => false
+            'terdaftar' => $user_tryout ? true : false,
+            'sudah_bayar' => $sudah_bayar->transaction_status == 'settlement' ? true : false
         ];
-
-        print_r($data['user_tryout']);
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
@@ -129,6 +127,18 @@ class Tryout extends CI_Controller
         if ($jawaban_user)
             if ($jawaban_user['waktu_mulai'] != null && $jawaban_user['waktu_selesai'] == null)
                 redirect('exam/question/' . $data['soal_nomor_satu']['token'] . '?tryout=' . $slug);
+    }
+
+    public function continuepayment($id)
+    {
+        $slug = $this->input->post('slug');
+        $user_tryout = $this->user_tryout->get('one', ['id' => $id], $slug);
+        $transaction = $this->transaction->selectById($user_tryout['transaction_id']);
+        if (!$transaction || $transaction->transaction_status == 'settlement') {
+            redirect('tryout/detail/' . $slug);
+        }
+        $snap_token = $transaction->snap_token;
+        echo $snap_token;
     }
 
     public function nilai($slug)
@@ -620,63 +630,11 @@ class Tryout extends CI_Controller
             'expiry'             => $custom_expiry
         );
         $snapToken = $this->midtrans->getSnapToken($params);
-
+        $this->transaction->updateByOrderId(
+            $order_id,
+            ['snap_token' => $snapToken,'expiry_time' => date("Y-m-d H:i:s", time() + (24 * 60 * 60))]
+        );
         echo $snapToken;
-        // $user_tryout = $this->user_tryout->get('one', ['email' => $email], $slug);
-        // if ($user_tryout)
-        //     $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
-        // else {
-        //     $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
-        //     $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
-        //     $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
-        //     $config['file_name'] = time();  // Nama file unik (timestamp)
-
-        //     $this->load->library('upload', $config);
-
-        //     // Load konfigurasi upload
-        //     $this->upload->initialize($config);
-
-        //     if ($this->upload->do_upload('bukti')) {
-        //         // Jika upload berhasil, ambil informasi file yang di-upload
-        //         $uploadData = $this->upload->data();
-
-        //         // Dapatkan path file yang di-upload
-        //         $imagePath = $uploadData['file_name'];
-        //     } else {
-        //         $error = $this->upload->display_errors();
-        //         $this->session->set_flashdata('error', $error);
-        //         redirect('tryout/detail/' . $slug);
-        //     }   
-
-        //     $data = [
-        //         'email' => $email,
-        //         'token' => 11111,
-        //         'status' => 100,
-        //         'freemium' => 1,
-        //         'bukti' => $imagePath
-        //     ];
-
-        //     $kode_refferal = $this->input->post('kode_refferal');
-        //     $tryout = $this->tryout->get('one', ['slug' => $slug]);
-
-        //     if ($kode_refferal) {
-        //         $kode_refferal_valid = json_decode($tryout['kode_refferal'], true);
-        //         $is_valid = false;
-
-        //         if (in_array($kode_refferal, $kode_refferal_valid)) {
-        //             $is_valid = true;
-        //         }
-
-        //         if ($is_valid) {
-        //             $data['refferal'] = $kode_refferal;
-        //         }
-        //     }
-
-
-        //     $this->user_tryout->insert($data, $slug);
-        //     $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
-        //     redirect('tryout/detail/' . $slug);
-        // }
     }
     // public function pembayaranmanual()
     // {

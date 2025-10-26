@@ -10,6 +10,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @property Bobot_nilai_model $bobot_nilai
  * @property CI_Loader $load
  * @property Pendaftar_to_model $pendaftar_to
+ * @property Access_menu_model $access_menu
+ * @property Access_sub_menu_model $access_sub_menu
+ * @property User_tryout_model $user_tryout
+ * @property CI_Form_validation $form_validation
+ * @property Tryout_model $tryout
+ * @property CI_Input $input
+ * @property Latsol_model $latsol
+ * @property CI_Session $session
+ * @property Menu_model $menu
+ * @property CI_DB_query_builder $db
+ * @property CI_Upload $upload
+ * @property Paket_to_model $paket_to
+ * @property Kode_settings_model $kode_settings
+ * @property Midtrans_payment_model $midtrans_payment
+ * 
  */
 class Admin extends CI_Controller
 {

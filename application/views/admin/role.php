@@ -96,8 +96,8 @@
               <td><?= $au['updated_at']; ?></td>
               <td class="text-center">
                 <a href="<?= base_url('admin/viewupdaterole/'.$au['id']); ?>"
-                   class="badge bg-primary">Update role</a>
-                <button type="button" class="badge bg-danger btn-delete-user"
+                   class="btn btn-sm bg-primary mb-2 text-white">Update role</a>
+                <button type="button" class="btn btn-sm bg-danger btn-delete-user text-white"
                         data-id="<?= $au['id']; ?>">
                   Hapus user
                 </button>
@@ -118,7 +118,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Hapus User</h5>
-        <button type="button" class="close" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-close" data-bs-dismiss="modal">
           <span>&times;</span>
         </button>
       </div>
@@ -137,7 +137,7 @@
     <form action="<?= base_url('admin/role'); ?>" method="post" class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Add New Role</h5>
-        <button type="button" class="close" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-close" data-bs-dismiss="modal">
           <span>&times;</span>
         </button>
       </div>

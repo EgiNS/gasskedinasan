@@ -31,10 +31,10 @@
                 </i> Edit Tryout</button>
         </div>
 
-        <!-- CHANGE STATUS -->
+        <!-- CHANGE STATUS RELEASE -->
         <div class="btn-group">
             <button class="btn rounded btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Change Status
+                <?= ($tryout['status'] != 1) ? 'Pull Tryout' : 'Release Tryout'; ?>
             </button>
             <div class="dropdown-menu">
                 <?php if ($tryout['status'] != 1) : ?>
@@ -42,6 +42,14 @@
                 <?php elseif ($tryout['status'] == 1) : ?>
                 <a class="dropdown-item" href="<?= base_url('admin/releasetryout/') . $slug; ?>">Pull Tryout</a>
                 <?php endif; ?>
+
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn rounded btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <?= ($tryout['hidden']==0 ? 'Show Tryout' : 'Hide Tryout') ?>
+            </button>
+            <div class="dropdown-menu">
                 <?php if ($tryout['hidden'] == 0) : ?>
                 <a class="dropdown-item" href="<?= base_url('admin/hidetryout/') . $slug; ?>">Hide Tryout</a>
                 <?php else : ?>
@@ -178,7 +186,7 @@
                             <th class="text-center" style="vertical-align: middle;">Email</th>
                             <th class="text-center" style="vertical-align: middle;">No.WA</th>
                             <th class="text-center" style="vertical-align: middle;">Urutan Daftar</th>
-                            <th class="text-center" style="vertical-align: middle;">Bukti</th>
+                            <th class="text-center" style="vertical-align: middle;">Sudah Bayar</th>
                             <th class="text-center" style="vertical-align: middle;">Premium</th>
                             <?php if ($tryout['kode_refferal']) : ?>
                                 <th class="text-center" style="vertical-align: middle;">Refferal</th>
