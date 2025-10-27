@@ -67,7 +67,7 @@
     <div class="row">
       <div class="col-12">
         <h5>User</h5>
-        <table id="tabelwoi" class="table table-striped">
+        <table id="tabelUser" class="table table-striped">
           <thead>
             <tr>
               <th>No.</th>
@@ -81,29 +81,7 @@
             </tr>
           </thead>
           <tbody>
-            <?php $i = 1; foreach ($all_user as $au): ?>
-            <tr>
-              <td><?= $i++; ?></td>
-              <td><?= $au['name']; ?></td>
-              <td><?= $au['email']; ?></td>
-              <td><?= $au['role']; ?></td>
-              <td>
-                <?= $au['is_active'] == 1
-                  ? '<span class="badge bg-success">Active</span>'
-                  : '<span class="badge bg-danger">Not yet</span>'; ?>
-              </td>
-              <td><?= $au['created_at']; ?></td>
-              <td><?= $au['updated_at']; ?></td>
-              <td class="text-center">
-                <a href="<?= base_url('admin/viewupdaterole/'.$au['id']); ?>"
-                   class="btn btn-sm bg-primary mb-2 text-white">Update role</a>
-                <button type="button" class="btn btn-sm bg-danger btn-delete-user text-white"
-                        data-id="<?= $au['id']; ?>">
-                  Hapus user
-                </button>
-              </td>
-            </tr>
-            <?php endforeach; ?>
+            
           </tbody>
         </table>
       </div>
@@ -155,6 +133,49 @@
 
 
 <script>
+  $(document).ready(function() {
+  $('#tabelUser').DataTable({
+      processing: true,
+      serverSide: true,
+      ajax: {
+          url: "<?= site_url('admin/getUserData') ?>",
+          type: "POST"
+      },
+      columns: [
+          { data: "no", orderable: false },
+          { data: "name" },
+          { data: "email" },
+          { data: "role" },
+          { data: "is_active", orderable: false, searchable: false },
+          { data: "created_at" },
+          { data: "updated_at" }, // tambahin biar sama kayak kolom tabel
+          {
+              data: "action", // tambahin action di backend
+              orderable: false,
+              searchable: false,
+              className: "text-center"
+          }
+      ],
+      order: [[5, "desc"]],
+      lengthMenu: [[25, 50, 75, -1], [25, 50, 75, "All"]],
+      scrollX: true,
+      language: {
+          processing: "Memuat data...",
+          search: "Cari:",
+          lengthMenu: "Tampilkan _MENU_ data",
+          info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+          infoEmpty: "Tidak ada data tersedia",
+          infoFiltered: "(disaring dari total _MAX_ data)",
+          paginate: {
+              first: "Pertama",
+              last: "Terakhir",
+              next: "Berikutnya",
+              previous: "Sebelumnya"
+          },
+      },
+  });
+});
+
 $(function() {
 
 
@@ -165,6 +186,8 @@ $(function() {
     $('#deleteUserModal').modal('show');
   });
 });
+
+
 </script>
 
 <?php destroysession(); ?>

@@ -159,7 +159,6 @@ class Admin extends CI_Controller
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
             'role' => $this->role->getAll(),
-            'all_user' => $this->user->getAllJoinRole(array('user.id', 'name', 'email', 'role_id', 'is_active', 'created_at', 'updated_at', 'role')),
             'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
         ];
 
@@ -187,6 +186,54 @@ class Admin extends CI_Controller
             $this->session->set_flashdata('success', 'Menambahkan Role Baru');
             redirect('admin/role');
         }
+    }
+
+    public function getUserData(){
+    $this->load->model('User_model', 'user');
+    $draw = intval($this->input->post('draw'));
+    $start = intval($this->input->post('start'));
+    $length = intval($this->input->post('length'));
+    $search = $this->input->post('search')['value'] ?? '';
+    $order_column = $this->input->post('order')[0]['column'] ?? null;
+    $order_dir = $this->input->post('order')[0]['dir'] ?? 'asc';
+          $list = $this->user->getAllJoinRole(
+        'user.id, user.name, user.email, user.is_active, user.created_at,user.updated_at ,user_role.role',
+        $length,
+        $start,
+        $search,
+        $order_column,
+        $order_dir
+    );
+     $data = [];
+    $no = $start;
+    foreach ($list as $u) {
+    $no++;
+    $data[] = [
+        'no' => $no,
+        'name' => $u->name,
+        'email' => $u->email,
+        'role' => $u->role,
+        'is_active' => $u->is_active
+            ? '<span class="badge bg-success">Active</span>'
+            : '<span class="badge bg-danger">Not yet</span>',
+        'created_at' => date('d M Y H:i', strtotime($u->created_at)),
+        'updated_at' => date('d M Y H:i', strtotime($u->updated_at)),
+        'action' => '
+            <a href="' . base_url('admin/viewupdaterole/' . $u->id) . '" class="btn btn-sm bg-primary mb-2 text-white">Update role</a>
+            <button type="button" class="btn btn-sm bg-danger btn-delete-user text-white" data-id="' . $u->id . '">Hapus user</button>
+        '
+    ];
+}
+
+
+    $output = [
+        "draw" => $draw,
+        "recordsTotal" => $this->user->count_all(),
+        "recordsFiltered" => $this->user->count_filtered($search),
+        "data" => $data,
+    ];
+
+    echo json_encode($output);
     }
 
     public function roleaccess($role_id)
@@ -345,7 +392,6 @@ class Admin extends CI_Controller
 
         echo json_encode($getrole);
     }
-
     public function updateuserrole()
     {
         $this->_loadRequiredModels();
