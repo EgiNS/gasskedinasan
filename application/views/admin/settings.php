@@ -1,5 +1,5 @@
-<!-- Begin Page Content -->
-<div class="container-fluid">
+<div class="pc-container">
+<div class="pc-container">
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
@@ -9,36 +9,51 @@
 
     <!-- Page Heading -->
     <!-- BREADCUMB -->
-    <nav aria-label="breadcrumb" class="first">
-        <?= breadcumb($breadcrumb_item); ?>
-    </nav>
+    <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="page-header-title">
+                  <h5 class="m-b-10"><?= $title ?></h5>
+                </div>
+              </div>
+              <div class="col-auto">
+                <ul class="breadcrumb">
+                  <?= breadcumb($breadcrumb_item); ?>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
 
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <!-- COMPANY -->
             <a class="nav-item nav-link <?= ($tab == 'company' ? 'active' : ''); ?>" id="nav-company-tab"
-                data-toggle="tab" href="#nav-company" role="tab" aria-controls="nav-company"
-                aria-selected="<?= ($tab == 'company' ? 'true' : 'false'); ?>" data-tab="company">Company</a>
+                data-bs-toggle="tab" href="#nav-company" role="tab" aria-controls="nav-company"
+                aria-selected="<?= ($tab == 'company' ? 'true' : 'false'); ?>" data-bs-tab="company">Company</a>
 
             <!-- TOKEN -->
-            <a class="nav-item nav-link <?= ($tab == 'token' ? 'active' : ''); ?>" id="nav-token-tab" data-toggle="tab"
+            <a class="nav-item nav-link <?= ($tab == 'token' ? 'active' : ''); ?>" id="nav-token-tab" data-bs-toggle="tab"
                 href="#nav-token" role="tab" aria-controls="nav-token"
-                aria-selected="<?= ($tab == 'token' ? 'true' : 'false'); ?>" data-tab="token">Token</a>
+                aria-selected="<?= ($tab == 'token' ? 'true' : 'false'); ?>" data-bs-tab="token">Token</a>
 
             <!-- EMAIL -->
-            <a class="nav-item nav-link <?= ($tab == 'email' ? 'active' : ''); ?>" id="nav-email-tab" data-toggle="tab"
+            <a class="nav-item nav-link <?= ($tab == 'email' ? 'active' : ''); ?>" id="nav-email-tab" data-bs-toggle="tab"
                 href="#nav-email" role="tab" aria-controls="nav-email"
-                aria-selected="<?= ($tab == 'email' ? 'true' : 'false'); ?>" data-tab="email">Email</a>
+                aria-selected="<?= ($tab == 'email' ? 'true' : 'false'); ?>" data-bs-tab="email">Email</a>
 
             <!-- MIDTRANS -->
             <a class="nav-item nav-link <?= ($tab == 'midtrans' ? 'active' : ''); ?>" id="nav-midtrans-tab"
-                data-toggle="tab" href="#nav-midtrans" role="tab" aria-controls="nav-midtrans"
-                aria-selected="<?= ($tab == 'midtrans' ? 'true' : 'false'); ?>" data-tab="midtrans">Midtrans</a>
+                data-bs-toggle="tab" href="#nav-midtrans" role="tab" aria-controls="nav-midtrans"
+                aria-selected="<?= ($tab == 'midtrans' ? 'true' : 'false'); ?>" data-bs-tab="midtrans">Midtrans</a>
 
             <!-- KODE -->
-            <a class="nav-item nav-link <?= ($tab == 'kode' ? 'active' : ''); ?>" id="nav-kode-tab" data-toggle="tab"
+            <a class="nav-item nav-link <?= ($tab == 'kode' ? 'active' : ''); ?>" id="nav-kode-tab" data-bs-toggle="tab"
                 href="#nav-kode" role="tab" aria-controls="nav-kode"
-                aria-selected="<?= ($tab == 'kode' ? 'true' : 'false'); ?>" data-tab="kode">Kode</a>
+                aria-selected="<?= ($tab == 'kode' ? 'true' : 'false'); ?>" data-bs-tab="kode">Kode</a>
         </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
@@ -50,7 +65,7 @@
                     <?= form_open_multipart('admin/settings?tab=company'); ?>
 
                     <!-- COMPANY NAME -->
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <label for="name" class="col-sm-3 col-form-label">Company name</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="name" name="name"
@@ -60,7 +75,7 @@
                     </div>
 
                     <!-- COMPANY EMAIL -->
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <label for="no_wa" class="col-sm-3 col-form-label">Company email</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="email" name="email"
@@ -70,7 +85,7 @@
                     </div>
 
                     <!-- COMPANY ADDRESS -->
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <label for="no_wa" class="col-sm-3 col-form-label">Company address</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="address" name="address"
@@ -80,7 +95,7 @@
                     </div>
 
                     <!-- LOGO -->
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <div class="col-sm-3">Logo</div>
                         <div class="col-sm-9">
                             <div class="row">
@@ -99,7 +114,7 @@
                     </div>
 
                     <!-- ICON FOR BROWSER -->
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <div class="col-sm-3">Icon for Browser</div>
                         <div class="col-sm-9">
                             <div class="row">
@@ -141,7 +156,7 @@
                     <form action="<?= base_url('admin/settings?tab=token'); ?>" method="post">
 
                         <!-- ACCOUNT ACTIVATION -->
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="account_activation" class="col-form-label">Account Activation</label>
                             <select class="custom-select" name="account_activation" id="account_activation">
                                 <option value="1"
@@ -236,7 +251,7 @@
                     <form action="<?= base_url('admin/settings?tab=email'); ?>" method="POST">
 
                         <!-- EMAIL SENDER ADDRESS -->
-                        <div class="form-group row">
+                        <div class="form-group row mb-3 ">
                             <label for="email_sender_address" class="col-form-label">Email sender address*</label>
                             <input type="text" class="form-control" id="email_sender_address"
                                 name="email_sender_address" autocomplete="off"
@@ -245,7 +260,7 @@
                         </div>
 
                         <!-- EMAIL SENDER NAME -->
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="email_sender_name" class="col-form-label">Email sender name*</label>
                             <input type="text" class="form-control" id="email_sender_name" name="email_sender_name"
                                 autocomplete="off"

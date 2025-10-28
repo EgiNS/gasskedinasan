@@ -12,8 +12,8 @@ class Paket_to_model extends CI_Model
 
     public function insert($data)
     {
-        $result = $this->db->insert($this->table, $data);
-        return ($result == true) ? true : false;
+        $this->db->insert($this->table, $data);
+        return  $this->db->insert_id();
     }
 
     public function insert_pendaftar($data, $slug)

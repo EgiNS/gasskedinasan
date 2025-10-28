@@ -4,7 +4,7 @@
       <a href="../dashboard/index.html" class="b-brand text-primary d-flex align-items-center">
         <!-- ========   Change your logo from here   ============ -->
         <img src="<?= base_url('assets/assets_lp/img/gass/logo0.png'); ?>" style="width: 50px;" alt="" class="" />
-        <p class="fs-4 fw-medium mt-3 text-black">GassEducation</p>
+        <p class="fs-4 fw-medium mt-3 text-black">Gass Education</p>
       </a>
     </div>
     <div class="navbar-content">
