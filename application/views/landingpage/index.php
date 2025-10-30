@@ -85,8 +85,10 @@
 <body data-aos-easing="ease" data-aos-duration="400" data-aos-delay="0">
     <?php $this->load->view('landingpage/navbar'); ?>
     <?php $this->load->view('landingpage/hero'); ?>
+    <?php $this->load->view('landingpage/tryout'); ?>
     <?php $this->load->view('landingpage/why'); ?>
     <?php $this->load->view('landingpage/featured'); ?>
+
     <!--================Header Menu Area =================-->
     <!-- <header class="header_area">
             <div class="d-flex justify-content-between align-items-center">

@@ -14,8 +14,8 @@
     <p style="font-size: 20px; width: 80%; line-height: 1.6; margin-bottom: 52px;" class="text-center">
         Pilih cara belajar yang paling cocok untukmu. Semua program dirancang untuk mempersiapkan kamu menghadapi setiap tahap seleksi sekolah kedinasan dari SKD hingga psikotes dan wawancara.
     </p>
-    <div class="d-flex ">
-        <div class="d-flex flex-column w-50" style="gap: 16px;">
+    <div class="d-flex align-items-start">
+        <div class="d-flex flex-column w-50" style="gap: 32px;">
             <div class="bg-white gk-text-featured d-flex p-3 mb-3" style="border-radius: 8px; gap: 16px; width: 80%;">
                 <img src="assets/assets_lp/img/icon/writing.svg" alt="">
                 <div>
