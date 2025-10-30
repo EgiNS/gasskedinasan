@@ -10,7 +10,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/css/bootstrap.css">
     <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/vendors/linericon/style.css">
-    <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/css/font-awesome.min.css"> -->
+     <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome-free/css/all.css'); ?>" />
     <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/vendors/owl-carousel/owl.carousel.min.css">
     <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/vendors/lightbox/simpleLightbox.css">
     <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/vendors/nice-select/css/nice-select.css">
@@ -82,15 +83,17 @@
 </head>
 
 <body data-aos-easing="ease" data-aos-duration="400" data-aos-delay="0">
+    <?php $this->load->view('landingpage/navbar'); ?>
+    <?php $this->load->view('landingpage/hero'); ?>
     <!--================Header Menu Area =================-->
-    <header class="header_area">
+    <!-- <header class="header_area">
             <div class="d-flex justify-content-between align-items-center">
                 <a href="https://gasseducation.com">
                     <img src="assets/assets_lp/img/gass/logo0.png" style="width:50px;" class="ml-4">
                 </a>
                 <a href="<?= base_url("auth"); ?>" class="btn btn-outline-primary btn-sm my-auto py-auto mr-4">Login</a>
             </div>
-    </header>
+    </header> -->
     <!--================ END Header Menu Area =================-->
     <section class="px-3 py-4" style="overflow: hidden; background-color: #f9f9ff; margin-top: 50px;">
         <div class="d-flex flex-column flex-md-row justify-content-center">

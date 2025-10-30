@@ -1,58 +1,55 @@
-    <div class="container">
-
-        <!-- Outer Row -->
-        <div class="row justify-content-center">
-
-            <div class="col-lg-5">
-
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Halaman Login</h1>
-                                    </div>
-
-                                    <?= $this->session->flashdata('message'); ?>
-                                    <form class="user" action="<?= base_url('auth'); ?>" method="post">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" id="email"
-                                                name="email" placeholder="Enter Email Address..."
-                                                value="<?= (set_value('email') ? set_value('email') : $this->session->flashdata('auth_email')); ?>"
-                                                autocomplete="off">
-                                            <?= form_error('email', '<small class="text-danger pl-3">', '</small>'); ?>
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="password" class="form-control form-control-user" id="password"
-                                                name="password" placeholder="Password">
-                                            <?= form_error('password', '<small class="text-danger pl-3">', '</small>'); ?>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-primary btn-user btn-block">
-                                            Login
-                                        </button>
-                                        <hr>
-                                        <a class="btn btn-primary btn-user btn-block"
-                                            href="<?= base_url('auth/registration'); ?>">
-                                            Buat Akun!
-                                        </a>
-                                    </form>
-                                    <div class="text-center mt-4">
-                                        <a class="small" href="<?= base_url('auth/forgotpassword'); ?>">Lupa Password?</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+<style>
+    .bg-gradient-primary {
+  background-color: #4e73df;
+  background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+  background-size: cover;
+}
+.bg-blue {
+  background-color: #233876;
+}
+</style>
+<div class="container-fluid ">
+    <div class="row vh-100">
+        <div class="col ">
+            <div class="d-flex flex-column justify-content-center align-items-center vh-100">
+                <img src="assets/assets_lp/img/gass/logo0.png" style="width:300px;" class="ml-4">
+                <p class="text-2xl">Masuk ke aplikasi Gass Kedinasan adalah langkah awal perjalananan karirmu.</p>
             </div>
-
         </div>
-
+        <div class="col bg-blue">
+            <div class="d-flex flex-column align-items-center justify-content-center vh-100">
+                <div class="bg-white w-50 p-4 rounded shadow-lg">
+                    <div>
+                <h3 class="text-center mb-4 font-bold">Login </h3>
+                    </div>
+                <div class="mb-3">
+                    <label for="form-label">
+                        Email
+                    </label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="">
+                    <label for="">Password</label>
+                    <input type="password" class="form-control">
+                </div>
+                <div class="my-2 d-flex justify-content-end">
+                    <a href="">
+                        Lupa Password?
+                    </a>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary w-100">Login</button>
+                </div>
+                <div>
+                    <p class="text-center">Belum punya akun Gass Kedinasan? <a href="">Daftar Yuk</a></p>
+                </div>
+                
+            </div>
+            </div>
+            
+        </div>
     </div>
+</div>
 
     <?php
     if (isset($_SESSION['message'])) {

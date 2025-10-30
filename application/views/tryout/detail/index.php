@@ -197,9 +197,11 @@
                     //     $(this).next('.custom-file-label').html(fileName);
                     // });
 
-
+                    const kodeValid = <?= json_encode(json_decode($tryout['kode_refferal'] ?? '[]')); ?>;
+            const hargaAsli = <?= (int)$tryout['harga']; ?>;
+            const hargaDiskon = <?= (int)$tryout['harga_diskon']; ?>;
                     $(document).on('click', '#cekRefferalBtn', function() {
-
+                        
                         const kode = $('#kodeRefferalInput').val().trim();
                         let valid = kodeValid.includes(kode);
 

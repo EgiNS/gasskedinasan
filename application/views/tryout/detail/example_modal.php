@@ -50,7 +50,7 @@
             <div class="modal-footer">
                 <a href="#"
                     id="free-pay"
-                    class="btn btn-primary daftarTryoutBtn disabled"
+                    class="btn btn-primary daftarTryoutBtn disabled "
                     data-harga="<?= $tryout['harga']; ?>" data-tryout="<?= $tryout['name']; ?>"
                     data-slug="<?= $tryout['slug']; ?>" data-name="<?= $user->name; ?>"
                     data-email="<?= $user->email; ?>" data-phone="<?= $user->no_wa; ?>"
