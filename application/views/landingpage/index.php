@@ -89,6 +89,8 @@
     <?php $this->load->view('landingpage/why'); ?>
     <?php $this->load->view('landingpage/featured'); ?>
     <?php $this->load->view('landingpage/testimoni'); ?>
+    <?php $this->load->view('landingpage/faq'); ?>
+    <?php $this->load->view('landingpage/footer'); ?>
 
     <!--================Header Menu Area =================-->
     <!-- <header class="header_area">
