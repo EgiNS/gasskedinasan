@@ -5,7 +5,7 @@
 </style>
 <div class="container-fluid" style="padding: 50px 100px;">
     <h3 class="text-dark text-center" style="font-size: 36px; margin-bottom: 20px;">Cerita Sukses dari Mereka yang Sudah Lolos</h3>
-    <p class="text-center text-dark" style="font-size: 16px; margin-bottom: 60px;"> Ribuan pelajar sudah berhasil menembus sekolah kedinasan berkat bimbingan di Gass Education. Berikut kisah inspiratif mereka.</p>
+    <p class="text-center text-dark" style="font-size: 18px; margin-bottom: 60px;"> Ribuan pelajar sudah berhasil menembus sekolah kedinasan berkat bimbingan di Gass Education. Berikut kisah inspiratif mereka.</p>
     <div class="d-flex" style="gap: 20px;">
 
         <div style="width: 20%; border-radius: 8px; padding: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); ">

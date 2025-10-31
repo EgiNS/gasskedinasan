@@ -11,7 +11,7 @@
 
 <div class="container-fluid why-bg d-flex justify-content-center align-items-center" style="padding: 0px 100px;">
     <div class="text-white w-50">
-        <h1 style="font-size: 52px; width: 60%; margin-bottom: 52px;">Kenapa Harus Gass Education?</h1>
+        <h1 style="font-size: 52px; width: 60%; margin-bottom: 52px;" class="text-white">Kenapa Harus Gass Education?</h1>
         <p style="font-size: 20px; width: 100%; line-height: 1.6;"> Gass Education adalah platform bimbingan belajar khusus sekolah kedinasan yang telah membantu ribuan pelajar di seluruh Indonesia mewujudkan mimpinya masuk perguruan tinggi kedinasan.  Kami menyediakan sistem belajar interaktif dengan mentor ahli, materi terkini sesuai kisi-kisi resmi, serta komunitas belajar yang solid agar kamu tidak merasa belajar sendirian.
         <ul style="font-size: 20px; list-style-type: none; padding-left: 0; margin-top: 28px; line-height: 1.8;">
             <li>

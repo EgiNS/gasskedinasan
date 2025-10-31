@@ -8,7 +8,7 @@
 </style>
 
 <div class="container-fluid gk-bg-featured text-white d-flex flex-column justify-content-center align-items-center" style="padding: 80px 100px; gap: 24px;">
-    <h3 style="font-size: 28px;">
+    <h3 style="font-size: 28px;" class="text-white">
         Program Unggulan Kami
     </h3>
     <p style="font-size: 20px; width: 80%; line-height: 1.6; margin-bottom: 52px;" class="text-center">
