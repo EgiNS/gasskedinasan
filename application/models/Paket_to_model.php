@@ -12,8 +12,8 @@ class Paket_to_model extends CI_Model
 
     public function insert($data)
     {
-        $result = $this->db->insert($this->table, $data);
-        return ($result == true) ? true : false;
+        $this->db->insert($this->table, $data);
+        return  $this->db->insert_id();
     }
 
     public function insert_pendaftar($data, $slug)
@@ -28,12 +28,56 @@ class Paket_to_model extends CI_Model
         return $this->db->get($this->table)->result_array();
     }
 
-    public function getAllOrderByIdDesc($select = '*')
-    {
-        $this->db->select($select);
-        $this->db->order_by('id', 'DESC');
-        return $this->db->get($this->table)->result_array();
+
+public function getAllWithTryouts()
+{
+    $this->db->select('
+        paket_to.id,
+        paket_to.nama,
+        paket_to.harga,
+        paket_to.foto,
+        paket_to.keterangan,
+        tryout_paket_to.tryout_id,
+        tryout_paket_to.paket_to_id,
+        tryout.name AS tryout_name,
+    ');
+    $this->db->from('paket_to');
+    $this->db->join('tryout_paket_to', 'tryout_paket_to.paket_to_id = paket_to.id', 'left');
+    $this->db->join('tryout', 'tryout.id = tryout_paket_to.tryout_id', 'left');
+    $this->db->order_by('paket_to.id', 'DESC');
+
+    $rows = $this->db->get()->result_array();
+
+    // Gabungkan tryouts per paket
+    $grouped = [];
+    foreach ($rows as $row) {
+        $id = $row['id'];
+        if (!isset($grouped[$id])) {
+            $grouped[$id] = [
+                'id' => $row['id'],
+                'nama' => $row['nama'],
+                'harga' => $row['harga'],
+                'foto' => $row['foto'],
+                'keterangan' => $row['keterangan'],
+                'tryouts' => [],
+            ];
+        }
+
+        if (!empty($row['tryout_id'])) {
+            $grouped[$id]['tryouts'][] = [
+                'tryout_id' => $row['tryout_id'],
+                'paket_to_id' => $row['paket_to_id'],
+                'name' => $row['tryout_name'],
+                
+                
+            ];
+        }
     }
+
+    return array_values($grouped);
+}
+
+
 
     public function getAllPendaftar($slug)
     {

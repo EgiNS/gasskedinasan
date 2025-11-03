@@ -3,6 +3,9 @@
 class User_model extends CI_Model
 {
     protected $table;
+    private $column_order = ['user.name', 'user.email', 'user_role.role', 'user.is_active', 'user.created_at'];
+    private $column_search = ['user.name', 'user.email', 'user_role.role'];
+    private $order = ['user.created_at' => 'desc'];
     public function __construct()
     {
         parent::__construct();
@@ -21,11 +24,55 @@ class User_model extends CI_Model
         return $this->db->get($this->table)->result_array();
     }
 
-    public function getAllJoinRole($select = '*')
+      public function getAllJoinRole($select = '*', $limit = null, $start = null, $search = null, $order_column = null, $order_dir = 'asc')
     {
         $this->db->select($select);
-        $this->db->join('user_role', 'user_role.id = ' . $this->table . '.role_id');
-        return $this->db->get($this->table)->result_array();
+        $this->db->from($this->table);
+        $this->db->join('user_role', 'user_role.id = user.role_id', 'left');
+
+        // 🔍 Search global
+        if (!empty($search)) {
+            $this->db->group_start();
+            foreach ($this->column_search as $col) {
+                $this->db->or_like($col, $search);
+            }
+            $this->db->group_end();
+        }
+
+        // 🧭 Ordering
+        if (!empty($order_column) && isset($this->column_order[$order_column])) {
+            $this->db->order_by($this->column_order[$order_column], $order_dir);
+        } else {
+            $this->db->order_by(key($this->order), current($this->order));
+        }
+
+        // 📄 Pagination
+        if ($limit != -1 && $limit !== null) {
+            $this->db->limit($limit, $start);
+        }
+
+        return $this->db->get()->result();
+    }
+
+    public function count_filtered($search = null)
+    {
+        $this->db->from($this->table);
+        $this->db->join('user_role', 'user_role.id = user.role_id', 'left');
+
+        if (!empty($search)) {
+            $this->db->group_start();
+            foreach ($this->column_search as $col) {
+                $this->db->or_like($col, $search);
+            }
+            $this->db->group_end();
+        }
+
+        return $this->db->count_all_results();
+    }
+
+    public function count_all()
+    {
+        return $this->db->count_all($this->table);
     }
 
     public function get($count, $key, $select = '*')

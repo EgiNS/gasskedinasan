@@ -92,7 +92,7 @@
                                     <?= $item['keterangan']; ?>
                                 </p>
                                 <div class="mt-auto d-flex justify-content-between align-items-center">
-                                    <small class="fw-medium"><?= 'Status: ' . ($item['status'] == 1 ? 'Release' : ($item['status'] == 2 ? 'Drawn' : 'Not release yet')); ?></small>
+                                    <small class="fw-medium"><?= 'Release   Status: ' . ($item['status'] == 1 ? 'Release' : ($item['status'] == 2 ? 'Drawn' : 'Not release yet')); ?></small>
                                     <a href="<?= base_url('admin/detailtryout/') . $item['slug']; ?>" class="btn btn-sm btn-primary rounded">Detail</a>
                                 </div>
                                 </div>
@@ -285,7 +285,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Add</button>
                     </div>
                 </form>

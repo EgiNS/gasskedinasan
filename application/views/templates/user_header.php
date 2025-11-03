@@ -33,7 +33,8 @@
 <link rel="stylesheet" href="<?= base_url('assets/fonts/feather.css'); ?>" />
 
 <!-- [Font Awesome Icons] -->
-<link rel="stylesheet" href="<?= base_url('assets/fonts/fontawesome.css'); ?>" />
+  <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome-free/css/all.css'); ?>" />
+
 
 <!-- [Material Icons] -->
 <link rel="stylesheet" href="<?= base_url('assets/fonts/material.css'); ?>" />
@@ -43,7 +44,7 @@
 <link rel="stylesheet" href="<?= base_url('assets/css/style-preset.css'); ?>" />
 
 <link href="<?= base_url('assets/vendor/datatables2/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet"/>
-
+<link href="<?= base_url('assets/plugins/select2/css/select2.css'); ?>" rel="stylesheet" />
 <script src="<?= base_url('assets/vendor/jquery/jquery.min.js'); ?>"></script>
 <script src="<?= base_url('assets/vendor/jquery-easing/jquery.easing.min.js'); ?>"></script>
   </head>
