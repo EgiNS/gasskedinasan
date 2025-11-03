@@ -165,7 +165,7 @@
                             class="btn btn-warning text-dark tryout-btn"><i class="ti ti-arrow-narrow-right me-1"></i> Lanjutkan</a>
                         <?php elseif ($myt['status'] == 2 && isset($myt['freemium']) && $myt['freemium'] == 1) : ?>
                             <button type="button" data-token="<?= $myt['token']; ?>" data-slug="<?= $tryout[$i]['slug']; ?>"
-                            class="btn btn-success tryout-btn"><i class="ti ti-repeat me-1"></i> Kerjakan Lagi</button>
+                            class="btn btn-success tryout-btn <?= ($tryout[$i]['status'] == 1 ? 'kerjakan' : 'notrelease'); ?>"><i class="ti ti-repeat me-1"></i> Kerjakan Lagi</button>
                         <?php else : ?>
                             <button class="btn btn-outline-gray-500 tryout-btn" disabled>Tidak tersedia</button>
                         <?php endif; ?>

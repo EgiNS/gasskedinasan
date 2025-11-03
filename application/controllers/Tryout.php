@@ -120,7 +120,7 @@ class Tryout extends CI_Controller
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/detail/index', $data);
+        $this->load->view('tryout/detail', $data);
         $this->load->view('templates/user_footer');
 
         $jawaban_user = $this->jawaban->get('one', ['email' => $user->email], $slug);
@@ -354,7 +354,7 @@ class Tryout extends CI_Controller
         $token = $this->input->get('soal');
         $soal = $this->soal->get('one', ['token' => $token], $slug);
 
-        $title = 'Answer Analysis - ' . $tryout['name'] . ' - No. ' . $soal['id'];
+        $title = $tryout['name'] . ' - No. ' . $soal['id'];
 
         $breadcrumb_item = [
             [

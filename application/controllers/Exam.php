@@ -67,6 +67,7 @@ class Exam extends CI_Controller
             redirect('auth/blocked');
 
         $this->load->view('templates/user_header', $data);
+        // $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
         $this->load->view('exam/index', $data);
         $this->load->view('templates/user_footer');
@@ -162,9 +163,9 @@ class Exam extends CI_Controller
         $this->ragu_ragu->insert(['email' => $email], $slug);
 
         if ($pengerjaan >= 1 && ($user_to['total'] != null || $user_to['nilai'] != null)) {
-            $this->user_tryout->insert(['email'=>$email, 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
+            $this->user_tryout->insert(['email'=>$email, 'status'=>1, 'freemium'=>$user_to['freemium'], 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
         } else {
-            $this->user_tryout->update(['status' => 1], ['email' => $email], $slug);
+            $this->user_tryout->updateLastRow(['status' => 1], ['email' => $email], $slug);
         }
     }
 

@@ -3,7 +3,6 @@
     <input type="hidden" id="error"
         data-flashdata="<?= (validation_errors() ? 'Something wrong' : $this->session->flashdata('error')); ?>">
     <input type="text" id="repoptinymce" name="repoptinymce" value="tambahsoal" hidden>
-    <div class="loading">Loading&#8230;</div>
 
       <div class="pc-content">
         <!-- [ breadcrumb ] start -->

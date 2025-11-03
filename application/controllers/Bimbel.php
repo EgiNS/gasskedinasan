@@ -155,7 +155,7 @@ class Bimbel extends CI_Controller
         $mytryout = [];
 
         foreach ($all_tryout as $to) {
-            $user_tryout = $this->user_tryout->get('one', ['email' => $user['email']], $to['slug']);
+            $user_tryout = $this->user_tryout->get('one', ['email' => $user->email], $to['slug']);
             if ($user_tryout) {
                 array_push($tryout, $to);
                 array_push($mytryout, $user_tryout);
@@ -184,13 +184,13 @@ class Bimbel extends CI_Controller
         ];
 
         $user = $this->loginUser;
-        if ($user['role_id'] == 3 || $user['role_id'] == 7) {
+        if ($user->role_id == 3 || $user->role_id == 7) {
             $tryout = $this->tryout->get('many', ['tipe_tryout'=>'SKD','hidden'=>0, 'for_bimbel'=>1]);
-        } else if ($user['role_id'] == 4  || $user['role_id'] == 6) {
+        } else if ($user->role_id == 4  || $user->role_id == 6) {
             $tryout = $this->tryout->get('many', ['tipe_tryout'=>'nonSKD','hidden'=>0, 'for_bimbel'=>1]);
-        } else if ($user['role_id'] == 5) {
+        } else if ($user->role_id == 5) {
             $tryout = $this->tryout->get('many', ['hidden'=>0, 'for_bimbel'=>1]);
-        } else if ($user['role_id'] == 8) {
+        } else if ($user->role_id == 8) {
             $tryout = $this->tryout->get('many', ['hidden'=>0, 'for_bimbel'=>2]);
         }
         

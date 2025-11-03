@@ -1,32 +1,18 @@
-    <div class="pc-container">
-        <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
+        <!-- BREADCUMB -->
+    <nav aria-label="breadcrumb" class="first">
+        <?= breadcumb($breadcrumb_item); ?>
+    </nav>
 
-      <div class="pc-content">
-        <!-- [ breadcrumb ] start -->
-        <div class="page-header">
-          <div class="page-block">
-            <div class="row align-items-center">
-              <div class="col">
-                <div class="page-header-title">
-                  <h5 class="m-b-10"><?= $title ?></h5>
-                </div>
-              </div>
-              <div class="col-auto">
-                <ul class="breadcrumb">
-                  <?= breadcumb($breadcrumb_item); ?>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- [ breadcrumb ] end -->
-
-    <div class="grid mt-3 mb-1">
+    <div class="grid">
 
         <!-- CHANGE STATUS -->
         <div class="btn-group">
-            <button class="btn btn-primary rounded btn-sm mb-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-primary btn-sm mb-2 dropdown-toggle" type="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 Change Status
             </button>
             <div class="dropdown-menu">
@@ -45,19 +31,19 @@
 
         <!-- UPDATE PEMBAHASAN -->
         <div class="btn-group">
-            <a href="#" class="btn btn-primary rounded btn-sm mb-2 add-new-materi" data-bs-toggle="modal" data-bs-target="#updateMateriModal">
+            <a href="#" class="btn btn-primary btn-sm mb-2 add-new-materi" data-toggle="modal" data-target="#updateMateriModal">
                 Update materi
             </a>
         </div>
 
         <!-- HAPUS MATERI  -->
-        <a href="#" class="btn btn-danger rounded btn-sm mb-2 btn-delete" data-url="admin/hapusmateri/"
+        <a href="#" class="btn btn-danger btn-sm mb-2 btn-delete" data-url="admin/hapusmateri/"
         data-message="Materi <?= $latsol['name']; ?>" data-key="<?= $latsol['id']; ?>"
         data-caption="<?= null; ?>" data-post="<?= null; ?>">Hapus File Materi</a>
 
     </div>
-
-     <div class="row">
+    <!-- Card Content -->
+    <div class="row">
 
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
@@ -110,13 +96,10 @@
         </div>
 
     </div>
-        <!-- [ Main Content ] start -->
-        <div class="row">
-          <!-- [ sample-page ] start -->
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <table id="tabelwoi" class="table table-striped projects nowrap table-responsive">
+
+    <div class="row">
+        <div class="col-lg">
+            <table id="tabelwoi" class="table table-striped projects nowrap table-responsive">
                 <thead>
                     <tr>
                         <th class="text-center" style="vertical-align: middle;">id</th>
@@ -179,32 +162,101 @@
                     <?php endforeach; ?>
                 </tbody>
             </table>
-              </div>
-            </div>
-          </div>
-          <!-- [ sample-page ] end -->
         </div>
-        <!-- [ Main Content ] end -->
-      </div>
+    </div>
 
-      <!-- Modal update materi-->
+</div>
+<!-- /.container-fluid -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="newTryoutModal" tabindex="-1" aria-labelledby="newTryoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newTryoutModalLabel">Add New Tryout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="<?= base_url('admin/tryout'); ?>" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="tryout" name="tryout"
+                                placeholder="Tryout name..." autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" name="ket_tryout" id="ket_tryout" cols="10" rows="5"
+                                placeholder="Keterangan tryout... (opsional)"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <select name="tipe_tryout" id="tipe_tryout" class="form-control">
+                                <option value="0">Tipe Tryout</option>
+                                <option value="SKD">Soal Pilihan Ganda SKD</option>
+                                <option value="nonSKD">Soal Pilihan Ganda non SKD</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jumlah_soal">Jumlah Soal</label>
+                            <input type="text" class="form-control" id="jumlah_soal" name="jumlah_soal"
+                                placeholder="Misal: 110">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" id="berbayar" name="berbayar">
+                                <label class="form-check-label" for="berbayar">
+                                    Berbayar ?
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="harga" name="harga"
+                                placeholder="Harga: contoh 10000" autocomplete="off" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="lama_pengerjaan">Lama Pengerjaan (dalam menit)</label>
+                            <input type="text" class="form-control" id="lama_pengerjaan" name="lama_pengerjaan"
+                                placeholder="Misal: 100" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal update materi-->
 <div class="modal fade" id="updateMateriModal" tabindex="-1" aria-labelledby="updateMateriModal"
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="uploadPembahasanModalLabel">Update Materi</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="uploadPembahasanModalLabel">Upload Pembahasan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <?= form_open_multipart('admin/updatemateri/' . $latsol['slug']); ?>
-            <div class="modal-body p-0">
+            <div class="modal-body">
                 <div class="modal-body">
                     <div class="form-group gbr_pilihan">
-                        <label for="update_materi" class="form-label mb-0">Update Materi <?= $latsol['name']; ?></label>
-                        <input class="form-control" type="file" id="update_materi" name="update_materi">
+                        <label for="gambar_b">Update Materi <?= $latsol['name']; ?></label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="update_materi"
+                                    name="update_materi">
+                                <label class="custom-file-label" for="update_materi">Choose file</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Upload</button>
                     </div>
                 </div>
@@ -213,6 +265,7 @@
         </div>
     </div>
 </div>
-    </div>
 
-    <?php destroysession(); ?>
+<!-- End of Main Content -->
+<script src="<?= base_url('assets/tinymce/tinymce.min.js'); ?>"></script>
+<?php destroysession(); ?>

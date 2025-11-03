@@ -16,16 +16,16 @@ $(function () {
         var examStartTime = new Date($("#exam-start").data("start")).getTime();
         var examDuration = $("#exam-duration").data("duration") * 1000; // Convert to milliseconds
 
-        console.log('Server End Time:', new Date(serverEndTime));
-        console.log('Exam Start Time:', new Date(examStartTime));
-        console.log('Exam Duration:', examDuration / 60000 + ' minutes');
+        // console.log('Server End Time:', new Date(serverEndTime));
+        // console.log('Exam Start Time:', new Date(examStartTime));
+        // console.log('Exam Duration:', examDuration / 60000 + ' minutes');
 
         // Validasi data integrity
         var calculatedEndTime = examStartTime + examDuration;
         var timeDifference = Math.abs(calculatedEndTime - serverEndTime);
         
-        console.log('Calculated End Time:', new Date(calculatedEndTime));
-        console.log('Time Difference:', timeDifference / 1000 + ' seconds');
+        // console.log('Calculated End Time:', new Date(calculatedEndTime));
+        // console.log('Time Difference:', timeDifference / 1000 + ' seconds');
 
         // Tolerance 30 detik untuk perbedaan waktu server-client
         if (timeDifference > 30000) {
@@ -66,7 +66,7 @@ $(function () {
             // Deteksi waktu mundur (user set time backwards)
             if (now < lastTimeCheck) {
                 consecutiveBackwards++;
-                console.warn('Time went backwards! Consecutive:', consecutiveBackwards);
+                // console.warn('Time went backwards! Consecutive:', consecutiveBackwards);
                 
                 if (consecutiveBackwards >= maxConsecutiveBackwards) {
                     handleTimeManipulation("Time manipulation detected - multiple backwards jumps");
@@ -89,7 +89,7 @@ $(function () {
                 totalTimeDrift += (actualDrift - 100);
             }
             
-            console.log('Time drift - Current:', actualDrift + 'ms, Total:', totalTimeDrift + 'ms');
+            // console.log('Time drift - Current:', actualDrift + 'ms, Total:', totalTimeDrift + 'ms');
 
             // Jika total drift melebihi batas, curang terdeteksi
             if (totalTimeDrift > maxAllowedDrift) {
@@ -269,10 +269,11 @@ $(function () {
     }
     // const ragu_ragu = $('.btn-warning').length - 1;
 
-    if (kosong == 0 && ragu_ragu == 0) var pesan = "";
-    else if (kosong == 0) var pesan = '<b style="color: red;">Masih ada ' + ragu_ragu + " soal ragu-ragu</b>";
-    else if (ragu_ragu == 0) var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab</b>";
-    else var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab dan " + ragu_ragu + " ragu-ragu</b>";
+    // if (kosong == 0 && ragu_ragu == 0) var pesan = "";
+    // else if (kosong == 0) var pesan = '<b style="color: red;">Masih ada ' + ragu_ragu + " soal ragu-ragu</b>";
+    // else if (ragu_ragu == 0) var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab</b>";
+    // else var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab dan " + ragu_ragu + " ragu-ragu</b>";
+    var pesan = "";
 
     e.preventDefault();
     Swal.fire({
