@@ -1,10 +1,10 @@
 <div class="container-fluid text-dark" style="padding: 50px 100px;">
     <div class="d-flex mb-5 flex-row-reverse align-items-center">
     <div style="width: 40%;" class="">
-     <h1 style="font-size: 40px;" class="mb-3 text-right">
+     <h1 style="font-size: 40px;" class="mb-3 text-end">
             Tryout
         </h1>
-        <p style="font-size: 18px; line-height: 1.6;" class="text-right">Simulasikan ujian dengan sistem seperti aslinya. Dapatkan skor real-time, pembahasan lengkap, dan ranking nasional untuk mengukur sejauh mana kesiapanmu.</p>
+        <p style="font-size: 18px; line-height: 1.6;" class="text-end">Simulasikan ujian dengan sistem seperti aslinya. Dapatkan skor real-time, pembahasan lengkap, dan ranking nasional untuk mengukur sejauh mana kesiapanmu.</p>
     </div>
        <div class="d-flex" style="width: 60%;">
     <div class="d-flex flex-column align-items-start w-50" style="gap: 12px; padding: 20px; margin-right: 20px;">

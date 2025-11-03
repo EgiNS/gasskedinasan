@@ -177,6 +177,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
+                
                 <h5 class="modal-title" id="exampleModalLabel">Unggah Bukti Persyaratan TO</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -194,7 +195,7 @@
                 </div>
                 
                 <span>Komen kalimat apapun dan tag 5 teman kamu
-</span>
+    </span>
                 <div class="custom-file mt-1 mb-3">
                     <input type="file" class="custom-file-input form-control" id="customFile" required>
                     <!-- <label class="custom-file-label" name="bukti" for="customFile">Unggah bukti</label> -->
@@ -248,8 +249,8 @@
                     <div class="mb-3">
                             <?php if($tryout['harga'] != null):?>
                             <p>Silakan lakukan pembayaran sebesar: <span class="font-weight-bold"><?= !is_null($tryout['harga']) ? number_format($tryout['harga'], 0, ',', '.') : ''; ?>
-</span> <br>
-                            dalam waktu 24 jam dari sekarang untuk pembelian TO Freemium.
+        </span> <br>
+                                    dalam waktu 24 jam dari sekarang untuk pembelian TO Freemium.
                             
                             </p>
                             <?php endif; ?>

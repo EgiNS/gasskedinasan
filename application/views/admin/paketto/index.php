@@ -39,7 +39,30 @@
                         <p class="card-title fs-4"><?= $p['nama']; ?></p>
                         
                         <p class="card-text"><?= $p['keterangan']; ?></p>
-
+                        
+                        <!-- Tryout List -->
+                        <div class="mb-3">
+                            <h6 class="text-black">
+                                Tryout dalam paket:
+                            </h6>
+                            
+                            <?php if (!empty($p['tryouts'] )): ?>
+                                <ul class="d-flex flex-wrap gap-1 list-unstyled">
+                                    <?php foreach ($p['tryouts'] as $to): ?>
+                                        <li class="mb-1" >
+                                            <span class="badge bg-success p-2 rounded">
+                                                <?= $to['name']; ?>
+                                            </span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                        
+                            <?php else: ?>
+                                <p class="text-muted">
+                                    <i class="ti ti-info-circle"></i> Belum ada tryout dalam paket ini
+                                </p>
+                            <?php endif; ?>
+                        </div>
                         <a href="<?= base_url("/admin/detailpendaftar/" . ($p["id"])); ?>" class="btn btn-primary w-100">Lihat Pendaftar</a>
                     </div>
                 </div>

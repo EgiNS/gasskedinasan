@@ -15,8 +15,8 @@
 <div class="container-fluid gk-footer-bg text-white" style="padding: 50px 0px;">
     <div class="d-flex justify-content-center" style="gap: 100px;">
         <div   class="w-25">
-            <img src="" alt="">
-            <p style="font-size: 16px;">Platform resmi bimbingan belajar khusus perguruan tinggi kedinasan.</p>
+        <img style="width: 70px; margin-bottom: 20px;" src="<?= base_url('assets/assets_lp/img/gass/Gass_Putih.png') ?>" alt="">
+            <p style="font-size: 18px;">Platform resmi bimbingan belajar khusus perguruan tinggi kedinasan.</p>
         </div>
         <div class=" w-25">
             <h6 class="gk-footer-h6">Kontak</h6>
@@ -31,10 +31,10 @@
             <h6 class="gk-footer-h6">Join Us</h6>
             <div>
                 <span class="me-2">
-                    <img src="assets/assets_lp/img/icon/Instagram - Original.svg" alt="">
+                    <img style="width: 30px;" src="assets/assets_lp/img/icon/Instagram - Original.svg" alt="">
                 </span>
                 <span>
-                    <img src="assets/assets_lp/img/icon/LinkedIn - Dark.svg" alt="">
+                    <img style="width: 30px;" src="assets/assets_lp/img/icon/LinkedIn - Dark.svg" alt="">
 
                 </span>
             </div>

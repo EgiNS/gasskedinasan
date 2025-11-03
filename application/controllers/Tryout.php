@@ -512,7 +512,7 @@ class Tryout extends CI_Controller
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/mytryout/index', $data);
+        $this->load->view('tryout/mytryout', $data);
         $this->load->view('templates/user_footer');
     }
 

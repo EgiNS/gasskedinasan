@@ -4956,12 +4956,16 @@ class Admin extends CI_Controller
         $parent_title = getSubmenuTitleById(22)['title'];
         submenu_access(22);
 
+        $paket_to = $this->paket_to->getAllWithTryouts();
+        // print_r($paket_to);
+        // exit;
+        
         $data = [
             'title' => $parent_title,
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
-            'paket_to' => $this->paket_to->getAllOrderByIdDesc(),
+            'paket_to' => $paket_to,
             'tryout_available' => $this->tryout->getAll(),
         ];
 
@@ -5126,7 +5130,6 @@ class Admin extends CI_Controller
         if (file_exists('./assets/img/' . $uploadData['file_name'])) {
             unlink('./assets/img/' . $uploadData['file_name']);
         }
-
         log_message('error', 'Gagal menambah paket TO: ' . $e->getMessage());
         $this->session->set_flashdata('error', 'Gagal menambahkan tryout. Silakan coba lagi.');
         redirect('admin/pendaftar');

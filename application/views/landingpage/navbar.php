@@ -19,8 +19,8 @@
                 </a>
         </div>
         <div class="d-flex" style="gap: 1em;">
-            <button class="btn btn-blue-outline ">Login</button>
-            <button class="btn btn-blue">Daftar</button>
+            <a href="<?= base_url("/auth")?>" class="btn btn-blue-outline ">Login</a>
+            <a href="<?= base_url("/auth/registration")?>" class="btn btn-blue">Daftar</a>
         </div>
     </div>
 </div>
