@@ -44,7 +44,6 @@ $(document).ready(function () {
   $("#free-pay").click(function () {
     var tryout = $(this).data("tryout");
     var slug = $(this).data("slug");
-    var email = $(this).data("email");
     $("#exampleModal").modal("hide");
     Swal.fire({
       title: "Apakah Anda Yakin",
@@ -60,9 +59,6 @@ $(document).ready(function () {
         $.ajax({
           url: base_url + "tryout/free/" + slug,
           type: "post",
-          data: {
-            email: email,
-          },
           success: function () {
             daftarTryoutBtn.html("Daftar Tryout");
             console.log("success");

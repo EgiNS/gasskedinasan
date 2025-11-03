@@ -17,11 +17,16 @@ class Transaction_model extends CI_Model{
     } else {
         return false; 
     }
-
     }
     public function updateByOrderId($orderId, $data){
         $this->db->where('order_id',$orderId);
         $result = $this->db->update($this->table, $data);
         return ($result) ? true : false;
     }
+    public function selectById($id){
+        $this->db->where('id',$id);
+        $query = $this->db->get($this->table);
+        return $query->row();
+    }
+
 }
