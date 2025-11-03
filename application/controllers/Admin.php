@@ -1547,9 +1547,12 @@ class Admin extends CI_Controller
 
             //PEMBAHASAN GAMBAR
             if ($this->input->post('cek_pembahasan', true)) {
+                // var_dump($gambar_pembahasan);die;
                 if ($this->upload->do_upload('gambar_pembahasan')) {
-                    if (file_exists($path_gambar_soal . $gambar_pembahasan))
-                        unlink($path_gambar_soal . $gambar_pembahasan);
+                    if (!empty($gambar_pembahasan)) {
+                        if (file_exists($path_gambar_soal . $gambar_pembahasan))
+                            unlink($path_gambar_soal . $gambar_pembahasan);
+                    }
                     $gambar_pembahasan = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_pembahasan']['name'])) {
                     if (empty($gambar_pembahasan)) {
@@ -1697,8 +1700,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR SOAL
                 if ($this->upload->do_upload('gambar_soal')) {
-                    if (file_exists($path_gambar_soal . $gambar_soal))
-                        unlink($path_gambar_soal . $gambar_soal);
+                    if (!empty($gambar_soal)) {
+                        if (file_exists($path_gambar_soal . $gambar_soal))
+                            unlink($path_gambar_soal . $gambar_soal);
+                    }
 
                     $gambar_soal = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_soal']['name'])) {
@@ -1720,8 +1725,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN A
                 if ($this->upload->do_upload('gambar_a')) {
-                    if (file_exists($path_gambar_soal . $gambar_a))
-                        unlink($path_gambar_soal . $gambar_a);
+                    if (!empty($gambar_a)) {
+                        if (file_exists($path_gambar_soal . $gambar_a))
+                            unlink($path_gambar_soal . $gambar_a);
+                    }
 
                     $gambar_a = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_a']['name'])) {
@@ -1743,8 +1750,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN B
                 if ($this->upload->do_upload('gambar_b')) {
-                    if (file_exists($path_gambar_soal . $gambar_b))
-                        unlink($path_gambar_soal . $gambar_b);
+                    if (!empty($gambar_b)) {
+                        if (file_exists($path_gambar_soal . $gambar_b))
+                            unlink($path_gambar_soal . $gambar_b);
+                    }
 
                     $gambar_b = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_b']['name'])) {
@@ -1766,8 +1775,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN C
                 if ($this->upload->do_upload('gambar_c')) {
-                    if (file_exists($path_gambar_soal . $gambar_c))
-                        unlink($path_gambar_soal . $gambar_c);
+                    if (!empty($gambar_c)) {
+                        if (file_exists($path_gambar_soal . $gambar_c))
+                            unlink($path_gambar_soal . $gambar_c);
+                    }
 
                     $gambar_c = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_c']['name'])) {
@@ -1789,8 +1800,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN D
                 if ($this->upload->do_upload('gambar_d')) {
-                    if (file_exists($path_gambar_soal . $gambar_d))
-                        unlink($path_gambar_soal . $gambar_d);
+                    if (!empty($gambar_d)) {
+                        if (file_exists($path_gambar_soal . $gambar_d))
+                            unlink($path_gambar_soal . $gambar_d);
+                    }
 
                     $gambar_d = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_d']['name']))
@@ -1806,8 +1819,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN E
                 if ($this->upload->do_upload('gambar_e')) {
-                    if (file_exists($path_gambar_soal . $gambar_e))
-                        unlink($path_gambar_soal . $gambar_e);
+                    if (!empty($gambar_e)) {
+                        if (file_exists($path_gambar_soal . $gambar_e))
+                            unlink($path_gambar_soal . $gambar_e);
+                    }
 
                     $gambar_e = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_e']['name']))
@@ -1879,8 +1894,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR SOAL
                 if ($this->upload->do_upload('gambar_soal')) {
-                    if (file_exists($path_gambar_soal . $gambar_soal))
-                        unlink($path_gambar_soal . $gambar_soal);
+                    if (!empty($gambar_soal)) {
+                        if (file_exists($path_gambar_soal . $gambar_soal))
+                            unlink($path_gambar_soal . $gambar_soal);
+                    }
 
                     $gambar_soal = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_soal']['name'])) {
@@ -1920,8 +1937,10 @@ class Admin extends CI_Controller
                     array_push($gambar_a, $gambar_b, $gambar_c, $gambar_d, $gambar_e);
 
                     foreach ($gambar_jawaban as $gj) {
-                        if (file_exists($path_gambar_soal . $gj))
-                            unlink($path_gambar_soal . $gj);
+                        if (!empty($gambar_gj)) {
+                            if (file_exists($path_gambar_soal . $gj))
+                                unlink($path_gambar_soal . $gj);
+                        }
                     }
                 }
 
@@ -1982,8 +2001,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN A
                 if ($this->upload->do_upload('gambar_a')) {
-                    if (file_exists($path_gambar_soal . $gambar_a))
-                        unlink($path_gambar_soal . $gambar_a);
+                    if (!empty($gambar_a)) {
+                        if (file_exists($path_gambar_soal . $gambar_a))
+                            unlink($path_gambar_soal . $gambar_a);
+                    }
 
                     $gambar_a = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_a']['name'])) {
@@ -2005,8 +2026,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN B
                 if ($this->upload->do_upload('gambar_b')) {
-                    if (file_exists($path_gambar_soal . $gambar_b))
-                        unlink($path_gambar_soal . $gambar_b);
+                    if (!empty($gambar_b)) {
+                        if (file_exists($path_gambar_soal . $gambar_b))
+                            unlink($path_gambar_soal . $gambar_b);
+                    }
 
                     $gambar_b = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_b']['name'])) {
@@ -2028,8 +2051,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN C
                 if ($this->upload->do_upload('gambar_c')) {
-                    if (file_exists($path_gambar_soal . $gambar_c))
-                        unlink($path_gambar_soal . $gambar_c);
+                    if (!empty($gambar_c)) {
+                        if (file_exists($path_gambar_soal . $gambar_c))
+                            unlink($path_gambar_soal . $gambar_c);
+                    }
 
                     $gambar_c = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_c']['name'])) {
@@ -2051,8 +2076,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN D
                 if ($this->upload->do_upload('gambar_d')) {
-                    if (file_exists($path_gambar_soal . $gambar_d))
-                        unlink($path_gambar_soal . $gambar_d);
+                    if (!empty($gambar_d)) {
+                        if (file_exists($path_gambar_soal . $gambar_d))
+                            unlink($path_gambar_soal . $gambar_d);
+                    }
 
                     $gambar_d = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_d']['name']))
@@ -2068,8 +2095,10 @@ class Admin extends CI_Controller
 
                 // GAMBAR PILIHAN E
                 if ($this->upload->do_upload('gambar_e')) {
-                    if (file_exists($path_gambar_soal . $gambar_e))
-                        unlink($path_gambar_soal . $gambar_e);
+                    if (!empty($gambar_e)) {
+                        if (file_exists($path_gambar_soal . $gambar_e))
+                            unlink($path_gambar_soal . $gambar_e);
+                    }
 
                     $gambar_e = $this->upload->data('file_name');
                 } else if (empty($_FILES['gambar_e']['name']))

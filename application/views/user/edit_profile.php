@@ -1,78 +1,93 @@
-<!-- Begin Page Content -->
-<div class="container-fluid">
+    <div class="pc-container">
+
     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
-    <!-- Page Heading -->
-    <!-- BREADCUMB -->
-    <nav aria-label="breadcrumb" class="first">
-        <?= breadcumb($breadcrumb_item); ?>
-    </nav>
-
-    <div class="row">
-        <div class="col-lg-8">
-
-            <?= form_open_multipart('user/editprofile'); ?>
-
-            <div class="form-group row">
-                <label for="email" class="col-sm-2 col-form-label">Email</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="email" name="email" value="<?= $user['email']; ?>"
-                        readonly>
+      <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="page-header-title">
+                  <h5 class="m-b-10"><?= $title ?></h5>
                 </div>
+              </div>
+              <div class="col-auto">
+                <ul class="breadcrumb">
+                  <?= breadcumb($breadcrumb_item); ?>
+                </ul>
+              </div>
             </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
 
-            <div class="form-group row">
-                <label for="name" class="col-sm-2 col-form-label">Full name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="name" name="name" value="<?= $user['name']; ?>">
-                    <?= form_error('name', '<small class="text-danger pl-3">', '</small>'); ?>
+
+        <!-- [ Main Content ] start -->
+        <div class="row">
+          <!-- [ sample-page ] start -->
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-body">
+                <?= form_open_multipart('user/editprofile'); ?>
+
+                <div class="form-group row mb-2">
+                    <label for="email" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="email" name="email" value="<?= $user->email; ?>"
+                            readonly>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group row">
-                <label for="no_wa" class="col-sm-2 col-form-label">WhatsApp</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="no_wa" name="no_wa" value="<?= $user['no_wa']; ?>"
-                        autocomplete="off" placeholder="Contoh: 628xxx">
-                    <?= form_error('no_wa', '<small class="text-danger pl-3">', '</small>'); ?>
+                <div class="form-group row mb-2">
+                    <label for="name" class="col-sm-2 col-form-label">Full name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" name="name" value="<?= $user->name; ?>">
+                        <?= form_error('name', '<small class="text-danger pl-3">', '</small>'); ?>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group row">
-                <div class="col-sm-2">Picture</div>
-                <div class="col-sm-10">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <img src="<?= base_url('assets/img/profile/') . $user['image'] ?>" class="img-thumbnail">
+                <div class="form-group row mb-2">
+                    <label for="no_wa" class="col-sm-2 col-form-label">WhatsApp</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="no_wa" name="no_wa" value="<?= $user->no_wa; ?>"
+                            autocomplete="off" placeholder="Contoh: 628xxx">
+                        <?= form_error('no_wa', '<small class="text-danger pl-3">', '</small>'); ?>
+                    </div>
+                </div>
 
-                        </div>
-                        <div class="col-sm-9">
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="image" name="image">
-                                <label class="custom-file-label" for="image">Choose file</label>
+                <div class="form-group row mb-2">
+                    <div class="col-sm-2">Picture</div>
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <img src="<?= base_url('assets/img/profile/') . $user->image ?>" class="img-thumbnail">
+
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="custom-file">
+                                    <label class="custom-file-label" for="image">Choose file</label>
+                                    <input type="file" class="custom-file-input form-control" id="image" name="image">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group row justify-content-end">
-                <div class="col-sm-10">
-                    <button type="submit" class="btn btn-primary">Edit</button>
+                <div class="form-group row justify-content-end">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </div>
                 </div>
+
+                </form>
             </div>
-
-            </form>
-
+          </div>
+          <!-- [ sample-page ] end -->
         </div>
+        <!-- [ Main Content ] end -->
+      </div>
     </div>
 
-
-</div>
-<!-- /.container-fluid -->
-
-</div>
-<!-- End of Main Content -->
-
-<?php destroysession(); ?>
+    <?php destroysession(); ?>

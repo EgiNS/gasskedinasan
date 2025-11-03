@@ -23,49 +23,68 @@ class User_tryout_model extends CI_Model
     }
 
     public function get($count, $key, $slug, $select = '*', $user = null)
-{
-    $table = $this->table . $slug;
-    $this->db->select($select);
+    {
+        $table = $this->table . $slug;
+        $this->db->select($select);
 
-    // Ambil semua kolom dari tabel
-    $fields = $this->db->list_fields($table);
+        // Ambil semua kolom dari tabel
+        $fields = $this->db->list_fields($table);
 
-    // Default kondisi
-    $where = [];
+        // Default kondisi
+        $where = [];
 
-    if (isset($key['user_id'])) {
-        // Kalau tabel punya kolom user_id
-        if (in_array('user_id', $fields)) {
-            $where['user_id'] = $key['user_id'];
+        if (isset($key['user_id'])) {
+            // Kalau tabel punya kolom user_id
+            if (in_array('user_id', $fields)) {
+                $where['user_id'] = $key['user_id'];
+            }
+            // Kalau gak ada user_id tapi ada email dan user object dikirim
+            else if (in_array('email', $fields) && isset($user->email)) {
+                $where['email'] = $user->email;
+            } 
+            // Kalau gak ada dua-duanya, return kosong
+            else {
+                return [];
+            }
+        } else {
+            $where = $key; // kalau pakai key lain
         }
-        // Kalau gak ada user_id tapi ada email dan user object dikirim
-        else if (in_array('email', $fields) && isset($user->email)) {
-            $where['email'] = $user->email;
+
+        // Tambahkan order_by untuk memastikan urutan terbaru duluan
+        if ($count === 'one') {
+            // Deteksi apakah tabel punya kolom id
+            if (in_array('id', $fields)) {
+                $this->db->order_by('id', 'DESC');
+            } elseif (in_array('created_at', $fields)) {
+                $this->db->order_by('created_at', 'DESC');
+            }
+            $this->db->limit(1);
+            $result = $this->db->get_where($table, $where);
+            return $result->row_array();
         } 
-        // Kalau gak ada dua-duanya, return kosong
+        else if ($count === 'many') {
+            $result = $this->db->get_where($table, $where);
+            return $result->result_array();
+        } 
         else {
-            return [];
+            return false;
         }
-    } else {
-        $where = $key; // kalau pakai key lain
     }
-
-    $result = $this->db->get_where($table, $where);
-
-    if ($count === 'many') {
-        return $result->result_array();
-    } else if ($count === 'one') {
-        return $result->row_array();
-    } else {
-        return false;
-    }
-}
-
 
     public function update($data, $key, $slug)
     {
         $this->db->set($data);
         $this->db->where($key);
+        $result = $this->db->update($this->table . $slug);
+        return ($result == true) ? true : false;
+    }
+
+    public function updateLastRow($data, $key, $slug)
+    {
+        $this->db->set($data);
+        $this->db->where($key);
+        $this->db->order_by('id', 'DESC');
+        $this->db->limit(1);
         $result = $this->db->update($this->table . $slug);
         return ($result == true) ? true : false;
     }
@@ -99,6 +118,7 @@ class User_tryout_model extends CI_Model
             `tiu` int(11) DEFAULT NULL,
             `tkp` int(11) DEFAULT NULL,
             `total` int(11) DEFAULT NULL,
+            `pengerjaan` int(11) DEFAULT 1,
              PRIMARY KEY (`id`),
              CONSTRAINT `fk_user_tryout_user_{$slug}` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
              CONSTRAINT `fk_user_tryout_transaction_{$slug}` FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON DELETE CASCADE

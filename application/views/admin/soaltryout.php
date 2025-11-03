@@ -65,74 +65,74 @@
             <div class="card mt-2">
               <div class="card-body">
                 <table class="table table-striped table-responsive projects">
-                <thead>
-                    <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
-                    <tr>
-                        <th>No</th>
-                        <th>Tipe Soal</th>
-                        <th>Soal</th>
-                        <th class="text-center">Action</th>
-                    </tr>
-                    <?php elseif ($tryout['tipe_tryout'] == 'nonSKD') : ?>
-                    <tr>
-                        <th>No</th>
-                        <th>Soal</th>
-                        <th class="text-center">Action</th>
-                    </tr>
-                    <?php endif; ?>
-                </thead>
-                <tbody>
-                    <?php if ($soal) : ?>
-                    <?php foreach ($soal as $s) : ?>
-                    <tr>
-                        <td><?= $s['id']; ?></td>
+                    <thead>
                         <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
-                        <td><?= $tipe_soal[$s['tipe_soal'] - 1]; ?></td>
+                        <tr>
+                            <th>No</th>
+                            <th>Tipe Soal</th>
+                            <th>Soal</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                        <?php elseif ($tryout['tipe_tryout'] == 'nonSKD') : ?>
+                        <tr>
+                            <th>No</th>
+                            <th>Soal</th>
+                            <th class="text-center">Action</th>
+                        </tr>
                         <?php endif; ?>
-                        <td class="col-lg-7"><?= $s['text_soal']; ?></td>
-                        <td class="text-center">
-                            <a class="btn btn-info btn-sm" data-id="<?= $s['id']; ?>"
-                                href="<?= base_url('admin/detailsoal/') . urlencode($s['token']) . '?tryout=' . $slug; ?>">
-                                <i class="ti ti-info-circle fs-4">
-                                </i>
-                            </a>
+                    </thead>
+                    <tbody>
+                        <?php if ($soal) : ?>
+                        <?php foreach ($soal as $s) : ?>
+                        <tr>
+                            <td><?= $s['id']; ?></td>
+                            <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
+                            <td><?= $tipe_soal[$s['tipe_soal'] - 1]; ?></td>
+                            <?php endif; ?>
+                            <td class="col-lg-7"><?= $s['text_soal']; ?></td>
+                            <td class="text-center">
+                                <a class="btn btn-info btn-sm" data-id="<?= $s['id']; ?>"
+                                    href="<?= base_url('admin/detailsoal/') . urlencode($s['token']) . '?tryout=' . $slug; ?>">
+                                    <i class="ti ti-info-circle fs-4">
+                                    </i>
+                                </a>
 
-                            <a class="btn btn-warning btn-sm editsoal" data-id="<?= $s['id']; ?>"
-                                href="<?= base_url('admin/editsoal/') . urlencode($s['token']) . '?tryout=' . $slug . '&' . $page; ?>">
-                                <i class="fas fa-pencil-alt">
-                                </i>
-                            </a>
+                                <a class="btn btn-warning btn-sm editsoal" data-id="<?= $s['id']; ?>"
+                                    href="<?= base_url('admin/editsoal/') . urlencode($s['token']) . '?tryout=' . $slug . '&' . $page; ?>">
+                                    <i class="fas fa-pencil-alt">
+                                    </i>
+                                </a>
 
-                            <a class="btn btn-danger btn-sm btn-delete" data-url="admin/hapussoal/"
-                                data-message="<?= 'soal ' . ($tryout['tipe_tryout'] == 'SKD' ? $tipe_soal[$s['tipe_soal'] - 1] : '') . ' nomor ' . $s['id'] . ' tryout ' . $tryout['name']; ?>"
-                                data-key="<?= urlencode($s['token']); ?>" data-caption="<?= null; ?>"
-                                data-post="<?= $slug; ?>" href="#">
-                                <i class="fas fa-trash">
-                                </i>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                    <?php else : ?>
-                    <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
-                    <tr>
-                        <td>Empty</td>
-                        <td>Empty</td>
-                        <td>Empty</td>
-                        <td class="text-center">Empty</td>
-                    </tr>
-                    <?php else : ?>
-                    <tr>
-                        <td>Empty</td>
-                        <td>Empty</td>
-                        <td class="text-center">Empty</td>
-                    </tr>
-                    <?php endif; ?>
-                    <?php endif; ?>
+                                <a class="btn btn-danger btn-sm btn-delete" data-url="admin/hapussoal/"
+                                    data-message="<?= 'soal ' . ($tryout['tipe_tryout'] == 'SKD' ? $tipe_soal[$s['tipe_soal'] - 1] : '') . ' nomor ' . $s['id'] . ' tryout ' . $tryout['name']; ?>"
+                                    data-key="<?= urlencode($s['token']); ?>" data-caption="<?= null; ?>"
+                                    data-post="<?= $slug; ?>" href="#">
+                                    <i class="fas fa-trash">
+                                    </i>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php else : ?>
+                        <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
+                        <tr>
+                            <td>Empty</td>
+                            <td>Empty</td>
+                            <td>Empty</td>
+                            <td class="text-center">Empty</td>
+                        </tr>
+                        <?php else : ?>
+                        <tr>
+                            <td>Empty</td>
+                            <td>Empty</td>
+                            <td class="text-center">Empty</td>
+                        </tr>
+                        <?php endif; ?>
+                        <?php endif; ?>
 
-                </tbody>
-            </table>
-            <?= $this->pagination->create_links(); ?>
+                    </tbody>
+                </table>
+                <?= $this->pagination->create_links(); ?>
               </div>
             </div>
           </div>
