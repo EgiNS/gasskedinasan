@@ -1,4 +1,10 @@
-<header class="pc-header">
+<?php
+    $current_url = uri_string(); // contoh hasil: 'exam/question/123'
+    $is_exam_page = (strpos($current_url, 'exam/') === 0); // true kalau di route /exam
+    $is_ans_page = (strpos($current_url, 'tryout/answeranalysis/') === 0); // true kalau di route /exam
+?>
+
+<header class="pc-header" style="<?= $is_exam_page || $is_ans_page ? 'margin-left: 0; left:0; width: 100vw' : ''; ?>">
   <div class="header-wrapper"><!-- [Mobile Media Block] start -->
 <div class="me-auto pc-mob-drp">
   <ul class="list-unstyled">
