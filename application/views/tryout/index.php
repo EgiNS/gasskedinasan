@@ -18,7 +18,7 @@
   .ratio-3x4 {
   position: relative;
   width: 100%;
-  padding-top: calc(4 / 3 * 100%); /* 3:4 ratio (tinggi > lebar) */
+  padding-top: calc(2 / 3 * 100%); /* 3:4 ratio (tinggi > lebar) */
 }
 .ratio-3x4 > * {
   position: absolute;
@@ -79,16 +79,28 @@
                                 <div class="card-body d-flex flex-column">             
                                 <div class="d-flex align-items-center">
                                     <h5 class="card-title mb-2 text-uppercase fw-bolder" style="<?= ($item['hidden'] == 1 ? 'color: red;' : ''); ?>"><?= $item['name']; ?></h5>
-                                    <?php if ($item['paid'] == 1) : ?>
-                                        <i class="ti ti-currency-dollar mb-2 color text-success fw-bold"></i>
-                                    <?php endif; ?>
                                 </div>
                                 <p class="card-text text-muted mb-3" style="flex:0 0 auto;">
                                     <?= $item['keterangan']; ?>
                                 </p>
-                                <div class="mt-auto d-flex justify-content-between align-items-center">
-                                    <a href="<?= base_url('tryout/detail/') . $item['slug']; ?>" class="btn btn-sm btn-primary rounded">Detail</a>
+                                <div class="border-top mt-auto">
+                                      <?php if ($item['freemium'] == 1): ?>
+                                        <div class="d-flex justify-content-between my-3 align-item-center">
+                                          <span class="badge bg-info text-white px-2 py-1 rounded-pill d-flex align-items-center">Premium</span>
+                                        </div>
+                                      <?php elseif ($item['paid'] == 1): ?>
+                                        <div class="d-flex justify-content-between my-3 align-item-center">
+                                          <span class="badge bg-danger text-white px-2 py-1 rounded-pill d-flex align-items-center">Berbayar</span>
+                                          <span class="fw-bold text-danger fs-4"><?= "Rp." . $item['harga'] ?></span>
+                                        </div>
+                                      <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
+                                          <div class="d-flex justify-content-between my-3 align-item-center">
+                                            <span class="badge bg-success text-white px-2 py-1 rounded-pill d-flex align-items-center">Gratis</span>
+                                            <span class="fw-bold text-success fs-4">Rp.0</span>
+                                          </div>
+                                      <?php endif; ?>
                                 </div>
+                                <a href="<?= base_url('tryout/detail/') . $item['slug']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
                                 </div>
                             </div>
                             </div>
@@ -134,9 +146,24 @@
                                 <p class="card-text text-muted mb-3" style="flex:0 0 auto;">
                                     <?= $item['keterangan']; ?>
                                 </p>
-                                <div class="mt-auto d-flex justify-content-between align-items-center">
-                                    <a href="<?= base_url('tryout/detail/') . $item['slug']; ?>" class="btn btn-sm btn-primary rounded">Detail</a>
+                                <div class="border-top mt-auto">
+                                      <?php if ($item['freemium'] == 1): ?>
+                                        <div class="d-flex justify-content-between my-3 align-item-center">
+                                          <span class="badge bg-info text-white px-2 py-1 rounded-pill d-flex align-items-center">Premium</span>
+                                        </div>
+                                      <?php elseif ($item['paid'] == 1): ?>
+                                        <div class="d-flex justify-content-between my-3 align-item-center">
+                                          <span class="badge bg-danger text-white px-2 py-1 rounded-pill d-flex align-items-center">Berbayar</span>
+                                          <span class="fw-bold text-danger fs-4"><?= "Rp." . $item['harga'] ?></span>
+                                        </div>
+                                      <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
+                                          <div class="d-flex justify-content-between my-3 align-item-center">
+                                            <span class="badge bg-success text-white px-2 py-1 rounded-pill d-flex align-items-center">Gratis</span>
+                                            <span class="fw-bold text-success fs-4">Rp.0</span>
+                                          </div>
+                                      <?php endif; ?>
                                 </div>
+                                <a href="<?= base_url('tryout/detail/') . $item['slug']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
                                 </div>
                             </div>
                             </div>
