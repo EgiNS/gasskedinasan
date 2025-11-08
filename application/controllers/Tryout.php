@@ -54,13 +54,16 @@ class Tryout extends CI_Controller
                 'href' => 'active'
             ]
         ];
-
+        $paket_to = $this->paket_to->getAll();
+        
         $data = [
             'title' => $parent_title,
             'breadcrumb_item' => $breadcrumb_item,
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
+            'paket_to' => $paket_to,
+            'events' => '',
             'tryout_skd' => $this->tryout->get('many', ['tipe_tryout' => 'SKD', 'hidden' => 0, 'for_bimbel' => 0]),
             'tryout_mtk' => $this->tryout->get('many', ['tipe_tryout' => 'nonSKD', 'hidden' => 0, 'for_bimbel' => 0]),
         ];
@@ -68,7 +71,7 @@ class Tryout extends CI_Controller
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/index', $data);
+        $this->load->view('tryout/beli_ilmu/index', $data);
         $this->load->view('templates/user_footer');
     }
 
