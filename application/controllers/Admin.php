@@ -25,6 +25,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @property Kode_settings_model $kode_settings
  * @property Midtrans_payment_model $midtrans_payment
  * @property Tryout_paket_to_model $tryout_paket_to
+ * @property Event_model $event
+ * @property Tryout_event_model $tryout_event
  */
 class Admin extends CI_Controller
 {
@@ -5258,5 +5260,140 @@ class Admin extends CI_Controller
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+
+    public function event(){
+        $this->_loadRequiredModels();
+        $this->load->model('Event_model', 'event');
+        $parent_title = getSubmenuTitleById(1)['title'];
+        submenu_access(1);
+
+        
+        $data = [
+            'title' => $parent_title,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'tryout_available' => $this->tryout->getAll(),
+            'events' => $this->event->getAllWithTryouts(),        
+            'parent_submenu' => $parent_title,
+        ];
+        
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/event/index', $data);
+        $this->load->view('templates/user_footer');
+    }
+    public function tambahevent()
+    {
+        $this->_loadRequiredModels();
+        $this->load->model('Event_model', 'event');
+        $this->load->model('Tryout_event_model', 'tryout_event'); // Updated to use events_tryout table
+
+        // Set validation rules to match database schema
+        $this->form_validation->set_rules('name', 'Nama Event', 'required',['required' => 'Nama Event harus diisi.']); // Changed from 'nama' to 'name'
+        $this->form_validation->set_rules('paket_to_ids[]', 'Tryout', 'required', ['required' => 'Paket Tryout harus dipilih.']);
+        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required', ['required' => 'Keterangan harus diisi.']);
+        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
+            'numeric' => 'Harga hanya boleh diisi angka.',
+            'required' => 'Harga harus diisi.'
+        ]);
+        $this->form_validation->set_rules('group_link', 'Link Grup', 'required|valid_url', [
+            'valid_url' => 'Link grup harus berupa URL yang valid.',
+            'required' => 'Link grup harus diisi.'
+        ]);
+
+        if ($this->form_validation->run() == false) {
+            // If validation fails, set flashdata and redirect back to keep modal state
+            $this->session->set_flashdata('validation_errors', validation_errors());
+            $this->session->set_flashdata('form_data', $this->input->post());
+            $this->session->set_flashdata('show_modal', true);
+            redirect('admin/event');
+            return;
+        } else {
+            // Configure file upload for event image (using 'gambar' field)
+            $config['upload_path'] = './assets/img/events/';
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size'] = 2048;
+            $config['file_name'] = time();
+
+            // Create directory if it doesn't exist
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if (!$this->upload->do_upload('gambar')) { // Changed from 'foto' to 'gambar'
+                // Upload failed - set specific error message
+                $error = $this->upload->display_errors('', '');
+                $this->session->set_flashdata('gambar', $error);
+                $this->session->set_flashdata('form_data', $this->input->post());
+                $this->session->set_flashdata('show_modal', true);
+                redirect('admin/event');
+                return;
+            }
+
+            // If upload successful, get file information
+            $uploadData = $this->upload->data();
+            
+            // Start database transaction
+            $this->db->trans_start();
+            
+            try {
+                // Generate unique slug from name
+                $name = $this->input->post('name'); // Changed from 'nama' to 'name'
+                $slug = $this->event->generateSlug($name);
+                
+                // Insert event data with correct field names
+                $event_data = [
+                    'name' => $name, // Using 'name' field
+                    'slug' => $slug, // Adding required slug field
+                    'gambar' => 'events/' . $uploadData['file_name'], // Using 'gambar' field
+                    'harga' => $this->input->post('harga'),
+                    'group_link' => $this->input->post('group_link'), // Using 'group_link' field
+                    'keterangan' => $this->input->post('keterangan'),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+                
+                $event_id = $this->event->insert($event_data);
+                
+                // Insert tryout-event relationships in events_tryout table
+                $tryout_ids = $this->input->post('paket_to_ids');
+                foreach ($tryout_ids as $tryout_id) {
+                    $tryout_event_data = [
+                        'event_id' => $event_id,
+                        'tryout_id' => $tryout_id,
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+                    $this->tryout_event->insert($tryout_event_data);
+                }
+                
+                // Complete transaction
+                $this->db->trans_complete();
+                
+                if ($this->db->trans_status() === FALSE) {
+                    throw new Exception('Transaksi database gagal.');
+                }
+                
+                $this->session->set_flashdata('success', 'Event baru berhasil ditambahkan');
+                redirect('admin/event');
+                
+            } catch (Exception $e) {
+                // Rollback transaction
+                $this->db->trans_rollback();
+                
+                // Delete uploaded file if exists
+                if (file_exists('./assets/img/events/' . $uploadData['file_name'])) {
+                    unlink('./assets/img/events/' . $uploadData['file_name']);
+                }
+                
+                log_message('error', 'Gagal menambah event: ' . $e->getMessage());
+                $this->session->set_flashdata('error', 'Gagal menambahkan event. Silakan coba lagi.');
+                redirect('admin/event');
+            }
+        }
     }
 }

@@ -43,6 +43,7 @@ class Tryout extends CI_Controller
         $this->sidebarMenu = 'Tryout';
     }
 
+
     public function index()
     {
         $parent_title = getSubmenuTitleById(10)['title'];
@@ -55,7 +56,7 @@ class Tryout extends CI_Controller
             ]
         ];
         $paket_to = $this->paket_to->getAll();
-        
+
         $data = [
             'title' => $parent_title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -98,12 +99,12 @@ class Tryout extends CI_Controller
         $this->load->model('Jawaban_model', 'jawaban');
 
         $user = $this->loginUser;
-    
+
 
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
         $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $slug);
-        $sudah_bayar = $this->transaction->selectById($user_tryout['transaction_id']);    
+        $sudah_bayar = $this->transaction->selectById($user_tryout['transaction_id']);
         $data = [
             'title' => 'Detail ' . $title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -116,7 +117,7 @@ class Tryout extends CI_Controller
             'soal_nomor_satu' => $this->soal->get('one', ['id' => 1], $slug),
             'soal_starting_three' => $soal_starting_three,
             'terdaftar' => $user_tryout ? true : false,
-            'sudah_bayar' =>  ($sudah_bayar && $sudah_bayar->transaction_status === 'settlement'),
+            'sudah_bayar' => ($sudah_bayar && $sudah_bayar->transaction_status === 'settlement'),
             'freemium' => $user_tryout['freemium'] ? true : false
         ];
 
@@ -498,7 +499,7 @@ class Tryout extends CI_Controller
         $all_tryout = $this->tryout->get('many', ['for_bimbel' => 0]);
         $tryout = [];
         $mytryout = [];
-        
+
 
         foreach ($all_tryout as $to) {
             $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $to['slug'], '*', $user);
@@ -510,7 +511,7 @@ class Tryout extends CI_Controller
 
         $data['tryout'] = $tryout;
         $data['mytryout'] = $mytryout;
-        
+
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
@@ -576,11 +577,11 @@ class Tryout extends CI_Controller
         if (!is_array($kode_refferal_list)) {
             $kode_refferal_list = [];
         }
-        
+
         $gross_amount = in_array($kode_refferal, $kode_refferal_list)
             ? (int)$tryout['harga_diskon']
             : (int)$tryout['harga'];
-        
+
         $transaction_details = array(
             'order_id' => $order_id,
             'gross_amount' => $gross_amount,
@@ -636,7 +637,7 @@ class Tryout extends CI_Controller
         $snapToken = $this->midtrans->getSnapToken($params);
         $this->transaction->updateByOrderId(
             $order_id,
-            ['snap_token' => $snapToken,'expiry_time' => date("Y-m-d H:i:s", time() + (24 * 60 * 60))]
+            ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (24 * 60 * 60))]
         );
         echo $snapToken;
     }
@@ -652,7 +653,7 @@ class Tryout extends CI_Controller
         $gross_amount = in_array($kode_refferal, $kode_refferal_list)
             ? (int)$tryout['harga_diskon']
             : (int)$tryout['harga'];
-        
+
         $transaction_details = array(
             'order_id' => $order_id,
             'gross_amount' => $gross_amount,
@@ -663,7 +664,7 @@ class Tryout extends CI_Controller
             'quantity' => 1,
             'name' => $tryout['name']
         );
-        
+
 
         $item_details = array($item1_details);
         $customer_details = array(
@@ -671,7 +672,7 @@ class Tryout extends CI_Controller
             'email'         => $user->email,
             'phone'         => $user->no_wa
         );
-                $credit_card = array(
+        $credit_card = array(
             'secure' => true,
             'save_card' => true
         );
@@ -708,7 +709,7 @@ class Tryout extends CI_Controller
         $snapToken = $this->midtrans->getSnapToken($params);
         $this->transaction->updateByOrderId(
             $order_id,
-            ['snap_token' => $snapToken,'expiry_time' => date("Y-m-d H:i:s", time() + (24 * 60 * 60))]
+            ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (24 * 60 * 60))]
         );
         echo $snapToken;
     }
@@ -848,9 +849,33 @@ class Tryout extends CI_Controller
         }
     }
 
-    private function _randtoken()
+    public function detail_paket_to($id)
     {
-        $token = rand(111111, 999999);
-        return $token;
+        
+        $submenu_parent = 10;
+        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
+        submenu_access($submenu_parent);
+        $title = $id;
+        $breadcrumb_item = [
+            [
+                'title' => $parent_title,
+                'href' => 'tryout'
+            ],
+            [
+                'title' => $title,
+                'href' => 'active'
+            ]
+        ];
+        $data = [
+            'title' => 'Detail Paket TO ' . $title,
+            'breadcrumb_item' => $breadcrumb_item,
+                        'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+        ];
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('tryout/beli_ilmu/paket_to/detail', $data);
+        $this->load->view('templates/user_footer');
     }
 }

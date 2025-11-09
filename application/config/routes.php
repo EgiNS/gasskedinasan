@@ -57,7 +57,7 @@ $route['404_override'] = 'my404';
 $route['translate_uri_dashes'] = FALSE;
 $route['midtrans/token'] = 'MidtransController/token';
 $route['midtrans/notification'] = 'MidtransController/notification';
-
+$route['tryout/paket-to/(:num)'] = 'Tryout/detail_paket_to/$1';
 // $route['midtrans/snap/token'] = 'midtrans/snap/token';
 // $route['processing/(:any)'] = 'frontend/processing/$1';
 // $route['profile/(:any)'] = 'frontend/profile/$1';
