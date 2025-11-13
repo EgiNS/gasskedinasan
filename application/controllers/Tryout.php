@@ -18,6 +18,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @property Bobot_nilai_tiap_soal_model $bobot_nilai_tiap_soal
  * @property Bobot_nilai_model $bobot_nilai
  * @property Transaction_model $transaction
+ * @property Event_model $event
+ * @property Event_pendaftar_model $event_pendaftar
  * 
  */
 class Tryout extends CI_Controller
@@ -46,8 +48,10 @@ class Tryout extends CI_Controller
 
     public function index()
     {
+        $this->load->model('Event_model', 'event');
         $parent_title = getSubmenuTitleById(10)['title'];
         submenu_access(10);
+
 
         $breadcrumb_item = [
             [
@@ -57,6 +61,8 @@ class Tryout extends CI_Controller
         ];
         $paket_to = $this->paket_to->getAll();
 
+
+
         $data = [
             'title' => $parent_title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -64,7 +70,7 @@ class Tryout extends CI_Controller
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
             'paket_to' => $paket_to,
-            'events' => '',
+            'events' => $this->event->getAll(),
             'tryout_skd' => $this->tryout->get('many', ['tipe_tryout' => 'SKD', 'hidden' => 0, 'for_bimbel' => 0]),
             'tryout_mtk' => $this->tryout->get('many', ['tipe_tryout' => 'nonSKD', 'hidden' => 0, 'for_bimbel' => 0]),
         ];
@@ -849,9 +855,9 @@ class Tryout extends CI_Controller
         }
     }
 
-    public function detail_paket_to($id)
+    public function detail_paket_to( $id )
     {
-        
+
         $submenu_parent = 10;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -869,7 +875,7 @@ class Tryout extends CI_Controller
         $data = [
             'title' => 'Detail Paket TO ' . $title,
             'breadcrumb_item' => $breadcrumb_item,
-                        'sidebar_menu' => $this->sidebarMenu,
+            'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
         ];
         $this->load->view('templates/user_header', $data);
@@ -878,4 +884,9 @@ class Tryout extends CI_Controller
         $this->load->view('tryout/beli_ilmu/paket_to/detail', $data);
         $this->load->view('templates/user_footer');
     }
+
+   
+
+
+
 }

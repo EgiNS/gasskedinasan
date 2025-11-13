@@ -25,3 +25,26 @@ CREATE TABLE events
 );
 
     
+    CREATE TABLE events_pendaftar (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_id INT NOT NULL,
+    user_id INT NOT NULL,
+    transaction_id INT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_event_pendaftar_event 
+        FOREIGN KEY (event_id) REFERENCES events(id)
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_event_pendaftar_user 
+        FOREIGN KEY (user_id) REFERENCES user(id)
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_event_pendaftar_transaction 
+        FOREIGN KEY (transaction_id) REFERENCES transactions(id)
+        ON DELETE SET NULL 
+        ON UPDATE CASCADE
+);

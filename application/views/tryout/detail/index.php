@@ -296,9 +296,7 @@
                     $.ajax({
                         url: '<?= base_url("tryout/upgradefreemium/") ?>',
                         type: 'POST',
-                        headers: {
-                            "Accept": "application/json"
-                        },
+                        headers: {"Accept": "application/json"},
                         data: {
                             'id': id
 

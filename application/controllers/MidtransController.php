@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers", "X-Requested-With, content-type");
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
@@ -15,6 +15,7 @@ header('HTTP/1.0 200 OK');
  * @property User_model $user
  * @property Transaction_model $transaction
  * @property Pendaftar_to_model $pendaftar_to
+ * @property Event_pendaftar_model $event_pendaftar
  */
 class MidtransController extends CI_Controller
 {
@@ -35,7 +36,7 @@ class MidtransController extends CI_Controller
 	 * @see http://codeigniter.com/user_guide/general/urls.html
 	 */
 	protected $loginUser;
-	
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -48,7 +49,7 @@ class MidtransController extends CI_Controller
 		$this->load->helper('url');
 		$this->load->model('User_model', 'user');
 		$this->load->model('Transaction_model', 'transaction');
-		$this->load->model('Pendaftar_to_model','pendaftar_to');
+		$this->load->model('Pendaftar_to_model', 'pendaftar_to');
 		$this->loginUser = $this->user->getLoginUser();
 		date_default_timezone_set('Asia/Jakarta');
 	}
@@ -100,17 +101,17 @@ class MidtransController extends CI_Controller
 		$data = [
 			'user_id' => $user->id,
 			'order_id' => $order_id,
-			'gross_amount'=> $gross_amount,
-			 'transaction_time'   => date('Y-m-d H:i:s'),
+			'gross_amount' => $gross_amount,
+			'transaction_time'   => date('Y-m-d H:i:s'),
 			'transaction_status' => 'pending'
 		];
 
 		$transaction_id = $this->transaction->insert($data);
 
 		$pendaftar_to_data = [
-			'user_id'=> $user->id,
+			'user_id' => $user->id,
 			'transaction_id' => $transaction_id,
-			'paket_to_id'=> $packet_to->id
+			'paket_to_id' => $packet_to->id
 		];
 		$this->pendaftar_to->insert($pendaftar_to_data);
 		$params = array(
@@ -127,25 +128,26 @@ class MidtransController extends CI_Controller
 
 	public function notification()
 	{
+		$this->load->model('Event_pendaftar_model', 'event_pendaftar');
 		$json = file_get_contents('php://input');
 		$notif = json_decode($json);
-		if($notif){
-			$data = [
-				'transaction_id'     => $notif->transaction_id ?? null,
-				'payment_type'       => $notif->payment_type ?? null,
-				'transaction_time'   => $notif->transaction_time ?? date('Y-m-d H:i:s'),
-				'bank'               => $notif->va_numbers[0]->bank ?? null,
-				'va_number'          => $notif->va_numbers[0]->va_number ?? null,
-				'pdf_url'            => $notif->pdf_url ?? null,
-				'status_code'        => $notif->status_code ?? null,
-				'fraud_status'       => $notif->fraud_status ?? null,
-				'transaction_status' => $notif->transaction_status ?? 'pending',
-				'updated_at'         => date('Y-m-d H:i:s'),
-				];
-			$this->transaction->updateByOrderId( $notif->order_id, $data);
-			http_response_code(200);
-		}else {
+		if (!$notif) {
 			http_response_code(400);
+			return;
 		}
-}
+		$data = [
+			'transaction_id'     => $notif->transaction_id ?? null,
+			'payment_type'       => $notif->payment_type ?? null,
+			'transaction_time'   => $notif->transaction_time ?? date('Y-m-d H:i:s'),
+			'bank'               => isset($notif->va_numbers[0]->bank) ? $notif->va_numbers[0]->bank : null,
+			'va_number'          => isset($notif->va_numbers[0]->va_number) ? $notif->va_numbers[0]->va_number : null,
+			'pdf_url'            => $notif->pdf_url ?? null,
+			'status_code'        => $notif->status_code ?? null,
+			'fraud_status'       => $notif->fraud_status ?? null,
+			'transaction_status' => $notif->transaction_status,
+			'updated_at'         => date('Y-m-d H:i:s'),
+		];
+		$this->transaction->updateByOrderId($notif->order_id, $data);
+	
+	}	
 }
