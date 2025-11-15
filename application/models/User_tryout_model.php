@@ -21,6 +21,23 @@ class User_tryout_model extends CI_Model
         $this->db->select($select);
         return $this->db->get($this->table . $slug)->result_array();
     }
+    public function getByTryoutIdWithTransaction($slug,$user_id)
+    {
+        $user_tryout_table = $this->table . $slug;
+        $this->db->select('
+        ' . $user_tryout_table . '.id,
+        tr.transaction_status,
+        tr.snap_token, tr.expiry_time
+        
+    ');
+        $this->db->from($user_tryout_table);
+        $this->db->join('transactions tr', $user_tryout_table . '.transaction_id = tr.id', 'left');
+
+        $this->db->where($user_tryout_table . '.user_id', $user_id);
+
+        $query = $this->db->get();
+        return $query->row_array();
+    }
 
     public function get($count, $key, $slug, $select = '*', $user = null)
     {
@@ -41,7 +58,7 @@ class User_tryout_model extends CI_Model
             // Kalau gak ada user_id tapi ada email dan user object dikirim
             else if (in_array('email', $fields) && isset($user->email)) {
                 $where['email'] = $user->email;
-            } 
+            }
             // Kalau gak ada dua-duanya, return kosong
             else {
                 return [];
@@ -61,12 +78,10 @@ class User_tryout_model extends CI_Model
             $this->db->limit(1);
             $result = $this->db->get_where($table, $where);
             return $result->row_array();
-        } 
-        else if ($count === 'many') {
+        } else if ($count === 'many') {
             $result = $this->db->get_where($table, $where);
             return $result->result_array();
-        } 
-        else {
+        } else {
             return false;
         }
     }
@@ -150,19 +165,19 @@ class User_tryout_model extends CI_Model
     {
         // $query = "SELECT * FROM `user_tryout` JOIN `user` ON `user_tryout`.`email` = `user`.`email` ORDER BY `user_tryout`.`total` DESC, `user_tryout`.`tkp` DESC, `user_tryout`.`tiu` DESC, `user_tryout`.`twk` DESC;";
 
-    // Cek apakah kolom 'user_id' ada di tabel
-$checkColumn = $this->db->query("SHOW COLUMNS FROM user_tryout_{$slug} LIKE 'user_id'");
-$useUserId = $checkColumn->num_rows() > 0;
+        // Cek apakah kolom 'user_id' ada di tabel
+        $checkColumn = $this->db->query("SHOW COLUMNS FROM user_tryout_{$slug} LIKE 'user_id'");
+        $useUserId = $checkColumn->num_rows() > 0;
 
-if ($useUserId) {
-    $joinField = 'user_id';
-    $onClause = 'u.id = ut.user_id';
-} else {
-    $joinField = 'email';
-    $onClause = 'u.email = ut.email';
-}
+        if ($useUserId) {
+            $joinField = 'user_id';
+            $onClause = 'u.id = ut.user_id';
+        } else {
+            $joinField = 'email';
+            $onClause = 'u.email = ut.email';
+        }
 
-$query = "
+        $query = "
     SELECT u.*, ut.*
     FROM user AS u
     JOIN (
@@ -197,7 +212,6 @@ $query = "
             ORDER BY ut.nilai DESC
         ");
         return $query->result_array();
-
     }
 
     public function getRankingnonSKDAdmin($slug, $select = '*')

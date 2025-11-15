@@ -20,6 +20,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @property Transaction_model $transaction
  * @property Event_model $event
  * @property Event_pendaftar_model $event_pendaftar
+ * @property CI_DB_query_builder $db
  * 
  */
 class Tryout extends CI_Controller
@@ -109,8 +110,17 @@ class Tryout extends CI_Controller
 
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
-        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $slug);
-        $sudah_bayar = $this->transaction->selectById($user_tryout['transaction_id']);
+        $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
+        $payment_status = '';
+        if ($pendaftar['transaction_status'] == 'settlement') {
+            $payment_status = 'settlement';
+
+        } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
+            $payment_status = 'pending';
+        } else {
+            $payment_status = 'expired';
+        }
+        
         $data = [
             'title' => 'Detail ' . $title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -118,19 +128,17 @@ class Tryout extends CI_Controller
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
             'tryout' => $tryout,
-            'user_tryout' => $user_tryout,
             'slug' => $slug,
             'soal_nomor_satu' => $this->soal->get('one', ['id' => 1], $slug),
             'soal_starting_three' => $soal_starting_three,
-            'terdaftar' => $user_tryout ? true : false,
-            'sudah_bayar' => ($sudah_bayar && $sudah_bayar->transaction_status === 'settlement'),
-            'freemium' => $user_tryout['freemium'] ? true : false
+            'payment_status'=> $payment_status
+          
         ];
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/detail', $data);
+        $this->load->view('tryout/detail/index', $data);
         $this->load->view('templates/user_footer');
 
         $jawaban_user = $this->jawaban->get('one', ['email' => $user->email], $slug);
@@ -140,17 +148,6 @@ class Tryout extends CI_Controller
                 redirect('exam/question/' . $data['soal_nomor_satu']['token'] . '?tryout=' . $slug);
     }
 
-    public function continuepayment($id)
-    {
-        $slug = $this->input->post('slug');
-        $user_tryout = $this->user_tryout->get('one', ['id' => $id], $slug);
-        $transaction = $this->transaction->selectById($user_tryout['transaction_id']);
-        if (!$transaction || $transaction->transaction_status == 'settlement') {
-            redirect('tryout/detail/' . $slug);
-        }
-        $snap_token = $transaction->snap_token;
-        echo $snap_token;
-    }
 
     public function nilai($slug)
     {
@@ -570,12 +567,18 @@ class Tryout extends CI_Controller
     public function freemium()
     {
 
-        $order_id = 'ORDER-' . uniqid();
         $user = $this->loginUser;
         $id = $this->input->post('id');
+        $order_id = 'TO-' . $id . '-USR-' . $user->id . '-' . time();
         $kode_refferal = $this->input->post('kode_refferal');
         $tryout = $this->tryout->get('one', ['id' => $id]);
-
+        $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($tryout['slug'], $user->id);
+        if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
+            print_r($pendaftar['snap_token']);
+            exit;
+            echo $pendaftar['snap_token'];
+            return;
+        }
         // Ubah string JSON jadi array PHP
         $kode_refferal_list = json_decode($tryout['kode_refferal'], true);
 
@@ -614,8 +617,8 @@ class Tryout extends CI_Controller
 
         $custom_expiry = array(
             'start_time' => date("Y-m-d H:i:s O", time()),
-            'unit' => 'day',
-            'duration'  => 1
+            'unit' => 'hour',
+            'duration'  => 2
         );
         $data = [
             'user_id' => $user->id,
@@ -624,28 +627,55 @@ class Tryout extends CI_Controller
             'transaction_time'   => date('Y-m-d H:i:s'),
             'transaction_status' => 'pending'
         ];
-        $transaction_id = $this->transaction->insert($data);
+        try {
+            
+            $this->db->trans_begin();
+            $transaction_id = $this->transaction->insert($data);
+            if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] <= date('Y-m-d H:i:s')) {
+                $this->user_tryout->update(
+                    ['transaction_id'=> $transaction_id ],
+                    ['id'=> $pendaftar['id'] ],
+                    $tryout['slug']
+                );
+            } else {
 
-        $this->user_tryout->insert([
+                        $this->user_tryout->insert([
             'token' => 11111,
             'status' => 0,
             'freemium' => 1,
             'user_id' => $user->id,
             'transaction_id' => $transaction_id
         ], $tryout['slug']);
-        $params = array(
-            'transaction_details' => $transaction_details,
-            'item_details'       => $item_details,
-            'customer_details'   => $customer_details,
-            'credit_card'        => $credit_card,
-            'expiry'             => $custom_expiry
-        );
-        $snapToken = $this->midtrans->getSnapToken($params);
-        $this->transaction->updateByOrderId(
-            $order_id,
-            ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (24 * 60 * 60))]
-        );
-        echo $snapToken;
+
+            }
+
+            $params = array(
+                'transaction_details' => $transaction_details,
+                'item_details'       => $item_details,
+                'customer_details'   => $customer_details,
+                'credit_card'        => $credit_card,
+                'expiry'             => $custom_expiry
+            );
+
+            $snapToken = $this->midtrans->getSnapToken($params);
+            $this->transaction->updateByOrderId(
+                $order_id,
+                ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (2 * 60 * 60))]
+            );
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                throw new Exception("Gagal menyimpan transaksi atau pendaftar.");
+            } else {
+                $this->db->trans_commit();
+            }
+            echo $snapToken;
+        } catch (\Throwable $th) {
+            $this->db->trans_rollback();
+            log_message('error', 'Gagal buat transaksi: ' . $th->getMessage());
+            throw $th;
+        }
+
+
     }
 
     public function upgradefreemium()

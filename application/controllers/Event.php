@@ -130,8 +130,8 @@ class Event extends CI_Controller
 
         $custom_expiry = array(
             'start_time' => date("Y-m-d H:i:s O", time()),
-            'unit' => 'minute',
-            'duration'  => 1
+            'unit' => 'hour',
+            'duration'  => 2
         );
         $data = [
             'user_id' => $user->id,
@@ -169,7 +169,7 @@ class Event extends CI_Controller
             $snap_token = $this->midtrans->getSnapToken($params);
             $this->transaction->updateByOrderId(
                 $order_id,
-                ['snap_token' => $snap_token, 'expiry_time' => date("Y-m-d H:i:s", time() + (1 * 1 * 60))]
+                ['snap_token' => $snap_token, 'expiry_time' => date("Y-m-d H:i:s", time() + (2 * 60 * 60))]
             );
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
