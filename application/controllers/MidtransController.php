@@ -147,6 +147,9 @@ class MidtransController extends CI_Controller
 			'transaction_status' => $notif->transaction_status,
 			'updated_at'         => date('Y-m-d H:i:s'),
 		];
+		if ($data['transaction_status'] != 'settlement') {
+			return;
+		}
 		$this->transaction->updateByOrderId($notif->order_id, $data);
 	
 	}	

@@ -77,15 +77,7 @@
                                 <div class="mb-4 flex-grow-1">
                                     <p class="text-muted mb-3"><?= $event['keterangan'] ?? 'Bergabunglah dengan event premium kami yang dirancang khusus untuk mempersiapkan diri menghadapi seleksi CPNS 2024. Event ini menyediakan berbagai tryout berkualitas tinggi dengan pembahasan lengkap dari tim ahli.' ?></p>
 
-                                    <div class="alert alert-info" role="alert">
-                                        <h6 class="mb-2"><i class="ti ti-info-circle me-2"></i>Keunggulan Event Ini</h6>
-                                        <ul class="mb-0 small">
-                                            <li>Akses ke berbagai tryout premium</li>
-                                            <li>Pembahasan detail dari instruktur berpengalaman</li>
-                                            <li>Grup diskusi eksklusif dengan peserta lain</li>
-                                            <li>Update materi sesuai kisi-kisi terbaru</li>
-                                        </ul>
-                                    </div>
+                                    
                                 </div>
 
 
@@ -204,7 +196,7 @@
                                     <?php if (!empty($event['group_link'] ?? '')): ?>
                                         <div class="mb-4">
                                             <!-- Success Alert -->
-                                            <div class=" border-0 shadow-sm mb-3 text-center" style="">
+                                            <div class=" border-0 shadow-sm mb-3 text-center" >
                                                 <div class="">
                                                     <i class="ti ti-check-circle mb-2" style="font-size: 2rem;"></i>
                                                     <h6 class="fw-bold mb-1">🎉 Selamat! Event Aktif</h6>
@@ -305,7 +297,7 @@
         </div>
 
         <?= $this->load->view('tryout/beli_ilmu/events/registration_modal'); ?>
-
+                                
         <script>
             $(document).ready(function() {
                 // Enable proceed button only if terms are agreed

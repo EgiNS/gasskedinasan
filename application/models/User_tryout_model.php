@@ -16,6 +16,22 @@ class User_tryout_model extends CI_Model
         return ($result == true) ? true : false;
     }
 
+    public function insertUserTryoutMultiSlug($data, $tryouts)
+{
+    foreach ($tryouts as $tryout) {
+        $tableName = $this->table . $tryout['slug'];
+
+        $result = $this->db->insert($tableName, $data);
+
+        if (!$result) {
+            return false; // kalau ada tabel gagal, hentikan
+        }
+    }
+
+    return true; // semua tabel berhasil
+}
+
+
     public function getAll($slug, $select = '*')
     {
         $this->db->select($select);
