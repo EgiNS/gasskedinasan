@@ -8,7 +8,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="<?= base_url('admin/tambahevent'); ?>" method="post" enctype="multipart/form-data">
+                        <form action="<?= base_url('admin/tambahevent'); ?>" method="post" enctype="multipart/form-data" novalidate>
                             <!-- Display general validation errors -->
                             <?php if ($this->session->flashdata('validation_errors')): ?>
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
