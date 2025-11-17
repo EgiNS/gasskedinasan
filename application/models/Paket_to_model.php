@@ -25,6 +25,7 @@ class Paket_to_model extends CI_Model
     public function getAll($select = '*')
     {
         $this->db->select($select);
+        $this->db->order_by('id', 'DESC');
         return $this->db->get($this->table)->result_array();
     }
 

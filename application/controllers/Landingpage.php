@@ -21,11 +21,13 @@ class Landingpage extends CI_Controller
         $data = ['tryout'=>$tryout];
         $data_2 = ['tryout_2'=>$tryout_2];
         
+        $role = check_role();
         $data = [
             'tryout' => $tryout,
+            'role' => $role,
             'tryout_2' => $tryout_2
         ];
-
+        
         $this->load->view('landingpage/index', $data);
     }
 }

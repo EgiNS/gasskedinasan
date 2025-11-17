@@ -33,37 +33,17 @@
 
         <div class="d-flex flex-row mb-4">
             <?php foreach ($paket_to as $p) { ?>
-                <div class="card me-3" style="width: 20rem;">
+                <div class="card me-3 position-relative" style="width: 20rem; padding-bottom: 30px;">
                     <img src="<?= base_url('assets/img/' . $p["foto"]); ?>" class="card-img-top" alt="...">
                     <div class="card-body">
                         <p class="card-title fs-4"><?= $p['nama']; ?></p>
                         
                         <p class="card-text"><?= $p['keterangan']; ?></p>
                         
-                        <!-- Tryout List -->
-                        <div class="mb-3">
-                            <h6 class="text-black">
-                                Tryout dalam paket:
-                            </h6>
-                            
-                            <?php if (!empty($p['tryouts'] )): ?>
-                                <ul class="d-flex flex-wrap gap-1 list-unstyled">
-                                    <?php foreach ($p['tryouts'] as $to): ?>
-                                        <li class="mb-1" >
-                                            <span class="badge bg-success p-2 rounded">
-                                                <?= $to['name']; ?>
-                                            </span>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                                        
-                            <?php else: ?>
-                                <p class="text-muted">
-                                    <i class="ti ti-info-circle"></i> Belum ada tryout dalam paket ini
-                                </p>
-                            <?php endif; ?>
+                        <div class="position-absolute bottom-0 start-0 end-0 mb-3 px-3">
+                            <a href="<?= base_url("/admin/detailpendaftar/" . ($p["id"])); ?>" class="btn btn-primary w-100">Lihat Pendaftar</a>
+
                         </div>
-                        <a href="<?= base_url("/admin/detailpendaftar/" . ($p["id"])); ?>" class="btn btn-primary w-100">Lihat Pendaftar</a>
                     </div>
                 </div>
             <?php } ?>

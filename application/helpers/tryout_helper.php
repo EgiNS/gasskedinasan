@@ -1,5 +1,19 @@
 <?php
 
+
+function check_role(){
+    $ci = get_instance();
+    $role_id = $ci->session->userdata('role_id');
+
+    load_model('Role_model', 'role');
+    $role = $ci->role->get('one', ['id' => $role_id]);
+    if (!$role){
+        return "Guest";
+    }
+    return $role["role"];
+}
+
+
 function is_logged_in()
 {
     $ci = get_instance();

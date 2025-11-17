@@ -4987,7 +4987,7 @@ class Admin extends CI_Controller
         $parent_title = getSubmenuTitleById(22)['title'];
         submenu_access(22);
 
-        $paket_to = $this->paket_to->getAllWithTryouts();
+        $paket_to = $this->paket_to->getAll();
         // print_r($paket_to);
         // exit;
         
@@ -5274,7 +5274,7 @@ class Admin extends CI_Controller
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'tryout_available' => $this->tryout->getAll(),
-            'events' => $this->event->getAllWithTryouts(),        
+            'events' => $this->event-> getAll(),        
             'parent_submenu' => $parent_title,
         ];
         
