@@ -130,9 +130,15 @@
                                                     </button>
                                                 </div>
                                                 <div class="position-absolute top-0 end-0">
+                                                    <?php if ($tryout['status'] === 'registered'): ?>
+                                                        <span class="badge bg-success fs-6 shadow">
+                                                            <i class="ti ti-calendar-check me-1"></i>Sudah Dimiliki
+                                                        </span>
+                                                    <?php else: ?>
                                                     <span class="badge bg-danger fs-6 shadow">
                                                         <i class="ti ti-calendar-check me-1"></i>Belum Dimiliki
                                                     </span>
+                                                    <?php endif; ?>
                                                 </div>
 
                                             </div>
@@ -160,6 +166,39 @@
 
 
 
+                        <!-- Price Information -->
+                        <div class="text-center mb-3">
+                            <h6 class="text-muted mb-2">Harga Paket</h6>
+                            
+                            <!-- Original Price (Crossed Out) -->
+                            <?php if ($is_diskon && isset($paket_to['harga']) && isset($paket_to['harga_diskon'])): ?>
+                                <div class="mb-1">
+                                    <span class="text-muted text-decoration-line-through fs-5">
+                                        Rp <?= number_format($paket_to['harga'], 0, ',', '.'); ?>
+                                    </span>
+                                    <span class="badge bg-danger ms-2">
+                                        -<?= round((($paket_to['harga'] - $paket_to['harga_diskon']) / $paket_to['harga']) * 100); ?>%
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <!-- Discounted Price -->
+                            <h2 class="fw-bold text-primary mb-2">
+                                Rp <?= number_format($is_diskon ? ($paket_to['harga_diskon'] ?? $paket_to['harga']) : $paket_to['harga'], 0, ',', '.'); ?>
+                            </h2>
+                            
+                            <small class="text-success" style="font-size: 12px;">💰 Hemat dari beli satuan!</small>
+                            <!-- Discount Information -->
+                            <?php if ($is_diskon): ?>
+                                <div class="alert alert-success small py-2 my-2">
+                                    <i class="ti ti-discount-2 me-1"></i>
+                                    <strong>Diskon Khusus!</strong><br>
+                                    Karena Anda sudah memiliki salah satu tryout
+                                </div>
+                            <?php endif; ?>
+                            
+                        </div>
+
                         <div class="d-grid gap-2 mb-4">
                             <?php if ($payment_status == 'pending'): ?>
                                 <button data-paket-slug="<?= $paket_to['slug'] ?>" type="button" class="btn btn-primary btn-lg rounded-pill shadow" id="proceedPaymentDirect">
@@ -182,14 +221,6 @@
 
                         <hr>
 
-                        <!-- Price Information -->
-                        <div class="text-center mb-3">
-                            <h6 class="text-muted mb-1">Harga Paket</h6>
-                            <h2 class="fw-bold text-primary mb-2">
-                                Rp <?= $paket_to['harga'] ?? '0'; ?>,-
-                            </h2>
-                            <small class="text-success">💰 Hemat 40% dari beli satuan!</small>
-                        </div>
                         <!-- Event Stats -->
                         <div class="row text-center g-3">
                             <div class="col-3">

@@ -30,11 +30,13 @@ class PaketTo extends CI_Controller
         $this->midtrans->config($params);
         $this->load->model('Paket_to_model', 'paket_to');
         $this->load->model('Pendaftar_to_model', 'pendaftar_to');
+        $this->load->model('User_tryout_model', 'user_tryout');
         $this->sidebarMenu = 'Tryout';
     }
 
     public function detail($slug)
     {
+        
         $submenu_parent = 10;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
@@ -62,16 +64,30 @@ class PaketTo extends CI_Controller
         } else {
             $payment_status = 'expired';
         }
-        foreach ($paket_to['tryouts'] as $tryout) {
+        $is_diskon = false;
+        foreach ($paket_to['tryouts'] as $i => $tryout) {
+            $user_tryout =  $this->user_tryout->get('one', ['user_id' => $this->loginUser->id], $tryout['slug'], '*');
+            if ($user_tryout){
+
+                $paket_to['tryouts'][$i]['status'] = 'registered';
+                $is_diskon = true;
+            }
+            else{
+                $paket_to['tryouts'][$i]['status'] = 'not_registered';
+            }
+            
             $total_soal += (int)$tryout['jumlah_soal'];
             $total_waktu += (int)$tryout['lama_pengerjaan'];
         }
+        
+        
         $data = [
             'title' => 'Detail Paket TO ' . $title,
             'breadcrumb_item' => $breadcrumb_item,
             'sidebar_menu' => $this->sidebarMenu,
             'paket_to' => $paket_to,
             'total_soal' => $total_soal,
+            'is_diskon' => $is_diskon,
             'jumlah_peserta' => $jumlah_peserta,
             'jumlah_tryout' => count($paket_to['tryouts']),
             'total_waktu' => $total_waktu,
@@ -103,8 +119,20 @@ class PaketTo extends CI_Controller
             echo $pendaftar['snap_token'];
             return;
         }
+        $is_diskon = false;
+        foreach ($paket_to['tryouts'] as $i => $tryout) {
+            $user_tryout =  $this->user_tryout->get('one', ['user_id' => $this->loginUser->id], $tryout['slug'], '*');
+            if ($user_tryout){
+
+                $paket_to['tryouts'][$i]['status'] = 'registered';
+                $is_diskon = true;
+            }
+            else{
+                $paket_to['tryouts'][$i]['status'] = 'not_registered';
+            }
+        }
         $order_id = 'PTO-' . $paket_to['id'] . '-USR-' . $user->id . '-' . time();
-        $gross_amount = (int)$paket_to['harga'];
+        $gross_amount = $is_diskon ? (int)$paket_to['harga_diskon'] : (int)$paket_to['harga'];
         $transaction_details = array(
             'order_id' => $order_id,
             'gross_amount' => $gross_amount,
@@ -156,7 +184,7 @@ class PaketTo extends CI_Controller
                     ]
                 );
                 $this->user_tryout->insertUserTryoutMultiSlug(
-                    ['user_id' => $user->id, 'transaction_id' => $transaction_id,'token'=> 11111, 'status' => 0, 'freemium' => 1], 
+                    ['user_id' => $user->id, 'transaction_id' => $transaction_id,'token'=> 11111, 'status' => 0, 'freemium' => 1,'source_type'=>'paket_to'], 
                     $paket_to['tryouts']
                 );
 

@@ -20,9 +20,10 @@ class User_tryout_model extends CI_Model
 {
     foreach ($tryouts as $tryout) {
         $tableName = $this->table . $tryout['slug'];
-
+        if ($tryout['status']== 'registered'){
+            continue;
+        }
         $result = $this->db->insert($tableName, $data);
-
         if (!$result) {
             return false; // kalau ada tabel gagal, hentikan
         }
@@ -109,6 +110,21 @@ class User_tryout_model extends CI_Model
         $result = $this->db->update($this->table . $slug);
         return ($result == true) ? true : false;
     }
+    public function updateUserTryoutMultiSlug($data, $key, $tryouts){
+        foreach ($tryouts as $tryout) {
+            $tableName = $this->table . $tryout['slug'];
+            if ($tryout['status']== 'not_registered'){
+                continue;
+            }
+            $this->db->where($key);
+            $result = $this->db->update($tableName, $data);
+            if (!$result) {
+                return false; // kalau ada tabel gagal, hentikan
+            }
+        }
+
+        return true; // semua tabel berhasil
+    }
 
     public function updateLastRow($data, $key, $slug)
     {
@@ -150,6 +166,9 @@ class User_tryout_model extends CI_Model
             `tkp` int(11) DEFAULT NULL,
             `total` int(11) DEFAULT NULL,
             `pengerjaan` int(11) DEFAULT 1,
+            `source_type` enum('tryout','event','paket_to') NOT NULL DEFAULT 'tryout',
+            `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+            `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
              PRIMARY KEY (`id`),
              CONSTRAINT `fk_user_tryout_user_{$slug}` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
              CONSTRAINT `fk_user_tryout_transaction_{$slug}` FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON DELETE CASCADE
@@ -171,6 +190,9 @@ class User_tryout_model extends CI_Model
             `bukti` varchar(256) DEFAULT NULL,
             `refferal` varchar(256) DEFAULT NULL,
             `nilai` int(11) DEFAULT NULL,
+            `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+            `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            `source_type` enum('tryout','event','paket_to') NOT NULL DEFAULT 'tryout',
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB";
 

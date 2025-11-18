@@ -15,14 +15,32 @@
                                 <i class="ti ti-shopping-cart text-primary mb-3" style="font-size: 3rem;"></i>
                                 <h5 class="text-primary mb-2"><?= htmlspecialchars($paket_to['nama'] ?? 'Event Premium CPNS 2024'); ?></h5>
                                 
-                                
-                                <!-- Price Display -->
-                                <div class="price-display mb-3">
-                                    <h3 class="text-primary fw-bold mb-1">
-                                        Rp <?= number_format($paket_to['harga'] ?? 149000, 0, ',', '.'); ?>
-                                    </h3>
-                                    <small class="text-muted">Sekali bayar, akses selamanya</small>
+                                <?php if ($is_diskon && isset($paket_to['harga']) && isset($paket_to['harga_diskon'])): ?>
+                                <div class="mb-1">
+                                    <span class="text-muted text-decoration-line-through fs-5">
+                                        Rp <?= number_format($paket_to['harga'], 0, ',', '.'); ?>
+                                    </span>
+                                    <span class="badge bg-danger ms-2">
+                                        -<?= round((($paket_to['harga'] - $paket_to['harga_diskon']) / $paket_to['harga']) * 100); ?>%
+                                    </span>
                                 </div>
+                            <?php endif; ?>
+                             <!-- Discounted Price -->
+                            <h2 class="fw-bold text-primary mb-2">
+                                Rp <?= number_format($is_diskon ? ($paket_to['harga_diskon'] ?? $paket_to['harga']) : $paket_to['harga'], 0, ',', '.'); ?>
+                            </h2>
+                            
+                            <small class="text-success" style="font-size: 12px;">💰 Hemat dari beli satuan!</small>
+                            <!-- Discount Information -->
+                            <?php if ($is_diskon): ?>
+                                <div class="alert alert-success small py-2 my-2">
+                                    <i class="ti ti-discount-2 me-1"></i>
+                                    <strong>Diskon Khusus!</strong><br>
+                                    Karena Anda sudah memiliki salah satu tryout
+                                </div>
+                            <?php endif; ?>
+
+                            
                             </div>
                         </div>
 

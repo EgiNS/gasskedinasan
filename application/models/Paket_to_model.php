@@ -36,6 +36,7 @@ public function getBySlugWithTryouts($slug)
         paket_to.nama,
         paket_to.slug,
         paket_to.harga,
+        paket_to.harga_diskon,
         paket_to.foto,
         paket_to.keterangan,
         tryout_paket_to.tryout_id,
@@ -65,6 +66,7 @@ public function getBySlugWithTryouts($slug)
     $paket = [
         'id' => $rows[0]['id'],
         'nama' => $rows[0]['nama'],
+        'harga_diskon' => $rows[0]['harga_diskon'],
         'harga' => $rows[0]['harga'],
         'slug' => $rows[0]['slug'],
         'foto' => $rows[0]['foto'],
@@ -163,4 +165,5 @@ public function getAllWithTryouts()
 
         $this->db->query($sql_tabel_pendaftar);
     }
+
 }

@@ -4732,32 +4732,6 @@ class Admin extends CI_Controller
         redirect('admin/detailtryout/' . $slug);
     }
 
-    public function pendaftar()
-    {
-        $this->load->model('Paket_to_model', 'paket_to');
-        $this->load->model('Tryout_model', 'tryout');
-        $parent_title = getSubmenuTitleById(22)['title'];
-        submenu_access(22);
-
-        $paket_to = $this->paket_to->getAll();
-        // print_r($paket_to);
-        // exit;
-        
-        $data = [
-            'title' => $parent_title,
-            'user' => $this->loginUser,
-            'sidebar_menu' => $this->sidebarMenu,
-            'parent_submenu' => $parent_title,
-            'paket_to' => $paket_to,
-            'tryout_available' => $this->tryout->getAll(),
-        ];
-
-        $this->load->view('templates/user_header', $data);
-        $this->load->view('templates/user_sidebar', $data);
-        $this->load->view('templates/user_topbar', $data);
-        $this->load->view('admin/paketto/index', $data);
-        $this->load->view('templates/user_footer');
-    }
 
     public function detailpendaftar($id)
     {
@@ -4832,93 +4806,7 @@ class Admin extends CI_Controller
         }
     }
 
-    public function tambahpaket()
-    {
-        $this->_loadRequiredModels();
-        $this->load->model('Paket_to_model', 'paket_to');
-        $this->load->model('Tryout_paket_to_model', 'tryout_paket_to');
-        $this->form_validation->set_rules('nama', 'Nama Tryout', 'required');
-        $this->form_validation->set_rules('paket_to_ids[]', 'Paket TO', 'required');
-        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required');
-        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
-            'numeric' => 'Hanya boleh diisi angka.'
-        ]);
-
-        if ($this->form_validation->run() == false) {
-            $parent_title = getSubmenuTitleById(22)['title'];
-            submenu_access(22);
-
-            $data = [
-                'title' => $parent_title,
-                'user' => $this->loginUser,
-                'sidebar_menu' => $this->sidebarMenu,
-                'parent_submenu' => $parent_title,
-                'paket_to' => $this->paket_to->getAllOrderByIdDesc(),
-            ];
-
-            $this->load->view('templates/user_header', $data);
-            $this->load->view('templates/user_sidebar', $data);
-            $this->load->view('templates/user_topbar', $data);
-            $this->load->view('admin/paketto', $data);
-            $this->load->view('templates/user_footer');
-        } else {
-            // Konfigurasi upload
-            $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
-            $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
-            $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
-            $config['file_name'] = time();  // Nama file unik (timestamp)
-
-            $this->load->library('upload', $config);
-
-            // Load konfigurasi upload
-            $this->upload->initialize($config);
-
-            if (!$this->upload->do_upload('foto')) {
-                // Upload gagal
-                $error = $this->upload->display_errors();
-                $this->session->set_flashdata('foto', $error);
-                redirect('admin/pendaftar');
-                return;
-            }
-
-            // Jika upload berhasil, ambil informasi file yang di-upload
-            $uploadData = $this->upload->data();
-            $this->db->trans_start();
-            try {
-                $data = [
-                'nama' => $this->input->post('nama'),
-                'foto' => $uploadData['file_name'],
-                'harga' => $this->input->post('harga'),
-                'keterangan' => $this->input->post('keterangan'),
-            ];
-                $this->paket_to->insert($data);
-                $paket_to_id = $this->db->insert_id();
-                            $tryout_ids = $this->input->post('paket_to_ids');
-            foreach ($tryout_ids as $tryout_id) {
-                $data_tryout_paket = [
-                    'paket_to_id' => $paket_to_id,
-                    'tryout_id' => $tryout_id,
-                ];
-                $this->tryout_paket_to->insert($data_tryout_paket);
-            }
-              $this->db->trans_complete();
-                  if ($this->db->trans_status() === FALSE) {
-            // Rollback otomatis kalau error
-            throw new Exception('Transaksi gagal.');
-        }
-           $this->session->set_flashdata('success', 'Menambahkan Tryout Baru');
-        redirect('admin/pendaftar');
-            } catch (Exception $e) {
-                $this->db->trans_rollback();
-        if (file_exists('./assets/img/' . $uploadData['file_name'])) {
-            unlink('./assets/img/' . $uploadData['file_name']);
-        }
-        log_message('error', 'Gagal menambah paket TO: ' . $e->getMessage());
-        $this->session->set_flashdata('error', 'Gagal menambahkan tryout. Silakan coba lagi.');
-        redirect('admin/pendaftar');
-            }
-        }
-    }
+    
 
     public function toggle_freemium()
     {

@@ -29,6 +29,9 @@
         <!-- FORM ERROR MESSAGE -->
         <?= form_error_message('nama'); ?>
         <?= form_error_message('keterangan'); ?>
+        <?= form_error_message('harga'); ?>
+        <?= form_error_message('harga_diskon'); ?>
+        <?= form_error_message('paket_to_ids[]'); ?>
         <?= error_message_file_input('foto'); ?>
 
         <div class="d-flex flex-row mb-4">
