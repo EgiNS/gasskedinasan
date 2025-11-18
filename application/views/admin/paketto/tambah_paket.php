@@ -8,7 +8,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="<?= base_url('admin/tambahpaket'); ?>" method="post" enctype="multipart/form-data">
+                        <form action="<?= base_url('admin/paket-to/tambah'); ?>" method="post" enctype="multipart/form-data">
                             <div class="modal-body">
                                 <div class="form-group mb-2">
                                     <label for="nama" class="form-label">Nama Paket</label>
@@ -27,6 +27,11 @@
                                     <label for="harga" class="form-label">Harga Paket</label>
                                     <input type="number" min="0" class="form-control" id="harga" name="harga"
                                         placeholder="Masukkan Harga Paket..." autocomplete="off" value="<?= set_value('harga'); ?>">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="harga_diskon" class="form-label">Harga Diskon Paket</label>
+                                    <input type="number" min="0" class="form-control" id="harga_diskon" name="harga_diskon"
+                                        placeholder="Masukkan Harga Diskon Paket..." autocomplete="off" value="<?= set_value('harga_diskon'); ?>">
                                 </div>
                                 <div class="form-group  mt-1 mb-2">
                                     <label for="foto" class="form-label">Foto Paket</label>

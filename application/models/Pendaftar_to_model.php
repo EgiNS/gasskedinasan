@@ -23,4 +23,26 @@ public function get_all_by_packet_to_id($id){
     return $query->result();
 }
 
+public function getByPacketToIdWithTransaction($paket_to_id, $user_id)
+    {
+        $this->db->select('pendaftar_paket_to.id, transactions.transaction_status, transactions.snap_token, transactions.expiry_time');
+        $this->db->from($this->table);
+        $this->db->join('transactions', 'transactions.id = pendaftar_paket_to.transaction_id', 'left');
+        $this->db->where('pendaftar_paket_to.paket_to_id', $paket_to_id);
+        $this->db->where('pendaftar_paket_to.user_id', $user_id);
+        return $this->db->get()->row_array();
+    }
+
+    public function getNumPaketParticipantWithSuccessTransaction($paket_to_id)
+    {
+        $this->db->from($this->table);
+        $this->db->join('transactions', 'transactions.id = pendaftar_paket_to.transaction_id', 'left');
+        $this->db->where('pendaftar_paket_to.paket_to_id', $paket_to_id);
+        $this->db->where('transactions.transaction_status', 'settlement');
+        return $this->db->count_all_results();
+    }
+    public function update($data, $where){
+        $this->db->where($where);
+        return $this->db->update($this->table, $data);
+    }
 }

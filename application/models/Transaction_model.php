@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+
 class Transaction_model extends CI_Model{
     protected $table;
     public function __construct()
@@ -21,7 +22,7 @@ class Transaction_model extends CI_Model{
     public function updateByOrderId($orderId, $data){
         $this->db->where('order_id',$orderId);
         $result = $this->db->update($this->table, $data);
-        return ($result) ? true : false;
+        return $result;
     }
     public function selectById($id){
         $this->db->where('id',$id);

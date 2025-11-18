@@ -47,6 +47,7 @@
 <link href="<?= base_url('assets/plugins/select2/css/select2.css'); ?>" rel="stylesheet" />
 <script src="<?= base_url('assets/vendor/jquery/jquery.min.js'); ?>"></script>
 <script src="<?= base_url('assets/vendor/jquery-easing/jquery.easing.min.js'); ?>"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-2O_VYtXDRgJ8EgPU"></script>
 <script src="<?= base_url('assets/js/plugins/apexcharts.min.js'); ?>"></script>
   </head>
   <!-- [Head] end -->
