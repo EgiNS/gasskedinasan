@@ -106,8 +106,8 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Pendapatan</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= 'Rp ' . number_format($pendapatan, 0, null, '.') . ',-'; ?></div>
+                             <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <?= 'Rp ' . number_format($all_user[0]['jumlah_pembayaran'] ?? 0, 0, null, '.') . ',-'; ?></div> 
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
@@ -210,7 +210,7 @@
                             <?php else: ?>
                                 <th class="text-center"><?= $index + 1; ?></th>
                             <?php endif ?>
-                            <th class="text-center"><?= $au['name']; ?></th>
+                            <th class="text-center"><?= $au['jumlah_pembayaran']; ?></th>
                             <th class="text-center"><?= $au['email']; ?></th>
                             <th class="text-center"><?= $au['no_wa']; ?></th>
                             <th class="text-center"><?= $au['id']; ?></th>

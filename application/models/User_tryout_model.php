@@ -216,7 +216,7 @@ class User_tryout_model extends CI_Model
         }
 
         $query = "
-    SELECT u.*, ut.*, tr.gross_amount
+    SELECT u.*, ut.*, tr.gross_amount, SUM(tr.gross_amount) AS jumlah_pembayaran
     FROM user AS u
     JOIN (
         SELECT t1.*
@@ -228,7 +228,9 @@ class User_tryout_model extends CI_Model
         ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
     ) ut ON {$onClause}
     JOIN transactions tr ON tr.id = ut.transaction_id
-    WHERE tr.transaction_status = 'settlement'
+    
+    WHERE tr.transaction_status = 'settlement' AND ut.source_type = 'tryout'
+    GROUP BY u.id
     ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
 ";
 

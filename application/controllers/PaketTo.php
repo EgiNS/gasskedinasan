@@ -175,6 +175,11 @@ class PaketTo extends CI_Controller
                     ['transaction_id' => $transaction_id],
                     ['id' => $pendaftar['id']]
                 );
+                $this-> user_tryout->updateUserTryoutMultiSlug(
+                    ['transaction_id' => $transaction_id],
+                    ['user_id' => $user->id],
+                    $paket_to['tryouts']
+                );
             } else {
                 $this->pendaftar_to->insert(
                     [

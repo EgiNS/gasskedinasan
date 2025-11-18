@@ -354,15 +354,6 @@ class Tryout extends CI_Controller {
             'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
         ];
 
-        if ($tryout['kode_refferal']) {
-            $ref = $this->user_tryout->get('many', ['refferal !=' => null], $slug);
-            $non_ref = $this->user_tryout->get('many', ['refferal' => null], $slug);
-
-            $data['pendapatan'] = (count($non_ref) * $tryout['harga']) + (count($ref) * $tryout['harga_diskon']);
-        } elseif ($tryout['paid'] == 1) {
-            $data['pendapatan'] = count($user_tryout) * $tryout['harga'];
-        }
-
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
