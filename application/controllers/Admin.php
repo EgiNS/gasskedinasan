@@ -25,6 +25,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @property Kode_settings_model $kode_settings
  * @property Midtrans_payment_model $midtrans_payment
  * @property Tryout_paket_to_model $tryout_paket_to
+ * @property Event_model $event
+ * @property Tryout_event_model $tryout_event
  */
 class Admin extends CI_Controller
 {
@@ -2832,336 +2834,76 @@ class Admin extends CI_Controller
         $this->session->set_flashdata('success', 'Generate token');
     }
 
-    public function tryout()
-    {
-        $this->_loadRequiredModels();
-        $parent_title = getSubmenuTitleById(3)['title'];
-        submenu_access(3);
+    
 
-        $breadcrumb_item = [
-            [
-                'title' => $parent_title,
-                'href' => 'active'
-            ]
-        ];
+    // public function detailtryout($slug)
+    // {
+    //     $this->_loadRequiredModels();
+    //     $this->load->model('Kode_settings_model', 'kode_settings');
+    //     // $this->load->model('Midtrans_payment_model', 'midtrans_payment');
 
-        $data = [
-            'title' => $parent_title,
-            'breadcrumb_item' => $breadcrumb_item,
-            'user' => $this->loginUser,
-            'sidebar_menu' => $this->sidebarMenu,
-            'parent_submenu' => $parent_title,
-            'tryout_skd' => $this->tryout->get('many', ['tipe_tryout' => 'SKD']),
-            'tryout_mtk' => $this->tryout->get('many', ['tipe_tryout' => 'nonSKD']),
-        ];
+    //     $submenu_parent = 3;
+    //     $parent_title = getSubmenuTitleById($submenu_parent)['title'];
+    //     submenu_access($submenu_parent);
+    //     $tryout = $this->tryout->get('one', ['slug' => $slug]);
+    //     $title = $tryout['name'];
 
-        $this->form_validation->set_rules('tryout', 'Tryout Name', 'required');
-        $this->form_validation->set_rules('tipe_tryout', 'Tipe Tryout', 'required');
-        $berbayar = htmlspecialchars($this->input->post('berbayar'));
-        $for_bimbel = htmlspecialchars($this->input->post('for_bimbel'));
-        $freemium = htmlspecialchars($this->input->post('freemium'));
+    //     $breadcrumb_item = [
+    //         [
+    //             'title' => $parent_title,
+    //             'href' => 'admin/tryout'
+    //         ],
+    //         [
+    //             'title' => $title,
+    //             'href' => 'active'
+    //         ]
+    //     ];
 
-        if ($berbayar == 1)
-            $this->form_validation->set_rules('harga', 'Harga', 'required|integer');
+    //     if ($tryout['tipe_tryout'] == 'SKD') {
+    //         $user_tryout = $this->user_tryout->getRankingSKD($slug);
+    //     } else {
+    //         $user_tryout = $this->user_tryout->getRankingnonSKDAdmin($slug);
+    //     }
 
-        $tipe_tryout = $this->input->post('tipe_tryout');
-        $lama_pengerjaan = $this->input->post('lama_pengerjaan');
+    //     if (count($user_tryout) == 0) {
+    //         $persentase = 0;
+    //     } else {
+    //         $persentase = $this->jawaban->getNumRows(['waktu_selesai !=' => null], $slug) / count($user_tryout) * 100;
+    //         $persentase = round($persentase, 2);
+    //     }
 
-        if ($this->input->post('refferal') == 1) {
-            $raw_input = $this->input->post('kode_refferal');
+    //     $user = $this->loginUser;
 
-            // 1. Bersihkan tag HTML dan ambil baris per kode
-            $cleaned = strip_tags($raw_input, "<p>"); // biarkan <p> untuk sementara
-            preg_match_all('/<p[^>]*>(.*?)<\/p>/', $cleaned, $matches);
+    //     $data = [
+    //         'title' => $title,
+    //         'breadcrumb_item' => $breadcrumb_item,
+    //         'user' => $user,
+    //         'sidebar_menu' => $this->sidebarMenu,
+    //         'parent_submenu' => $parent_title,
+    //         'tryout' => $tryout,
+    //         'all_user' => $user_tryout,
+    //         'jawaban' => $this->jawaban->getAll($slug, array('email', 'waktu_mulai', 'waktu_selesai')),
+    //         'jumlah_soal' => $this->soal->getNumRows(['id >' => 0], $slug),
+    //         'persentase_selesai' => $persentase,
+    //         'slug' => $slug,
+    //         'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
+    //     ];
 
-            $kode_array = array_filter(array_map('trim', $matches[1])); // Ambil isi dalam <p>, trim spasi
+    //     if ($tryout['kode_refferal']) {
+    //         $ref = $this->user_tryout->get('many', ['refferal !=' => null], $slug);
+    //         $non_ref = $this->user_tryout->get('many', ['refferal' => null], $slug);
 
-            // 2. Ubah ke JSON jika mau disimpan dalam satu field
-            $kode_json = json_encode($kode_array);
-        }
+    //         $data['pendapatan'] = (count($non_ref) * $tryout['harga']) + (count($ref) * $tryout['harga_diskon']);
+    //     } elseif ($tryout['paid'] == 1) {
+    //         $data['pendapatan'] = count($user_tryout) * $tryout['harga'];
+    //     }
 
-        if ($tipe_tryout == 'nonSKD') {
-            $this->form_validation->set_rules('jumlah_soal', 'Jumlah Soal', 'required|numeric');
-            $this->form_validation->set_rules('lama_pengerjaan', 'Lama Pengerjaan', 'required|numeric');
-
-            $jumlah_soal = $this->input->post('jumlah_soal');
-        } else if ($tipe_tryout == 'SKD')
-            $jumlah_soal = 110;
-
-        if ($this->form_validation->run() == false) {
-            $this->_tinymcerepop(['ket_tryout']);
-
-            $this->load->view('templates/user_header', $data);
-            $this->load->view('templates/user_sidebar', $data);
-            $this->load->view('templates/user_topbar', $data);
-            $this->load->view('admin/tryout', $data);
-            $this->load->view('templates/user_footer');
-        } else {
-            $this->load->model('Paradata_model', 'paradata');
-            $this->load->model('Ragu_ragu_model', 'ragu_ragu');
-
-            $tryout_name = htmlspecialchars($this->input->post('tryout'));
-
-            //SLUG
-            $slug = str_replace(' ', '_', strtolower($tryout_name));
-            $tryout_by_slug = $this->tryout->get('one', ['slug' => $slug]);
-            $tryout_by_name = $this->tryout->get('one', ['name' => $tryout_name]);
-            if ($tryout_by_slug) {
-                $this->session->set_flashdata('error', 'Tidak dapat menggunakan nama ujian tersebut');
-                redirect('admin/tryout');
-            } else if ($tryout_by_name) {
-                $this->session->set_flashdata('error', 'Tryout sudah ada');
-                redirect('admin/tryout');
-            } else {
-                $desc = $this->input->post('ket_tryout');
-                $harga = htmlspecialchars($this->input->post('harga'));
-
-                $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
-                $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
-                $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
-                $config['file_name'] = time();  // Nama file unik (timestamp)
-
-                $this->load->library('upload', $config);
-
-                // Load konfigurasi upload
-                $this->upload->initialize($config);
-
-                if ($this->upload->do_upload('foto')) {
-                    // Jika upload berhasil, ambil informasi file yang di-upload
-                    $uploadData = $this->upload->data();
-
-                    // Dapatkan path file yang di-upload
-                    $imagePath = $uploadData['file_name'];
-                } else {
-                    $error = $this->upload->display_errors();
-                    $this->session->set_flashdata('error', $error);
-                    redirect('admin/tryout');
-                }
-
-                $data = [
-                    'name' => $tryout_name,
-                    'slug' => $slug,
-                    'keterangan' => $desc,
-                    'tipe_tryout' => $tipe_tryout,
-                    'jumlah_soal' => $jumlah_soal,
-                    'lama_pengerjaan' => $lama_pengerjaan,
-                    'harga' => $harga,
-                    'hidden' => 1,
-                    'paid' => $berbayar,
-                    'for_bimbel' => $for_bimbel,
-                    'freemium' => $freemium,
-                    'gambar' => $imagePath,
-                ];
-
-                if ($this->input->post('refferal') == 1) {
-                    $data['kode_refferal'] = $kode_json;
-                    $data['harga_diskon'] = $this->input->post('diskon');
-                }
-
-                //INSERT TRYOUT
-                $this->tryout->insert($data);
-
-                //CREATE TABLE
-                //PARADATA
-                $this->paradata->createTable($slug);
-
-                //RAGU-RAGU
-                $this->ragu_ragu->createTable($slug, $jumlah_soal);
-
-                //TABEL JAWABAN
-                $this->jawaban->createTable($slug, $jumlah_soal);
-
-                if ($tipe_tryout == 'SKD') {
-                    //TABEL SOAL
-                    $this->soal->createTableSKD($slug);
-
-                    //TABEL KUNCI TKP
-                    $this->kunci_tkp->createTable($slug);
-
-                    //TABEL USER TRYOUT
-                    $this->user_tryout->createTableSKD($slug);
-
-                    $pilihan = ['A', 'B', 'C', 'D', 'E'];
-                    foreach ($pilihan as $p)
-                        $this->kunci_tkp->insert(['pilihan' => $p], $slug);
-
-                    if ($for_bimbel == 1) {
-                        $user_3 = $this->user->get('many', ['role_id' => 3]);
-                        $user_7 = $this->user->get('many', ['role_id' => 7]);
-
-                        foreach ($user_3 as $u) {
-                            $data = [
-                                'email' => $u['email'],
-                                'token' => 11111,
-                                'status' => 0
-                            ];
-
-                            $this->user_tryout->insert($data, $slug);
-                        }
-
-                        foreach ($user_7 as $u) {
-                            $data = [
-                                'email' => $u['email'],
-                                'token' => 11111,
-                                'status' => 0
-                            ];
-
-                            $this->user_tryout->insert($data, $slug);
-                        }
-                    }
-                } else {
-                    //TABEL SOAL
-                    $this->soal->createTablenonSKD($slug);
-
-                    //TABEL USER TRYOUT
-                    $this->user_tryout->createTablenonSKD($slug);
-
-                    //TABEL BOBOT NILAI TIAP SOAL
-                    $this->bobot_nilai_tiap_soal->createTable($jumlah_soal, $slug);
-
-                    $pilihan = ['A', 'B', 'C', 'D', 'E'];
-                    foreach ($pilihan as $p)
-                        $this->bobot_nilai_tiap_soal->insert(['pilihan' => $p], $slug);
-
-                    // INSERT BOBOT NILAI
-                    $jawaban = ['benar', 'salah'];
-                    foreach ($jawaban as $j) {
-                        $data = [
-                            'jawaban' => $j,
-                            'bobot' => null,
-                            'tryout' => $slug,
-                            'status' => 0
-                        ];
-
-                        $this->bobot_nilai->insert($data);
-                    }
-
-                    if ($for_bimbel == 1) {
-                        $user_4 = $this->user->get('many', ['role_id' => 4]);
-                        $user_6 = $this->user->get('many', ['role_id' => 6]);
-
-                        foreach ($user_4 as $u) {
-                            $data = [
-                                'email' => $u['email'],
-                                'token' => 11111,
-                                'status' => 0
-                            ];
-
-                            $this->user_tryout->insert($data, $slug);
-                        }
-
-                        foreach ($user_6 as $u) {
-                            $data = [
-                                'email' => $u['email'],
-                                'token' => 11111,
-                                'status' => 0
-                            ];
-
-                            $this->user_tryout->insert($data, $slug);
-                        }
-                    } else if ($for_bimbel == 2) {
-                        $user_8 = $this->user->get('many', ['role_id' => 8]);
-
-                        foreach ($user_8 as $u) {
-                            $data = [
-                                'email' => $u['email'],
-                                'token' => 11111,
-                                'status' => 0
-                            ];
-
-                            $this->user_tryout->insert($data, $slug);
-                        }
-                    }
-                }
-
-                if ($for_bimbel == 1) {
-                    $user_5 = $this->user->get('many', ['role_id' => 5]);
-
-                    foreach ($user_5 as $u) {
-                        $data = [
-                            'email' => $u['email'],
-                            'token' => 11111,
-                            'status' => 0
-                        ];
-
-                        $this->user_tryout->insert($data, $slug);
-                    }
-                }
-
-                $this->session->set_flashdata('success', 'Menambahkan Tryout Baru');
-                redirect('admin/tryout');
-            }
-        }
-    }
-
-    public function detailtryout($slug)
-    {
-        $this->_loadRequiredModels();
-        $this->load->model('Kode_settings_model', 'kode_settings');
-        // $this->load->model('Midtrans_payment_model', 'midtrans_payment');
-
-        $submenu_parent = 3;
-        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
-        submenu_access($submenu_parent);
-        $tryout = $this->tryout->get('one', ['slug' => $slug]);
-        $title = $tryout['name'];
-
-        $breadcrumb_item = [
-            [
-                'title' => $parent_title,
-                'href' => 'admin/tryout'
-            ],
-            [
-                'title' => $title,
-                'href' => 'active'
-            ]
-        ];
-
-        if ($tryout['tipe_tryout'] == 'SKD') {
-            $user_tryout = $this->user_tryout->getRankingSKD($slug);
-        } else {
-            $user_tryout = $this->user_tryout->getRankingnonSKDAdmin($slug);
-        }
-
-        if (count($user_tryout) == 0) {
-            $persentase = 0;
-        } else {
-            $persentase = $this->jawaban->getNumRows(['waktu_selesai !=' => null], $slug) / count($user_tryout) * 100;
-            $persentase = round($persentase, 2);
-        }
-
-        $user = $this->loginUser;
-
-        $data = [
-            'title' => $title,
-            'breadcrumb_item' => $breadcrumb_item,
-            'user' => $user,
-            'sidebar_menu' => $this->sidebarMenu,
-            'parent_submenu' => $parent_title,
-            'tryout' => $tryout,
-            'all_user' => $user_tryout,
-            'jawaban' => $this->jawaban->getAll($slug, array('email', 'waktu_mulai', 'waktu_selesai')),
-            'jumlah_soal' => $this->soal->getNumRows(['id >' => 0], $slug),
-            'persentase_selesai' => $persentase,
-            'slug' => $slug,
-            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
-        ];
-
-        if ($tryout['kode_refferal']) {
-            $ref = $this->user_tryout->get('many', ['refferal !=' => null], $slug);
-            $non_ref = $this->user_tryout->get('many', ['refferal' => null], $slug);
-
-            $data['pendapatan'] = (count($non_ref) * $tryout['harga']) + (count($ref) * $tryout['harga_diskon']);
-        } elseif ($tryout['paid'] == 1) {
-            $data['pendapatan'] = count($user_tryout) * $tryout['harga'];
-        }
-
-        $this->load->view('templates/user_header', $data);
-        $this->load->view('templates/user_sidebar', $data);
-        $this->load->view('templates/user_topbar', $data);
-        $this->load->view('admin/detailtryout', $data);
-        $this->load->view('templates/user_footer');
-    }
+    //     $this->load->view('templates/user_header', $data);
+    //     $this->load->view('templates/user_sidebar', $data);
+    //     $this->load->view('templates/user_topbar', $data);
+    //     $this->load->view('admin/detailtryout', $data);
+    //     $this->load->view('templates/user_footer');
+    // }
 
     public function rankingtryout($slug)
     {
@@ -3912,7 +3654,11 @@ class Admin extends CI_Controller
 
             $this->session->set_flashdata('success', 'Menampilkan Tryout');
         }
-        redirect('admin/detail' . $jenis . '/' . $slug);
+        if ($jenis == 'tryout')
+            redirect('admin/tryout/' . $slug);
+        else{
+            redirect('admin/detail' . $jenis . '/' . $slug);
+        }
     }
 
     public function hapustryout()
@@ -4131,7 +3877,7 @@ class Admin extends CI_Controller
 
                 if ($bobot_nilai[0]['status'] == 0 && $bobot_nilai_A[1] == null) {
                     $this->session->set_flashdata('error', 'Gagal melakukan release Tryout Anda belum menetapkan bobot nilai pada soal tryout ini, silakan tetapkan bobot nilai pada menu Soal Tryout');
-                    redirect('admin/detail' . $jenis  . '/' . $slug);
+                    $this->redirectDetail($jenis, $slug);
                 } else if ($bobot_nilai[0]['status'] == 1) {
                     $kunci_jawaban = $this->jawaban->get('one', ['email' => 'kunci_jawaban_' . $slug . '@gmail.com'], $slug);
                     $stop = false;
@@ -4147,56 +3893,64 @@ class Admin extends CI_Controller
                         foreach ($soal as $s)
                             $message = $s . ', ';
                         $this->session->set_flashdata('error', 'Soal nomor ' . $message . 'merupakan soal yang kunci jawabannya belum diinputkan. Silakan input kunci jawaban pada soal-soal tersebut pada menu Edit Soal');
-                        redirect('admin/detail' . $jenis  . '/' . $slug);
+                        $this->redirectDetail($jenis, $slug);
                     } else {
                         if ($tryout['status'] == 0) {
                             $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                             $this->session->set_flashdata('success', 'Melakukan release tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                            redirect('admin/detail' . $jenis  . '/' . $slug);
+                            $this->redirectDetail($jenis, $slug);
                         } else if ($tryout['status'] == 1) {
                             $this->$jenis->update(['status' => 2], ['slug' => $slug]);
                             $this->session->set_flashdata('success', 'Menarik kembali tryout. Peserta tidak bisa memulai pengerjaan tryout');
-                            redirect('admin/detail' . $jenis  . '/' . $slug);
+                            $this->redirectDetail($jenis, $slug);
                         } else if ($tryout['status'] == 2) {
                             $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                             $this->session->set_flashdata('success', 'Melakukan release kembali Tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                            redirect('admin/detail' . $jenis  . '/' . $slug);
+                            $this->redirectDetail($jenis, $slug);
                         }
                     }
                 } else {
                     if ($tryout['status'] == 0) {
                         $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                         $this->session->set_flashdata('success', 'Melakukan release tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                        redirect('admin/detail' . $jenis  . '/' . $slug);
+                        $this->redirectDetail($jenis, $slug);
                     } else if ($tryout['status'] == 1) {
                         $this->$jenis->update(['status' => 2], ['slug' => $slug]);
                         $this->session->set_flashdata('success', 'Menarik kembali tryout. Peserta tidak bisa memulai pengerjaan tryout');
-                        redirect('admin/detail' . $jenis  . '/' . $slug);
+                       $this->redirectDetail($jenis, $slug);
                     } else if ($tryout['status'] == 2) {
                         $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                         $this->session->set_flashdata('success', 'Melakukan release kembali Tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                        redirect('admin/detail' . $jenis  . '/' . $slug);
+                         $this->redirectDetail($jenis, $slug);
                     }
                 }
             } else if ($tryout['tipe_tryout'] == 'SKD') {
                 if ($tryout['status'] == 0) {
                     $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                     $this->session->set_flashdata('success', 'Melakukan release tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                    redirect('admin/detail' . $jenis  . '/' . $slug);
+                    $this->redirectDetail($jenis, $slug);
                 } else if ($tryout['status'] == 1) {
                     $this->$jenis->update(['status' => 2], ['slug' => $slug]);
                     $this->session->set_flashdata('success', 'Menarik kembali tryout. Peserta tidak bisa memulai pengerjaan tryout');
-                    redirect('admin/detail' . $jenis  . '/' . $slug);
+                    $this->redirectDetail($jenis, $slug);
                 } else if ($tryout['status'] == 2) {
                     $this->$jenis->update(['status' => 1], ['slug' => $slug]);
                     $this->session->set_flashdata('success', 'Melakukan release kembali Tryout. Peserta sudah bisa memulai pengerjaan tryout');
-                    redirect('admin/detail' . $jenis  . '/' . $slug);
+                    $this->redirectDetail($jenis, $slug);
                 }
             }
         } else {
             $this->session->set_flashdata('error', 'Gagal melakukan release Tryout. Jumlah soal belum lengkap, silakan lengkapi soal tryout terlebih dahulu untuk melakukan release pada tryout');
-            redirect('admin/detail' . $jenis  . '/' . $slug);
+            $this->redirectDetail($jenis, $slug);
         }
+    }
+    private function redirectDetail($jenis, $slug)
+    {
+        if ($jenis == 'tryout')
+            redirect('admin/tryout/' . $slug);
+        else
+            redirect('admin/detaillatsol/' . $slug);
+
     }
 
     public function getsoal()
@@ -4978,32 +4732,6 @@ class Admin extends CI_Controller
         redirect('admin/detailtryout/' . $slug);
     }
 
-    public function pendaftar()
-    {
-        $this->load->model('Paket_to_model', 'paket_to');
-        $this->load->model('Tryout_model', 'tryout');
-        $parent_title = getSubmenuTitleById(22)['title'];
-        submenu_access(22);
-
-        $paket_to = $this->paket_to->getAllWithTryouts();
-        // print_r($paket_to);
-        // exit;
-        
-        $data = [
-            'title' => $parent_title,
-            'user' => $this->loginUser,
-            'sidebar_menu' => $this->sidebarMenu,
-            'parent_submenu' => $parent_title,
-            'paket_to' => $paket_to,
-            'tryout_available' => $this->tryout->getAll(),
-        ];
-
-        $this->load->view('templates/user_header', $data);
-        $this->load->view('templates/user_sidebar', $data);
-        $this->load->view('templates/user_topbar', $data);
-        $this->load->view('admin/paketto/index', $data);
-        $this->load->view('templates/user_footer');
-    }
 
     public function detailpendaftar($id)
     {
@@ -5078,93 +4806,7 @@ class Admin extends CI_Controller
         }
     }
 
-    public function tambahpaket()
-    {
-        $this->_loadRequiredModels();
-        $this->load->model('Paket_to_model', 'paket_to');
-        $this->load->model('Tryout_paket_to_model', 'tryout_paket_to');
-        $this->form_validation->set_rules('nama', 'Nama Tryout', 'required');
-        $this->form_validation->set_rules('paket_to_ids[]', 'Paket TO', 'required');
-        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required');
-        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
-            'numeric' => 'Hanya boleh diisi angka.'
-        ]);
-
-        if ($this->form_validation->run() == false) {
-            $parent_title = getSubmenuTitleById(22)['title'];
-            submenu_access(22);
-
-            $data = [
-                'title' => $parent_title,
-                'user' => $this->loginUser,
-                'sidebar_menu' => $this->sidebarMenu,
-                'parent_submenu' => $parent_title,
-                'paket_to' => $this->paket_to->getAllOrderByIdDesc(),
-            ];
-
-            $this->load->view('templates/user_header', $data);
-            $this->load->view('templates/user_sidebar', $data);
-            $this->load->view('templates/user_topbar', $data);
-            $this->load->view('admin/paketto', $data);
-            $this->load->view('templates/user_footer');
-        } else {
-            // Konfigurasi upload
-            $config['upload_path'] = './assets/img/';  // Folder untuk menyimpan gambar
-            $config['allowed_types'] = 'jpg|jpeg|png';  // Tipe file yang diizinkan
-            $config['max_size'] = 2048;  // Maksimal ukuran file (2MB)
-            $config['file_name'] = time();  // Nama file unik (timestamp)
-
-            $this->load->library('upload', $config);
-
-            // Load konfigurasi upload
-            $this->upload->initialize($config);
-
-            if (!$this->upload->do_upload('foto')) {
-                // Upload gagal
-                $error = $this->upload->display_errors();
-                $this->session->set_flashdata('foto', $error);
-                redirect('admin/pendaftar');
-                return;
-            }
-
-            // Jika upload berhasil, ambil informasi file yang di-upload
-            $uploadData = $this->upload->data();
-            $this->db->trans_start();
-            try {
-                $data = [
-                'nama' => $this->input->post('nama'),
-                'foto' => $uploadData['file_name'],
-                'harga' => $this->input->post('harga'),
-                'keterangan' => $this->input->post('keterangan'),
-            ];
-                $this->paket_to->insert($data);
-                $paket_to_id = $this->db->insert_id();
-                            $tryout_ids = $this->input->post('paket_to_ids');
-            foreach ($tryout_ids as $tryout_id) {
-                $data_tryout_paket = [
-                    'paket_to_id' => $paket_to_id,
-                    'tryout_id' => $tryout_id,
-                ];
-                $this->tryout_paket_to->insert($data_tryout_paket);
-            }
-              $this->db->trans_complete();
-                  if ($this->db->trans_status() === FALSE) {
-            // Rollback otomatis kalau error
-            throw new Exception('Transaksi gagal.');
-        }
-           $this->session->set_flashdata('success', 'Menambahkan Tryout Baru');
-        redirect('admin/pendaftar');
-            } catch (Exception $e) {
-                $this->db->trans_rollback();
-        if (file_exists('./assets/img/' . $uploadData['file_name'])) {
-            unlink('./assets/img/' . $uploadData['file_name']);
-        }
-        log_message('error', 'Gagal menambah paket TO: ' . $e->getMessage());
-        $this->session->set_flashdata('error', 'Gagal menambahkan tryout. Silakan coba lagi.');
-        redirect('admin/pendaftar');
-            }
-        }
-    }
+    
 
     public function toggle_freemium()
     {
@@ -5258,5 +4900,140 @@ class Admin extends CI_Controller
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+
+    public function event(){
+        $this->_loadRequiredModels();
+        $this->load->model('Event_model', 'event');
+        $parent_title = getSubmenuTitleById(1)['title'];
+        submenu_access(1);
+
+        
+        $data = [
+            'title' => $parent_title,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'tryout_available' => $this->tryout->getAll(),
+            'events' => $this->event-> getAll(),        
+            'parent_submenu' => $parent_title,
+        ];
+        
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/event/index', $data);
+        $this->load->view('templates/user_footer');
+    }
+    public function tambahevent()
+    {
+        $this->_loadRequiredModels();
+        $this->load->model('Event_model', 'event');
+        $this->load->model('Tryout_event_model', 'tryout_event'); // Updated to use events_tryout table
+
+        // Set validation rules to match database schema
+        $this->form_validation->set_rules('name', 'Nama Event', 'required',['required' => 'Nama Event harus diisi.']); // Changed from 'nama' to 'name'
+        $this->form_validation->set_rules('paket_to_ids[]', 'Tryout', 'required', ['required' => 'Paket Tryout harus dipilih.']);
+        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required', ['required' => 'Keterangan harus diisi.']);
+        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
+            'numeric' => 'Harga hanya boleh diisi angka.',
+            'required' => 'Harga harus diisi.'
+        ]);
+        $this->form_validation->set_rules('group_link', 'Link Grup', 'required|valid_url', [
+            'valid_url' => 'Link grup harus berupa URL yang valid.',
+            'required' => 'Link grup harus diisi.'
+        ]);
+
+        if ($this->form_validation->run() == false) {
+            // If validation fails, set flashdata and redirect back to keep modal state
+            $this->session->set_flashdata('validation_errors', validation_errors());
+            $this->session->set_flashdata('form_data', $this->input->post());
+            $this->session->set_flashdata('show_modal', true);
+            redirect('admin/event');
+            return;
+        } else {
+            // Configure file upload for event image (using 'gambar' field)
+            $config['upload_path'] = './assets/img/events/';
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size'] = 2048;
+            $config['file_name'] = time();
+
+            // Create directory if it doesn't exist
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if (!$this->upload->do_upload('gambar')) { // Changed from 'foto' to 'gambar'
+                // Upload failed - set specific error message
+                $error = $this->upload->display_errors('', '');
+                $this->session->set_flashdata('gambar', $error);
+                $this->session->set_flashdata('form_data', $this->input->post());
+                $this->session->set_flashdata('show_modal', true);
+                redirect('admin/event');
+                return;
+            }
+
+            // If upload successful, get file information
+            $uploadData = $this->upload->data();
+            
+            // Start database transaction
+            $this->db->trans_start();
+            
+            try {
+                // Generate unique slug from name
+                $name = $this->input->post('name'); // Changed from 'nama' to 'name'
+                $slug = $this->event->generateSlug($name);
+                
+                // Insert event data with correct field names
+                $event_data = [
+                    'name' => $name, // Using 'name' field
+                    'slug' => $slug, // Adding required slug field
+                    'gambar' => 'events/' . $uploadData['file_name'], // Using 'gambar' field
+                    'harga' => $this->input->post('harga'),
+                    'group_link' => $this->input->post('group_link'), // Using 'group_link' field
+                    'keterangan' => $this->input->post('keterangan'),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+                
+                $event_id = $this->event->insert($event_data);
+                
+                // Insert tryout-event relationships in events_tryout table
+                $tryout_ids = $this->input->post('paket_to_ids');
+                foreach ($tryout_ids as $tryout_id) {
+                    $tryout_event_data = [
+                        'event_id' => $event_id,
+                        'tryout_id' => $tryout_id,
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+                    $this->tryout_event->insert($tryout_event_data);
+                }
+                
+                // Complete transaction
+                $this->db->trans_complete();
+                
+                if ($this->db->trans_status() === FALSE) {
+                    throw new Exception('Transaksi database gagal.');
+                }
+                
+                $this->session->set_flashdata('success', 'Event baru berhasil ditambahkan');
+                redirect('admin/event');
+                
+            } catch (Exception $e) {
+                // Rollback transaction
+                $this->db->trans_rollback();
+                
+                // Delete uploaded file if exists
+                if (file_exists('./assets/img/events/' . $uploadData['file_name'])) {
+                    unlink('./assets/img/events/' . $uploadData['file_name']);
+                }
+                
+                log_message('error', 'Gagal menambah event: ' . $e->getMessage());
+                $this->session->set_flashdata('error', 'Gagal menambahkan event. Silakan coba lagi.');
+                redirect('admin/event');
+            }
+        }
     }
 }

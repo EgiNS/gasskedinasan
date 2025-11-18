@@ -106,8 +106,8 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Pendapatan</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= 'Rp ' . number_format($pendapatan, 0, null, '.') . ',-'; ?></div>
+                             <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <?= 'Rp ' . number_format($all_user[0]['jumlah_pembayaran'] ?? 0, 0, null, '.') . ',-'; ?></div> 
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
@@ -186,7 +186,7 @@
                             <th class="text-center" style="vertical-align: middle;">Email</th>
                             <th class="text-center" style="vertical-align: middle;">No.WA</th>
                             <th class="text-center" style="vertical-align: middle;">Urutan Daftar</th>
-                            <th class="text-center" style="vertical-align: middle;">Sudah Bayar</th>
+                            <th class="text-center" style="vertical-align: middle;">Harga Beli</th>
                             <th class="text-center" style="vertical-align: middle;">Premium</th>
                             <?php if ($tryout['kode_refferal']) : ?>
                                 <th class="text-center" style="vertical-align: middle;">Refferal</th>
@@ -199,6 +199,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($all_user as $index => $au) : ?>
+                            
                         <tr>
                             <?php if ($tryout['tipe_tryout'] == "SKD") : ?>
                                 <?php if ($au['total'] != null && $au['twk'] >= 65 && $au['tiu'] >= 80 && $au['tkp'] >= 156) : ?>
@@ -209,18 +210,15 @@
                             <?php else: ?>
                                 <th class="text-center"><?= $index + 1; ?></th>
                             <?php endif ?>
-                            <th class="text-center"><?= $au['name']; ?></th>
+                            <th class="text-center"><?= $au['jumlah_pembayaran']; ?></th>
                             <th class="text-center"><?= $au['email']; ?></th>
                             <th class="text-center"><?= $au['no_wa']; ?></th>
                             <th class="text-center"><?= $au['id']; ?></th>
                             <?php if (isset($au['transaction_id'])) : ?>
-                                <td class="text-center">
-                                    <input type="checkbox" checked disabled>
-                                </td>
-                            <?php else: ?>
                                 <th class="text-center">
-                                    <input type="checkbox" disabled>
+                                    Rp <?=  number_format($au['gross_amount'],0,',','.') ?>
                                 </th>
+\
                             <?php endif; ?>
                             <td class="text-center">
                                     <?php if ($au['freemium'] == 1) : ?>
