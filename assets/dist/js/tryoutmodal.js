@@ -34,6 +34,9 @@ $(document).ready(function () {
         $("#jumlah_soal").attr("disabled", true);
         $("#jumlah_soal").val(data.jumlah_soal);
 
+        $("#link_premium").val(data.link_premium);
+        $("#link").val(data.link);
+
         if (data.tipe_tryout == "SKD") {
           $("#tipe_tryout option[value=SKD]").prop("selected", true);
           if (data.paid == 1) {

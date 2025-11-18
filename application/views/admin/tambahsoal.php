@@ -187,7 +187,7 @@
                         </select>
                         <?= form_error_message('kunci_jawaban'); ?>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group d-flex flex-wrap">
                         <select class="form-select nilai_tkp mr-3" style="width: 15%;" id="nilai_a" name="nilai_a">
                             <option value="0">Nilai untuk A...</option>
                             <option value="1">1</option>
@@ -245,13 +245,11 @@
                         </div>
 
                         <div class="form-group gbr_pembahasan mb-2">
-                            <div class="input-group">
                                 <div class="custom-file">
                                     <label class="custom-file-label" for="gambar_pembahasan">Choose file</label>
                                     <input type="file" class="custom-file-input form-control" id="gambar_pembahasan"
                                         name="gambar_pembahasan">
                                 </div>
-                            </div>
                             <?= error_message_file_input('error_gbr_pembahasan'); ?>
                         </div>
                         <textarea class="form-control default-height" name="pembahasan" id="pembahasan" cols="10" rows="5"

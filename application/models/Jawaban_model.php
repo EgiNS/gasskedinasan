@@ -71,6 +71,15 @@ class Jawaban_model extends CI_Model
         return $result->num_rows();
     }
 
+    public function getNumRowsUnique($data, $slug)
+    {
+        $this->db->where($data);
+        $this->db->select('email');
+        $this->db->distinct();
+        $result = $this->db->get($this->table . $slug);
+        return $result->num_rows();
+    }
+
     public function getLastRow($key, $slug) {
         $this->db->select('id');
         $this->db->from($this->table . $slug);

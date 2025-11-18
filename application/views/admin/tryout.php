@@ -283,6 +283,18 @@
                                 placeholder="Misal: 100" autocomplete="off"
                                 value="<?= set_value('lama_pengerjaan'); ?>">
                         </div>
+                        <div class="form-group mb-2">
+                            <label for="link">Link grup belajar (seluruh peserta)</label>
+                            <input type="text" class="form-control" id="link" name="link"
+                                autocomplete="off"
+                                value="<?= set_value('link'); ?>">
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="link_premium">Link grup belajar (khusus premium)</label>
+                            <input type="text" class="form-control" id="link_premium" name="link_premium"
+                                autocomplete="off"
+                                value="<?= set_value('link_premium'); ?>">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -151,32 +151,49 @@ class User_tryout_model extends CI_Model
         // $query = "SELECT * FROM `user_tryout` JOIN `user` ON `user_tryout`.`email` = `user`.`email` ORDER BY `user_tryout`.`total` DESC, `user_tryout`.`tkp` DESC, `user_tryout`.`tiu` DESC, `user_tryout`.`twk` DESC;";
 
     // Cek apakah kolom 'user_id' ada di tabel
-$checkColumn = $this->db->query("SHOW COLUMNS FROM user_tryout_{$slug} LIKE 'user_id'");
-$useUserId = $checkColumn->num_rows() > 0;
+    $checkColumn = $this->db->query("SHOW COLUMNS FROM user_tryout_{$slug} LIKE 'user_id'");
+    $useUserId = $checkColumn->num_rows() > 0;
 
-if ($useUserId) {
-    $joinField = 'user_id';
-    $onClause = 'u.id = ut.user_id';
-} else {
-    $joinField = 'email';
-    $onClause = 'u.email = ut.email';
-}
+    if ($useUserId) {
+        $joinField = 'user_id';
+        $onClause = 'u.id = ut.user_id';
 
-$query = "
-    SELECT u.*, ut.*
-    FROM user AS u
-    JOIN (
-        SELECT t1.*
-        FROM user_tryout_{$slug} t1
-        JOIN (
-            SELECT {$joinField}, MIN(id) AS min_id
-            FROM user_tryout_{$slug}
-            GROUP BY {$joinField}
-        ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
-    ) ut ON {$onClause}
-    ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
-";
+        // Tambahkan juga join ke tabel transaction
+        $query = "
+            SELECT u.*, ut.*, tr.gross_amount
+            FROM user AS u
+            JOIN (
+                SELECT t1.*
+                FROM user_tryout_{$slug} t1
+                JOIN (
+                    SELECT {$joinField}, MIN(id) AS min_id
+                    FROM user_tryout_{$slug}
+                    GROUP BY {$joinField}
+                ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
+            ) ut ON {$onClause}
+            LEFT JOIN transactions tr ON ut.transaction_id = tr.id
+            ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
+        ";
+    } else {
+        $joinField = 'email';
+        $onClause = 'u.email = ut.email';
 
+        // Tanpa join ke transaction
+        $query = "
+            SELECT u.*, ut.*
+            FROM user AS u
+            JOIN (
+                SELECT t1.*
+                FROM user_tryout_{$slug} t1
+                JOIN (
+                    SELECT {$joinField}, MIN(id) AS min_id
+                    FROM user_tryout_{$slug}
+                    GROUP BY {$joinField}
+                ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
+            ) ut ON {$onClause}
+            ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
+        ";
+    }
 
         return $this->db->query($query)->result_array();
     }
@@ -235,5 +252,17 @@ $query = "
                 return $value;
             } else return false;
         } else return false;
+    }
+
+    public function getPendapatan($slug)
+    {
+        $this->db->select_sum('tr.gross_amount', 'total_amount');
+        $this->db->from("user_tryout_{$slug} ut");
+        $this->db->join('transactions tr', 'ut.transaction_id = tr.id', 'inner');
+        $this->db->where('ut.transaction_id IS NOT NULL');
+        $this->db->where('tr.status_code', 200);
+
+        $query = $this->db->get();
+        return $query->row()->total_amount ?? 0;
     }
 }

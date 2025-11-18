@@ -93,36 +93,36 @@
                     <?php if ($tryout['kode_refferal']) : ?>
                         <button type="button" class="btn btn-primary rounded-pill" 
                                 data-bs-toggle="modal" data-bs-target="#refferalModal">
-                        <i class="bi bi-star-fill me-1"></i> Daftar Premium
+                        <i class="bi bi-star-fill me-1"></i> Daftar
                         </button>
-                        <button type="button" class="btn btn-outline-secondary rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <i class="bi bi-person-plus me-1"></i> Daftar Gratis
-                        </button>
+                        <?php if ($tryout['paid'] == 0) : ?>
+                            <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <i class="bi bi-person-plus me-1"></i> Daftar Gratis
+                            </button>
+                        <?php endif; ?>
 
                     <?php else : ?>
-                        <?php if ($tryout['paid'] == 0) : ?>
                         <?php if ($tryout['freemium'] == 1) : ?>
-                            <button type="button" class="btn btn-primary rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Daftar Gratis
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                <button type="button" class="btn btn-primary rounded-pill"
+                                        data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                Daftar Freemium
+                                </button>
+                                <button type="button" class="btn  btn-outline-secondary rounded-pill"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Daftar Gratis
+                                </button>
+                            <?php elseif ($tryout['paid'] == 1) : ?>
+                                <button type="button" class="btn btn-primary rounded-pill"
                                     data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                            Daftar Pemium
-                            </button>
-                        <?php else : ?>
-                            <button type="button" class="btn btn-primary rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Daftar Gratis
-                            </button>
-                        <?php endif; ?>
-                        <?php else : ?>
-                        <button type="button" class="btn btn-primary rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                            Daftar
-                        </button>
-                        <?php endif; ?>
+                                    Daftar
+                                </button>
+                            <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
+                                <button type="button" class="btn btn-primary rounded-pill"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Daftar Gratis
+                                </button>
+                            <?php endif; ?>
                     <?php endif; ?>
                     </div>
                 <?php endif; ?>

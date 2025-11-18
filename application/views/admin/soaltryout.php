@@ -51,6 +51,8 @@
                 Baru</a>
             <a href="<?= base_url('admin/generatedummysoal/') . $slug . '?' . $page; ?>"
                 class="btn rounded btn-primary btn-sm mb-3 submit">Generate Dummy Soal</a>
+            <button type="button" class="btn rounded btn-primary btn-sm mb-3 tampilModalUbahTryout"
+                data-id="<?= $tryout['id']; ?>" data-bs-toggle="modal" data-bs-target="#imporModal">Impor Soal</button>
 
             <!-- BOBOT NILAI -->
             <?php if ($tryout['tipe_tryout'] == 'nonSKD') : ?>
@@ -320,5 +322,41 @@
         </div>
         <?php endif; ?>
         <!-- [ Main Content ] end -->
+
+        <div class="modal fade" id="imporModal" tabindex="-1" aria-labelledby="imporModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content p-0">
+                    <form action="<?= base_url('admin/imporsoal/' . $tryout['slug']) ?>" method="post" enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="imporModalLabel">Unggah Soal</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                                <div class="mb-3">
+                                    <a class="btn btn-outline-secondary btn-sm rounded" href="<?= base_url('admin/downloadtemplate/template_excel_twk.xlsx'); ?>" role="button">Unduh Template TWK</a>
+                                    <a class="btn btn-outline-primary btn-sm rounded" href="<?= base_url('admin/downloadtemplate/template_excel_tkp.xlsx'); ?>" role="button">Unduh Template TKP</a>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label>Pilih File Excel Soal TWK (.xlsx / .xls)</label>
+                                    <input type="file" name="excel_file_twk" class="form-control">
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label>Pilih File Excel Soal TKP (.xlsx / .xls)</label>
+                                    <input type="file" name="excel_file_tkp" class="form-control">
+                                </div>
+    
+                                <small>*soal yang dapat diimpor hanya subtes TWK dan TKP, unggah dalam 2 file yang terpisah sesuai template diatas.</small>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Import</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
+
+    <?php destroysession(); ?>

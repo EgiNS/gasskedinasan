@@ -49,6 +49,99 @@ class User extends CI_Controller
         $this->load->view('templates/user_footer');
     }
 
+    public function dashboard()
+    {
+        $this->load->model('Tryout_model', 'tryout');
+        $this->load->model('User_tryout_model', 'user_tryout');
+        $title = 'Dashboard';
+
+        $user = $this->loginUser;
+
+        $all_tryout = $this->tryout->get('many', ['for_bimbel' => 0]);
+        $tryout = [];
+        $mytryout = [];
+        $tryout_names = [];
+        $tryout_scores = [];
+        
+
+        foreach ($all_tryout as $to) {
+            if ($to['tipe_tryout'] == 'SKD') {
+                $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $to['slug'], '*', $user);
+                if (isset($user_tryout['total']) && $user_tryout['total'] !== null) {
+                    array_push($tryout, $to);
+                    array_push($mytryout, $user_tryout);
+                    array_push($tryout_names, $to['name']);
+                    array_push($tryout_scores, $user_tryout['total']);
+                }
+            }
+        }
+
+        if (!empty($mytryout)) {
+            $jumlah_tryout = count($mytryout);
+            $rata_rata = round(array_sum($tryout_scores) / $jumlah_tryout);
+            $tertinggi = max($tryout_scores);
+            $terendah  = min($tryout_scores);
+        } else {
+            $jumlah_tryout = 0;
+            $rata_rata = 0;
+            $tertinggi = 0;
+            $terendah = 0;
+        }
+        
+        $last_score = $tryout_scores[count($tryout_scores) - 1] ?? null;
+        $prev_score = $tryout_scores[count($tryout_scores) - 2] ?? null; 
+
+        $message = '';
+        $alert_class = 'alert-secondary';
+        $icon = 'ti ti-info-circle';
+
+        if ($prev_score !== null) {
+            if ($last_score > $prev_score) {
+                $diff = $last_score - $prev_score;
+                $alert_class = 'alert-success';
+                $icon = 'ti ti-trending-up';
+                $message = "Nilai kamu naik <b>{$diff} poin</b> dari TO sebelumnya 🚀 <span class='fw-semibold'>Keren! Tancap Gass terus yaa 🔥 OTW Kedinasan Impian!</span>";
+            } elseif ($last_score < $prev_score) {
+                $diff = $prev_score - $last_score;
+                $alert_class = 'alert-danger';
+                $icon = 'ti ti-trending-down';
+                $message = "Wah nilai kamu turun <b>{$diff} poin</b> dari TO sebelumnya 😔 <span class='fw-semibold'>Jangan patah semangat! Yok Gass Terusss 💪</span>";
+            } else {
+                $alert_class = 'alert-warning';
+                $icon = 'ti ti-minus';
+                $message = "Nilai kamu masih <b>stabil</b> nih ⚖️ <span class='fw-semibold'>Pertahankan performamu, Gass Terus Menuju Target!</span>";
+            }
+        } else {
+            $alert_class = 'alert-info';
+            $icon = 'ti ti-info-circle';
+            $message = "Baru mulai nih! 🌟 <span class='fw-semibold'>Yok ikuti Tryout berikutnya buat lihat progresmu!</span>";
+        }
+
+        $data = [
+            'title' => $title,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $title,
+            'tryout' => $tryout,
+            'mytryout' => $mytryout,
+            'tryout_names' => $tryout_names,
+            'tryout_scores' => $tryout_scores,
+            'alert_class' => $alert_class,
+            'icon' => $icon,
+            'message' => $message,
+            'jumlah_tryout' => $jumlah_tryout,
+            'rata_rata' => $rata_rata,
+            'tertinggi' => $tertinggi,
+            'terendah' => $terendah,
+        ];
+
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('user/dashboard', $data);
+        $this->load->view('templates/user_footer');
+    }
+
     public function editprofile()
     {
         $parent_title = getSubmenuTitleById(6)['title'];

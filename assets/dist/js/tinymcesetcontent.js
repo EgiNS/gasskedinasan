@@ -2,55 +2,37 @@ $(document).ready(function () {
   var base_url = $(".base_url").data("baseurl");
   // console.log(base_url)
 
-  if ($("#repoptinymce").length) {
-    const key = { 0: "text_soal", 1: "pembahasan", 2: "text_a", 3: "text_b", 4: "text_c", 5: "text_d", 6: "text_e" };
-    const count = Object.keys(key).length;
+if ($("#repoptinymce").length) {
+  const key = ["text_soal", "pembahasan", "text_a", "text_b", "text_c", "text_d", "text_e"];
+  const values = {};
 
-    var textSoal;
-    var pembahasanSoal;
-    var textA;
-    var textB;
-    var textC;
-    var textD;
-    var textE;
+  // Ambil semua data repop dengan Promise agar tunggu semua selesai
+  const requests = key.map(name => {
+    return $.ajax({
+      url: base_url + "admin/gettinymcevalue",
+      type: "post",
+      data: { name },
+      dataType: "json"
+    }).then(data => {
+      values[data.name] = data.value;
+    });
+  });
 
-    for (let i = 0; i < count; i++) {
-      $.ajax({
-        url: base_url + "admin/gettinymcevalue",
-        type: "post",
-        data: {
-          name: key[i],
-        },
-        dataType: "json",
-        success: (data) => {
-          if (data.name == "text_soal") textSoal = data.value;
-          else if (data.name == "pembahasan") pembahasanSoal = data.value;
-          else if (data.name == "text_a") textA = data.value;
-          else if (data.name == "text_b") textB = data.value;
-          else if (data.name == "text_c") textC = data.value;
-          else if (data.name == "text_d") textD = data.value;
-          else if (data.name == "text_e") textE = data.value;
-        },
-        error: function (request, status, error) {
-          Swal.fire({
-            icon: "error",
-            html: request.responseText ? request.responseText : "Oops, something went wrong. Please try again later.",
-          });
-        },
-      });
-    }
-
+  // Tunggu semua request selesai dulu
+  Promise.all(requests).then(() => {
+    // Inisialisasi TinyMCE setelah semua data siap
     tinymce.init({
       selector: "textarea.default-height",
       plugins: "autolink lists table lists",
-      toolbar: "a11ycheck addcomment showcomments casechange checklist code export formatpainter pageembed permanentpen table tableofcontents numlist bullist",
+      toolbar:
+        "a11ycheck addcomment showcomments casechange checklist code export formatpainter pageembed permanentpen table tableofcontents numlist bullist",
       toolbar_mode: "floating",
       tinycomments_mode: "embedded",
       tinycomments_author: "Author name",
       setup: (editor) => {
-        editor.on("init", (e) => {
-          tinymce.get(key[0]).setContent(textSoal);
-          tinymce.get(key[1]).setContent(pembahasanSoal);
+        editor.on("init", () => {
+          const id = editor.id;
+          if (values[id]) editor.setContent(values[id]);
         });
       },
     });
@@ -58,22 +40,26 @@ $(document).ready(function () {
     tinymce.init({
       selector: "textarea.custom-height",
       plugins: "autolink lists table lists",
-      toolbar: "a11ycheck addcomment showcomments casechange checklist code export formatpainter pageembed permanentpen table tableofcontents numlist bullist",
+      toolbar:
+        "a11ycheck addcomment showcomments casechange checklist code export formatpainter pageembed permanentpen table tableofcontents numlist bullist",
       toolbar_mode: "floating",
       tinycomments_mode: "embedded",
       tinycomments_author: "Author name",
-      height: "240",
+      height: 240,
       setup: (editor) => {
-        editor.on("init", (e) => {
-          tinymce.get(key[2]).setContent(textA);
-          tinymce.get(key[3]).setContent(textB);
-          tinymce.get(key[4]).setContent(textC);
-          tinymce.get(key[5]).setContent(textD);
-          tinymce.get(key[6]).setContent(textE);
+        editor.on("init", () => {
+          const id = editor.id;
+          if (values[id]) editor.setContent(values[id]);
         });
       },
     });
-  }
+  }).catch(err => {
+    Swal.fire({
+      icon: "error",
+      html: err.responseText ? err.responseText : "Oops, gagal memuat data TinyMCE.",
+    });
+  });
+}
 
   if ($("#repoptinymcetryout").length) {
     $.ajax({

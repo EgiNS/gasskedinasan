@@ -44,9 +44,18 @@ class Exam extends CI_Controller
         $tryout = $this->$jenis->get('one', ['slug' => $slug]);
 
         $email = $this->session->userdata('email');
+        $user_id = $this->session->userdata('id');
+
         $company_settings = $this->company_settings->get('one', ['id' => 1]);
 
-        $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $pengerjaan = $this->user_tryout->getNumRows(['user_id'=>$user_id], $slug);
+            $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id, 'pengerjaan'=>$pengerjaan], $slug);
+        } else {
+            $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+            $user_tryout = $this->user_tryout->get('one', ['email' => $email, 'pengerjaan'=>$pengerjaan], $slug);
+        }
+
         $last = $this->jawaban->getLastRow(['email'=>$email], $slug);
 
         $data = [
@@ -56,7 +65,7 @@ class Exam extends CI_Controller
             'soal_lengkap' => $this->soal->getAll($slug, array('token')),
             'jawaban' => $this->jawaban->get('one', ['id'=>$last['id']], $slug),
             'ragu_ragu' => $this->ragu_ragu->get('one', ['email' => $email], $slug),
-            'user_tryout' => $this->user_tryout->get('one', ['email' => $email, 'pengerjaan'=>$pengerjaan], $slug),
+            'user_tryout' => $user_tryout,
             'tryout' => $tryout
         ];
 
@@ -141,31 +150,46 @@ class Exam extends CI_Controller
                 $slug
             );
         }
+
+        $this->user->update(['last_login_at' => date('Y-m-d H:i:s')], ['email' => $this->loginUser->email]);
     }
 
     public function setkerjakan($slug)
     {
         $email = $this->session->userdata('email');
+        $user_id = $this->session->userdata('id');
 
         $data = [
             'email' => $this->session->userdata('email'),
             'waktu_mulai' => time()
         ];
 
-        $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
-        $user_to = $this->user_tryout->get('one', ['email' => $email, 'pengerjaan'=>$pengerjaan], $slug);
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $pengerjaan = $this->user_tryout->getNumRows(['user_id'=>$user_id], $slug);
+            $user_to = $this->user_tryout->get('one', ['user_id' => $user_id, 'pengerjaan'=>$pengerjaan], $slug);
 
-        // log_message('debug', 'Pengerjaan '.$pengerjaan);
-        // log_message('debug', 'Nilai '.$user_to['total']);die;
+            $this->jawaban->insert($data, $slug);
 
-        $this->jawaban->insert($data, $slug);
+            $this->ragu_ragu->insert(['email' => $email], $slug);
 
-        $this->ragu_ragu->insert(['email' => $email], $slug);
-
-        if ($pengerjaan >= 1 && ($user_to['total'] != null || $user_to['nilai'] != null)) {
-            $this->user_tryout->insert(['email'=>$email, 'status'=>1, 'freemium'=>$user_to['freemium'], 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
+            if ($pengerjaan >= 1 && ($user_to['total'] != null || $user_to['nilai'] != null)) {
+                $this->user_tryout->insert(['user_id'=>$user_id, 'status'=>1, 'freemium'=>$user_to['freemium'], 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
+            } else {
+                $this->user_tryout->updateLastRow(['status' => 1], ['user_id' => $user_id], $slug);
+            }
         } else {
-            $this->user_tryout->updateLastRow(['status' => 1], ['email' => $email], $slug);
+            $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+            $user_to = $this->user_tryout->get('one', ['email' => $email, 'pengerjaan'=>$pengerjaan], $slug);
+
+            $this->jawaban->insert($data, $slug);
+
+            $this->ragu_ragu->insert(['email' => $email], $slug);
+
+            if ($pengerjaan >= 1 && ($user_to['total'] != null || $user_to['nilai'] != null)) {
+                $this->user_tryout->insert(['email'=>$email, 'status'=>1, 'freemium'=>$user_to['freemium'], 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
+            } else {
+                $this->user_tryout->updateLastRow(['status' => 1], ['email' => $email], $slug);
+            }
         }
     }
 
@@ -174,6 +198,8 @@ class Exam extends CI_Controller
         $this->load->model('Kunci_tkp_model', 'kunci_tkp');
 
         $email = $this->session->userdata('email');
+        $user_id = $this->session->userdata('id');
+
         $latsol = substr($slug,0,6);
         if ($latsol != 'latsol') {
             $jenis = 'tryout';
@@ -241,9 +267,14 @@ class Exam extends CI_Controller
                 'total' => $nilai_twk + $nilai_tiu + $nilai_tkp
             ];
 
-            $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+            if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+                $pengerjaan = $this->user_tryout->getNumRows(['user_id'=>$user_id], $slug);
+                $this->user_tryout->update($update, ['user_id' => $user_id, 'pengerjaan' => $pengerjaan], $slug);
+            } else {
+                $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+                $this->user_tryout->update($update, ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
+            }
 
-            $this->user_tryout->update($update, ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
 
             // END PERHITUNGAN NILAI
             $last = $this->jawaban->getLastRow(['email'=>$email], $slug);
@@ -303,9 +334,14 @@ class Exam extends CI_Controller
                 'nilai' => $nilai
             ];
 
-            $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+            if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+                $pengerjaan = $this->user_tryout->getNumRows(['user_id'=>$user_id], $slug);
+                $this->user_tryout->update($update, ['user_id' => $user_id, 'pengerjaan' => $pengerjaan], $slug);
+            } else {
+                $pengerjaan = $this->user_tryout->getNumRows(['email'=>$email], $slug);
+                $this->user_tryout->update($update, ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
+            }
 
-            $this->user_tryout->update($update, ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
 
             // END PERHITUNGAN NILAI
 
@@ -325,7 +361,11 @@ class Exam extends CI_Controller
             );
         }
         $this->ragu_ragu->delete(['email' => $email], $slug);
-        $this->user_tryout->update(['status' => 2], ['email' => $email], $slug);
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $this->user_tryout->update(['status' => 2], ['user_id' => $user_id], $slug);
+        } else {
+            $this->user_tryout->update(['status' => 2], ['email' => $email], $slug);
+        }
         $this->session->set_flashdata('success', 'Menyelesaikan Try Out');
     }
 }

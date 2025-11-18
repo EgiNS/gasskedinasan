@@ -148,7 +148,7 @@ $('.custom-file-input').on('change', function() {
 
     <!-- [Page Specific JS] start -->
     <!-- Apex Chart -->
-<script src="<?= base_url('assets/js/plugins/apexcharts.min.js'); ?>"></script>
+
 <script src="<?= base_url('assets/js/pages/dashboard-default.js'); ?>"></script>
     <!-- [Page Specific JS] end -->
   </body>

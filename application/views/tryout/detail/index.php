@@ -89,36 +89,36 @@
                     <?php if ($tryout['kode_refferal']) : ?>
                         <button type="button" class="btn btn-primary rounded-pill" 
                                 data-bs-toggle="modal" data-bs-target="#refferalModal">
-                        <i class="bi bi-star-fill me-1"></i> Daftar Premium
+                        <i class="bi bi-star-fill me-1"></i> Daftar
                         </button>
-                        <button type="button" class="btn btn-outline-secondary rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <i class="bi bi-person-plus me-1"></i> Daftar Gratis
-                        </button>
+                        <?php if ($tryout['paid'] == 0) : ?>
+                            <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <i class="bi bi-person-plus me-1"></i> Daftar Gratis
+                            </button>
+                        <?php endif; ?>
 
                     <?php else : ?>
-                        <?php if ($tryout['paid'] == 0) : ?>
                         <?php if ($tryout['freemium'] == 1) : ?>
-                            <button type="button" class="btn btn-primary rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Daftar Gratis
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                <button type="button" class="btn btn-primary rounded-pill"
+                                        data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                Daftar Premium
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Daftar Gratis
+                                </button>
+                            <?php elseif ($tryout['paid'] == 1) : ?>
+                                <button type="button" class="btn btn-primary rounded-pill"
                                     data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                            Daftar Pemium
-                            </button>
-                        <?php else : ?>
-                            <button type="button" class="btn btn-primary rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Daftar Gratis
-                            </button>
-                        <?php endif; ?>
-                        <?php else : ?>
-                        <button type="button" class="btn btn-primary rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                            Daftar
-                        </button>
-                        <?php endif; ?>
+                                    Daftar
+                                </button>
+                            <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
+                                <button type="button" class="btn btn-primary rounded-pill"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Daftar Gratis
+                                </button>
+                            <?php endif; ?>
                     <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -127,20 +127,24 @@
 
                 <!-- Informasi Harga -->
                 <div class="text-center mb-3">
-                    <?php if ($tryout['paid'] == 1) : ?>
-                    <h6 class="text-muted mb-1">Mulai dari</h6>
-                    <h2 class="fw-bold text-primary mb-2">
-                        <?= 'Rp ' . number_format($tryout['harga'], 0, null, '.') . ',-'; ?>
-                    </h2>
-                    <?php else : ?>
-                    <?php if ($tryout['freemium'] == 0) : ?>
-                        <h2 class="fw-bold text-success mb-2">GRATIS 🎉</h2>
-                    <?php else : ?>
+                    <?php if ($tryout['freemium'] == 1) : ?>
+                        <h6 class="text-muted mb-1">Harga TO Premium mulai dari</h6>
+                        <h2 class="fw-bold text-primary mb-2">
+                            <?= 'Rp ' . number_format($tryout['harga'], 0, null, '.') . ',-'; ?>
+                        </h2>
                         <div class="alert alert-warning small text-center" role="alert">
-                        Silakan <strong>Daftar Premium</strong> untuk mendapatkan
-                        <em>answer analysis</em> & pembahasan lengkap!
+                            Silakan <strong>Daftar Premium</strong> untuk mendapatkan
+                            <em>answer analysis</em> & pembahasan lengkap!
                         </div>
-                    <?php endif; ?>
+                    <?php else : ?>
+                        <?php if ($tryout['paid'] == 1) : ?>
+                            <h6 class="text-muted mb-1">Mulai dari</h6>
+                            <h2 class="fw-bold text-primary mb-2">
+                                <?= 'Rp ' . number_format($tryout['harga'], 0, null, '.') . ',-'; ?>
+                            </h2>
+                        <?php else : ?>
+                             <h2 class="fw-bold text-success mb-2">GRATIS 🎉</h2>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
