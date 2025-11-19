@@ -48,3 +48,14 @@ CREATE TABLE events
         ON DELETE SET NULL 
         ON UPDATE CASCADE
 );
+
+CREATE TABLE show_to_landingpage (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    to_id INT NOT NULL,
+    keterangan TEXT,
+    CONSTRAINT fk_show_to_landingpage_to_id
+        FOREIGN KEY (to_id)
+        REFERENCES tryout(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);

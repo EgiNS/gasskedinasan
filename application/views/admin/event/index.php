@@ -84,7 +84,7 @@
                                                 <div class="border-top mt-auto">
 
                                                 </div>
-                                                <a href="<?= base_url('tryout/paket-to/') . $item['id']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
+                                                <a href="<?= base_url('admin/event/') . $item['id']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
                                             </div>
                                         </div>
                                     </div>
@@ -95,7 +95,7 @@
                     <?php else : ?>
                         <div class="card-body">
                             <div class="row g-3">
-                                <p>Belum ada tryout yang tersedia</p>
+                                <p>Belum ada event yang tersedia</p>
                             </div>
                         </div>
                     <?php endif; ?>

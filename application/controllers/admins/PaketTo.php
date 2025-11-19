@@ -149,4 +149,47 @@ class PaketTo extends CI_Controller
             }
         }
     }
+    public function detail($slug)
+    {
+        
+
+        $this->load->model('Pendaftar_to_model', 'pendaftar_to');
+        $submenu_parent = 22;
+        $parent_title = getSubmenuTitleById($submenu_parent)['title'];
+        submenu_access($submenu_parent);
+
+        $pendaftar = $this->pendaftar_to->get_all_by_packet_to_id($slug);
+
+        $data = [
+            'title' => $parent_title,
+            'user' => $this->loginUser,
+            'sidebar_menu' => $this->sidebarMenu,
+            'parent_submenu' => $parent_title,
+            'pendaftar' => $pendaftar,
+        ];
+        $data['page_scripts'] = [
+            "$(document).ready(function () {
+                $('#tabelwoi').DataTable();
+            });"
+        ];
+        $this->load->view('templates/user_header', $data);
+        $this->load->view('templates/user_sidebar', $data);
+        $this->load->view('templates/user_topbar', $data);
+        $this->load->view('admin/paketto/detail', $data);
+        $this->load->view('templates/user_footer');
+    }
+
+    public function show_packet($slug){
+        $packet_to = $this->paket_to->get('one', ['slug' => $slug]);
+         if ($packet_to['hidden'] == 0) {
+            $this->paket_to->update(['hidden' => 1], ['slug' => $slug]);
+
+            $this->session->set_flashdata('success', 'Menyembunyikan Tryout');
+        } else if ($packet_to['hidden'] == 1) {
+            $this->paket_to->update(['hidden' => 0], ['slug' => $slug]);
+            $this->session->set_flashdata('success', 'Menampilkan Tryout');
+        }
+        redirect('admin/paket-to/' . $slug);
+    }
+
 }

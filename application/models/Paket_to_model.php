@@ -166,4 +166,24 @@ public function getAllWithTryouts()
         $this->db->query($sql_tabel_pendaftar);
     }
 
+
+    
+    public function get($count, $key, $select = '*')
+    {
+        $this->db->select($select);
+        $this->db->order_by('id', 'DESC');
+        $result = $this->db->get_where($this->table, $key);
+        if ($count === 'many')
+            return $result->result_array();
+        else if ($count === 'one')
+            return $result->row_array();
+        else
+            return false;
+    }
+
+    public function update($data, $where)
+    {
+        $this->db->where($where);
+        return $this->db->update($this->table, $data);
+    }
 }

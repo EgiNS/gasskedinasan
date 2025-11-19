@@ -77,7 +77,7 @@ class Event extends CI_Controller
             'jumlah_tryout' => count($event['tryouts']),
             'total_waktu' => $total_waktu,
             'sidebar_menu' => $this->sidebarMenu,
-            'payment_status' => $payment_status,
+            'payment_status' => $payment_status ,
             'parent_submenu' => $parent_title,
         ];
         $this->load->view('templates/user_header', $data);
