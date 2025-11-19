@@ -81,6 +81,10 @@
                 margin-top: 16px;
             }
         }
+        .keterangan-wrapper p {
+            font-size: 18px !important;
+            line-height: 2;
+        }
         
     </style>
 </head>

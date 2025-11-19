@@ -694,9 +694,55 @@ class Auth extends CI_Controller
         //jika user ada
         if ($user) {
             if (!empty($user['session_token']) && $user['role_id'] != 1) {
-                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Akun ini sedang aktif di perangkat lain.</div>');
-                $this->session->set_flashdata('auth_email', $user['email']);
-                redirect('auth');
+                $inactive_limit = 2 * 60 * 60; // 2 jam dalam detik
+                $last_ts = $last_ts = strtotime($user['last_login_at'] . ' +7 hours');
+                                
+                // var_dump(time(), $inactive_limit, $user['last_login_at'], $last_ts, time() - $last_ts);
+                // var_dump((time() - $last_ts) > $inactive_limit);
+                // die;
+
+                if (time() - $last_ts > $inactive_limit) {
+                    if ($user['is_active'] == 1) {
+                        //cek password
+                        if (password_verify($password, $user['password'])) {
+                            $token = bin2hex(random_bytes(32));
+
+                            $this->user->update(['session_token' => $token, 'last_login_at' => date('Y-m-d H:i:s')], ['email' => $email]);
+                            
+                            $data = [
+                                'id' => $user['id'],
+                                'email' => $user['email'],
+                                'role_id' => $user['role_id'],
+                                'session_token' => $token
+                            ];
+                            $this->session->set_userdata($data);
+
+                            // $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
+
+                            //jika benar
+                            if ($user['role_id'] == 1) {
+                                redirect('admin');
+                            } else if ($user['role_id'] == 8) {
+                                redirect('bimbel/tryout');
+                            } else {
+                                redirect('tryout');
+                            }
+                        } else {
+                            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Wrong password!</div>');
+                            $this->session->set_flashdata('auth_email', $user['email']);
+                            redirect('auth');
+                        }
+                    } else {
+                        $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">This email has not been activated!</div>');
+                        $this->session->set_flashdata('auth_email', $user['email']);
+                        redirect('auth');
+                    }
+                } else {
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Akun ini sedang aktif di perangkat lain.</div>');
+                    $this->session->set_flashdata('auth_email', $user['email']);
+                    redirect('auth');
+                }
+
             } else {
                 //jika user aktif
                 if ($user['is_active'] == 1) {
@@ -707,6 +753,7 @@ class Auth extends CI_Controller
                         $this->user->update(['session_token' => $token, 'last_login_at' => date('Y-m-d H:i:s')], ['email' => $email]);
                         
                         $data = [
+                            'id' => $user['id'],
                             'email' => $user['email'],
                             'role_id' => $user['role_id'],
                             'session_token' => $token

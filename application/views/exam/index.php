@@ -121,6 +121,16 @@ body {
   width: 1.5rem;
 }
 
+.custom-control-label p,
+.custom-control-label div,
+.custom-control-label span {
+font-size: 1rem;
+  margin: 0;                 /* Hilangkan margin bawaan <p> */
+  padding: 0;
+  display: inline;           /* Biar tetap sejajar teks */
+  line-height: 1.5;
+}
+
 /* Responsif & rapih */
 .custom-control {
   margin-bottom: 0.75rem;

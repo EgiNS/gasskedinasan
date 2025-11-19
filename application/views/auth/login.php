@@ -27,7 +27,7 @@
                     <div class="bg-white w-50 p-4 rounded shadow-lg">
 
                         <h3 class="text-center text-3xl mb-4 font-bold">Login </h3>
-
+                        <?= $this->session->flashdata('message'); ?>
                         <div class="mb-3">
                             <label for="form-label">
                                 Email

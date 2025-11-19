@@ -78,6 +78,12 @@
                 </i> Delete
                 Tryout</button>
         </div>
+
+        <div class="btn-group mt-3">
+            <button type="button" class="btn rounded btn-secondary btn-sm mb-3"
+                data-id="<?= $tryout['id']; ?>" data-bs-toggle="modal" data-bs-target="#LandingModal">
+                Tampilkan di Landing</button>
+        </div>
     </div>
     <!-- Card Content -->
     <div class="row">
@@ -188,6 +194,9 @@
                             <th class="text-center" style="vertical-align: middle;">Urutan Daftar</th>
                             <th class="text-center" style="vertical-align: middle;">Harga Beli</th>
                             <th class="text-center" style="vertical-align: middle;">Premium</th>
+                            <?php if (isset($all_user[0]['transaction_id'])) : ?>
+                                <th class="text-center" style="vertical-align: middle;">Jumlah Bayar</th>
+                            <?php endif; ?>
                             <?php if ($tryout['kode_refferal']) : ?>
                                 <th class="text-center" style="vertical-align: middle;">Refferal</th>
                             <?php endif ?>
@@ -232,6 +241,9 @@
                                         <input type="checkbox" disabled>
                                     <?php endif; ?>
                                 </td>
+                            <?php if (isset($au['transaction_id'])) : ?>
+                                <th class="text-center"><?= number_format($au['gross_amount'], 0, ',', '.'); ?></th>
+                            <?php endif ?>
                             <?php if ($tryout['kode_refferal']) : ?>
                                 <th class="text-center"><?= $au['refferal']; ?></th>
                             <?php endif ?>
@@ -336,27 +348,27 @@
             <div class="modal-body p-0">
                 <form action="<?= base_url('admin/tryout'); ?>" method="post">
                     <div class="modal-body">
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <input type="text" class="form-control" id="tryout" name="tryout"
                                 placeholder="Tryout name..." autocomplete="off">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <textarea class="form-control" name="ket_tryout" id="ket_tryout" cols="10" rows="5"
                                 placeholder="Keterangan tryout... (opsional)"></textarea>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <select name="tipe_tryout" id="tipe_tryout" class="form-control">
                                 <option value="0">Tipe Tryout</option>
                                 <option value="SKD">Soal Pilihan Ganda SKD</option>
                                 <option value="nonSKD">Soal Pilihan Ganda non SKD</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <label for="jumlah_soal">Jumlah Soal</label>
                             <input type="text" class="form-control" id="jumlah_soal" name="jumlah_soal"
                                 placeholder="Misal: 110">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="1" id="berbayar" name="berbayar">
                                 <label class="form-check-label" for="berbayar">
@@ -364,7 +376,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <input type="text" class="form-control" id="harga" name="harga"
                                 placeholder="Harga: contoh 10000" autocomplete="off" disabled>
                         </div>
@@ -388,14 +400,24 @@
                                     placeholder="Harga dengan kode refferal" autocomplete="off">
                             </div>
                         <?php endif; ?>
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <label for="lama_pengerjaan">Lama Pengerjaan (dalam menit)</label>
                             <input type="text" class="form-control" id="lama_pengerjaan" name="lama_pengerjaan"
                                 placeholder="Misal: 100" autocomplete="off">
                         </div>
+                        <div class="form-group mb-2">
+                            <label for="link">Link grup belajar (seluruh peserta)</label>
+                            <input type="text" class="form-control" id="link" name="link"
+                                autocomplete="off">
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="link_premium">Link grup belajar (khusus premium)</label>
+                            <input type="text" class="form-control" id="link_premium" name="link_premium"
+                                autocomplete="off">
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Add</button>
                     </div>
                 </form>
@@ -421,8 +443,48 @@
     </div>
 </div>
 
+<div class="modal fade" id="LandingModal" tabindex="-1" aria-labelledby="landingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-0">
+            <form action="<?= base_url('admin/save_show_to_landing/' . $tryout["slug"]); ?>" method="post">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="imageModalLabel">Tampilkan di Landing Page</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="to_id" value="<?= $tryout['id']; ?>">
+                    <label for="ket_display">Isikan keterangan</label>
+                   <textarea class="form-control" name="ket_display" id="ket_display" cols="10" rows="5"
+                        placeholder="Keterangan tryout... (opsional)">
+                        <?= isset($show->keterangan) ? htmlspecialchars($show->keterangan) : '' ?>
+                    </textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
+        tinymce.init({
+            selector: "#ket_display",
+            plugins: "autolink lists table lists",
+            toolbar:
+                "a11ycheck addcomment showcomments casechange checklist code export formatpainter pageembed permanentpen table tableofcontents numlist bullist",
+            toolbar_mode: "floating",
+            tinycomments_mode: "embedded",
+            tinycomments_author: "Author name",
+            setup: (editor) => {
+                editor.on("init", () => {
+                const id = editor.id;
+                if (values[id]) editor.setContent(values[id]);
+                });
+            },
+        });
         // Gunakan event delegation
         $(document).on('click', '.lihat-gambar', function () {
             // Ambil URL gambar dari data-src

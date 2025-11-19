@@ -17,27 +17,32 @@
     </div>
        </div>
     </div>
-    <div class="d-flex justify-content-start align-items-center">
-        <div class="w-50">
-                <img class="w-75" src="assets/assets_lp/img/gass/Banner_Image.png" alt="Banner">
+    <?php if($show): ?>
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="w-50">
+                    <img class="w-75" src="<?= base_url('assets/img/' . $tryout["gambar"]); ?>" alt="Banner">
+            </div>
+            <div class="w-50">
+                <h3 class="text-blue mb-3" style="font-size: 20px;">
+                    <?= $tryout['name'] ?>
+                </h3>
+                <!-- <p style="font-size: 32px; font-weight: bold;" class="mb-5">
+                    Sikat TO MTK STIS Secepat Kilat !!!
+                </p>
+                <ul style="list-style-type: none; padding: 0; gap: 12px; font-size: 18px;" class="mb-4 d-flex flex-column">
+                    <li>✅ Total 6 paket TO MATEMATIKA STIS</li>
+                    <li>✅ Fast Scoring dan Ranking Nasional</li>
+                    <li>✅ Soal berdasarkan tes asli</li>
+                    <li>✅ Bisa dikerjakan lewat media apapun </li>
+                    <li>✅ Answer Analysis dan Pembahasan PDF </li>
+                    <li>✅ Bisa Dikerjakan Berkali-kali</li>
+                    <li>✅ Bonus: Rekaman Zoom 4 Live Class dan Grup Belajar </li>
+                </ul> -->
+                <div style="list-style-type: none; padding: 0; gap: 12px; font-size: 18px;" class="keterangan-wrapper mb-4 d-flex flex-column">
+                    <?= $show->keterangan ?>
+                </div>
+                <button class="btn btn-blue" style="padding: 16px 28px; font-size: 16px;">Daftar Sekarang <span><i class="fas fa-arrow-right"></i></span></button>
+            </div>
         </div>
-        <div class="w-50">
-            <h3 class="text-blue mb-3" style="font-size: 20px;">
-                FAST MATEMATIKA STIS
-            </h3>
-            <p style="font-size: 32px; font-weight: bold;" class="mb-5">
-                Sikat TO MTK STIS Secepat Kilat !!!
-            </p>
-            <ul style="list-style-type: none; padding: 0; gap: 12px; font-size: 18px;" class="mb-4 d-flex flex-column">
-                <li>✅ Total 6 paket TO MATEMATIKA STIS</li>
-                <li>✅ Fast Scoring dan Ranking Nasional</li>
-                <li>✅ Soal berdasarkan tes asli</li>
-                <li>✅ Bisa dikerjakan lewat media apapun </li>
-                <li>✅ Answer Analysis dan Pembahasan PDF </li>
-                <li>✅ Bisa Dikerjakan Berkali-kali</li>
-                <li>✅ Bonus: Rekaman Zoom 4 Live Class dan Grup Belajar </li>
-            </ul>
-            <button class="btn btn-blue" style="padding: 16px 28px; font-size: 16px;">Daftar Sekarang <span><i class="fas fa-arrow-right"></i></span></button>
-        </div>
-    </div>
+    <?php endif; ?>
 </div>

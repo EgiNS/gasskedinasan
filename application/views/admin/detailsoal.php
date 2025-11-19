@@ -45,10 +45,10 @@
                         <img src="<?= base_url('assets/img/soal/') . $soal['gambar_soal']; ?>" class="img-fluid rounded-start">
                     </div>
                     <hr>
-                    <p class="" style="color: black; font-weight: bold; font-size: 125%; text-align: justify;">
+                    <p class="" style="color: black; font-size: 1.1em; text-align: justify;">
                         <?= $soal['text_soal']; ?></p>
                 <?php else : ?>
-                    <p class="" style="color: black; font-weight: bold; font-size: 125%; text-align: justify;">
+                    <p class="" style="color: black; font-size: 1.1em; text-align: justify;">
                         <?= $soal['text_soal']; ?></p>
                 <?php endif;
 
@@ -293,7 +293,7 @@
 
                 <?php if ($gambar_pembahasan || $pembahasan) : ?>
                     <hr>
-                    <label for="pembahasan_soal" style="font-weight: bold;">Pembahasan</label><br>
+                    <label for="pembahasan_soal" style="font-weight: bold;font-size: 1.1em;">Pembahasan</label><br>
                 <?php endif; ?>
                 <?php if ($gambar_pembahasan) : ?>
                     <div class="col-md-8">
@@ -302,7 +302,7 @@
                     <br>
                 <?php endif; ?>
                 <?php if ($pembahasan) : ?>
-                    <p class="" style="color: black; font-size: 125%; text-align: justify;"><?= $pembahasan; ?></p>
+                    <p class="" style="color: black; font-size: 1.1em; text-align: justify;"><?= $pembahasan; ?></p>
                 <?php endif; ?>
               </div>
             </div>

@@ -292,4 +292,16 @@ class User_tryout_model extends CI_Model
             } else return false;
         } else return false;
     }
+
+    public function getPendapatan($slug)
+    {
+        $this->db->select_sum('tr.gross_amount', 'total_amount');
+        $this->db->from("user_tryout_{$slug} ut");
+        $this->db->join('transactions tr', 'ut.transaction_id = tr.id', 'inner');
+        $this->db->where('ut.transaction_id IS NOT NULL');
+        $this->db->where('tr.status_code', 200);
+
+        $query = $this->db->get();
+        return $query->row()->total_amount ?? 0;
+    }
 }

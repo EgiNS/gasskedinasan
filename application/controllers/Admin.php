@@ -1,4 +1,6 @@
 <?php
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
 defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
@@ -67,7 +69,7 @@ class Admin extends CI_Controller
     public function index()
     {
         $this->_loadRequiredModels();
-        $this->load->model('Midtrans_payment_model', 'midtrans_payment');
+        $this->load->model('Transaction_model', 'transaction');
 
         $parent_title = getSubmenuTitleById(1)['title'];
         submenu_access(1);
@@ -86,12 +88,28 @@ class Admin extends CI_Controller
         $total_peserta = 0;
         $total_soal = 0;
 
+        $top_tryout_list = []; // buat array kosong untuk menampung data
+
         foreach ($all_tryout as $at) {
             $user_count = $this->user_tryout->getNumRows(['id >' => 0], $at['slug']);
             $total_peserta += $user_count;
-
             $total_soal += $at['jumlah_soal'];
+
+            // simpan data tiap tryout ke array
+            $top_tryout_list[] = [
+                'name' => $at['name'],
+                'slug' => $at['slug'],
+                'jumlah_peserta' => $user_count,
+            ];
         }
+
+        // urutkan berdasarkan jumlah peserta (descending)
+        usort($top_tryout_list, function ($a, $b) {
+            return $b['jumlah_peserta'] <=> $a['jumlah_peserta'];
+        });
+
+        // ambil 5 teratas saja
+        $top_tryout = array_slice($top_tryout_list, 0, 5);
 
         $tryout = $this->tryout->getAllOrderByIdDesc(['status' => 1]);
 
@@ -121,13 +139,16 @@ class Admin extends CI_Controller
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
             'jumlah_tryout' => $tryout_count,
-            'total_pendapatan' => $this->midtrans_payment->getAllPendapatan(),
+            'total_pendapatan' => $this->transaction->getAllPendapatan(),
             'total_peserta' => $total_peserta,
             'total_soal' => $total_soal,
-            'pendapatantimeseries' => $this->midtrans_payment->getPendapatanTimeSeries(),
+            'pendapatantimeseries' => $this->transaction->getPendapatanTimeSeries(),
             'persentasestatususer' => $this->user_tryout->getPersentaseStatusUser($slug),
             'tryout' => $tryout_available,
-            'all_tryout' => $all_tryout
+            'all_tryout' => $all_tryout,
+            'peserta_aktif_minggu_ini' => $this->user->getCountActiveThisWeek(),
+            'peserta_online' => $this->user->getCountOnline(),
+            'top_tryout' => $top_tryout
         ];
 
         $this->load->view('templates/user_header', $data);
@@ -684,6 +705,14 @@ class Admin extends CI_Controller
 
         // 🚀 ISOLATE: Hitung count untuk request ini saja
         $count_soal = $this->soal->getNumRows(['id >' => 0], $slug);
+        $jumlah_soal_twk = $this->soal->getNumRows(['tipe_soal' => 1], $slug);
+        $jumlah_soal_tiu = $this->soal->getNumRows(['tipe_soal' => 2], $slug);
+        $jumlah_soal_tkp = $this->soal->getNumRows(['tipe_soal' => 3], $slug);
+
+        if ($jumlah_soal_twk == 30 && $jumlah_soal_tkp == 45) {
+            $display_number_tiu = $jumlah_soal_tiu + 31;
+        } 
+
         $display_number = $count_soal + 1;
 
         // Validasi jumlah soal maksimum
@@ -709,16 +738,24 @@ class Admin extends CI_Controller
                 'title' => 'Tambah',
                 'href' => 'active'
             ],
-            [
-                'title' => 'No. ' . $display_number,
-                'href' => 'active'
-            ]
         ];
 
+        // Prepare data untuk view
         log_message('debug', 'AMANN SOAL ' . $display_number . ' 1 - ' . date('H:i:s'));
 
-        // Prepare data untuk view
-        $data = $this->_prepareViewData($title, $breadcrumb_item, $tryout, $slug, $parent_title, $display_number);
+        if ($jumlah_soal_twk == 30 && $jumlah_soal_tkp == 45) {
+            $breadcrumb_item[] = [
+                'title' => 'No. ' . $display_number_tiu,
+                'href' => 'active'
+            ];
+            $data = $this->_prepareViewData($title, $breadcrumb_item, $tryout, $slug, $parent_title, $display_number_tiu);
+        } else {
+            $breadcrumb_item[] = [
+                'title' => 'No. ' . $display_number,
+                'href' => 'active'
+            ];
+            $data = $this->_prepareViewData($title, $breadcrumb_item, $tryout, $slug, $parent_title, $display_number);
+        }
 
         log_message('debug', 'SET DATA SELESAI SOAL ' . $display_number . ' - ' . date('H:i:s'));
 
@@ -1425,6 +1462,115 @@ class Admin extends CI_Controller
         }
 
         return $base_data;
+    }
+
+    public function imporsoal($slug)
+    {
+        $this->load->model('Jawaban_model', 'jawaban');
+        $this->load->model('Soal_model', 'soal');
+        $this->load->model('Kunci_tkp_model', 'kunci_tkp');
+
+        // Cek apakah file diupload
+        if (!empty($_FILES['excel_file_twk']['name'])) {
+            $file_tmp = $_FILES['excel_file_twk']['tmp_name'];
+
+            try {
+                // Load Excel
+                $spreadsheet = IOFactory::load($file_tmp);
+                $sheet = $spreadsheet->getActiveSheet();
+                $data = $sheet->toArray(null, true, true, true);
+                $email_kunci_twk = 'kunci_jawaban_' . $slug . '@gmail.com';
+
+                // Loop dari baris ke-2 (asumsi baris pertama adalah header)
+                                    
+                $insert_data = [];
+                for ($i = 2; $i <= count($data); $i++) {
+                    $insert_data[] = [
+                        'id' => $data[$i]['A'],
+                        'tipe_soal' => 1,
+                        'text_soal' => '<strong>' . $data[$i]['B'] . '</strong> <br>' . $data[$i]['C'],
+                        'text_a' => $data[$i]['D'],
+                        'text_b' => $data[$i]['E'],
+                        'text_c' => $data[$i]['F'],
+                        'text_d' => $data[$i]['G'],
+                        'text_e' => $data[$i]['H'],
+                        'pembahasan' => $data[$i]['J'],
+                        'token' => 'twk-' . $this->grs()
+                    ];
+                    $this->jawaban->update(
+                        [
+                            '`' . $data[$i]['A'] . '`' => $data[$i]['I']
+                        ],
+                        [
+                            'email' => $email_kunci_twk
+                        ],
+                        $slug
+                    );
+                }
+
+                $this->soal->emptyTable();
+                // Masukkan ke database
+                $this->soal->insert_batch($insert_data, $slug);
+            } catch (Exception $e) {
+                $this->session->set_flashdata('error', 'Gagal mengimpor file TWK: ' . $e->getMessage());
+                redirect('admin/soaltryout/' . $slug);
+            }
+        }
+
+        if (!empty($_FILES['excel_file_tkp']['name'])) {
+            $file_tmp = $_FILES['excel_file_tkp']['tmp_name'];
+
+            try {
+                // Load Excel
+                $spreadsheet = IOFactory::load($file_tmp);
+                $sheet = $spreadsheet->getActiveSheet();
+                $data = $sheet->toArray(null, true, true, true);
+
+                // Loop dari baris ke-2 (asumsi baris pertama adalah header)
+                                    
+                $insert_data = [];
+                for ($i = 2; $i <= count($data); $i++) {
+                    $insert_data[] = [
+                        'id' => $data[$i]['A'],
+                        'tipe_soal' => 3,
+                        'text_soal' => '<strong>' . $data[$i]['B'] . '</strong> <br>' . $data[$i]['C'],
+                        'text_a' => $data[$i]['D'],
+                        'text_b' => $data[$i]['E'],
+                        'text_c' => $data[$i]['F'],
+                        'text_d' => $data[$i]['G'],
+                        'text_e' => $data[$i]['H'],
+                        'pembahasan' => $data[$i]['N'],
+                        'token' => 'tkp-' . $this->grs()
+                    ];
+                    $nilai = [$data[$i]['I'], $data[$i]['J'], $data[$i]['K'], $data[$i]['L'], $data[$i]['M']];
+                    $pilihan = ['A', 'B', 'C', 'D', 'E'];
+
+                    for ($j = 0; $j <= 4; $j++) {
+                        $n = $nilai[$j];
+                        $p = $pilihan[$j];
+                        $this->kunci_tkp->update(
+                            [
+                                '`' . $data[$i]['A'] . '`' => $n
+                            ],
+                            [
+                                'pilihan' => $p
+                            ],
+                            $slug
+                        );
+                    }
+                }
+
+                // Masukkan ke database
+                $this->soal->insert_batch($insert_data, $slug);
+            } catch (Exception $e) {
+                $this->session->set_flashdata('error', 'Gagal mengimpor file TIU: ' . $e->getMessage());
+                redirect('admin/soaltryout/' . $slug);
+            }
+        }
+
+        $this->session->set_flashdata('success', 'Data soal berhasil diimpor!');
+
+        redirect('admin/soaltryout/' . $slug);
     }
 
     private function _showFormWithErrors($data, $tinymce_content)
@@ -2641,7 +2787,11 @@ class Admin extends CI_Controller
         $id = $this->input->get('id');
         // User Tryout
         $user_tryout = $this->user_tryout->get('one', ['id' => $id], $slug);
-        $user = $this->user->get('one', ['email' => $user_tryout['email']]);
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $user = $this->user->get('one', ['id' => $user_tryout['user_id']]);
+        } else {
+            $user = $this->user->get('one', ['email' => $user_tryout['email']]);
+        }
 
         $latsol = substr($slug, 0, 6);
         if ($latsol != 'latsol') {
@@ -2689,7 +2839,11 @@ class Admin extends CI_Controller
 
         //HITUNG JUMLAH PARADATA - SEDIKIT TRIKI
         //MENGHITUNG JUMLAH BARIS PARADATA USER BERSANGKUTAN
-        $config['total_rows'] = $this->paradata->getNumRows(['email' => $user_tryout['email']], $slug);
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $config['total_rows'] = $this->paradata->getNumRows(['user_id' => $user_tryout['user_id']], $slug);
+        } else {
+            $config['total_rows'] = $this->paradata->getNumRows(['email' => $user_tryout['email']], $slug);
+        }
 
         //JUMLAH PARADATA YANG AKAN DITAMPILKAN PER HALAMAN
         $config['per_page'] = 25;
@@ -2740,7 +2894,11 @@ class Admin extends CI_Controller
         // ====================================
 
         //RESULT_ARRAY DAN ROW_ARRAY DIPERHATIKAN
-        $userparadata = $this->paradata->getForPagination(['email' => $user_tryout['email']], $config['per_page'], $data['start'], $slug);
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $userparadata = $this->paradata->getForPagination(['user_id' => $user_tryout['user_id']], $config['per_page'], $data['start'], $slug);
+        } else {
+            $userparadata = $this->paradata->getForPagination(['email' => $user_tryout['email']], $config['per_page'], $data['start'], $slug);
+        }
 
         $data = [
             'title' => $title,
@@ -2783,7 +2941,11 @@ class Admin extends CI_Controller
         // User Tryout
         $user_tryout = $this->user_tryout->get('one', ['id' => $id], $slug);
         $tryout = $this->$jenis->get('one', ['slug' => $slug]);
-        $user = $this->user->get('one', ['email' => $user_tryout['email']]);
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $user = $this->user->get('one', ['id' => $user_tryout['user_id']]);
+        } else {
+            $user = $this->user->get('one', ['email' => $user_tryout['email']]);
+        }
 
         $title = 'Nilai ' . $user['name'] . ' - ' . $tryout['name'];
 
@@ -2833,77 +2995,6 @@ class Admin extends CI_Controller
 
         $this->session->set_flashdata('success', 'Generate token');
     }
-
-    
-
-    // public function detailtryout($slug)
-    // {
-    //     $this->_loadRequiredModels();
-    //     $this->load->model('Kode_settings_model', 'kode_settings');
-    //     // $this->load->model('Midtrans_payment_model', 'midtrans_payment');
-
-    //     $submenu_parent = 3;
-    //     $parent_title = getSubmenuTitleById($submenu_parent)['title'];
-    //     submenu_access($submenu_parent);
-    //     $tryout = $this->tryout->get('one', ['slug' => $slug]);
-    //     $title = $tryout['name'];
-
-    //     $breadcrumb_item = [
-    //         [
-    //             'title' => $parent_title,
-    //             'href' => 'admin/tryout'
-    //         ],
-    //         [
-    //             'title' => $title,
-    //             'href' => 'active'
-    //         ]
-    //     ];
-
-    //     if ($tryout['tipe_tryout'] == 'SKD') {
-    //         $user_tryout = $this->user_tryout->getRankingSKD($slug);
-    //     } else {
-    //         $user_tryout = $this->user_tryout->getRankingnonSKDAdmin($slug);
-    //     }
-
-    //     if (count($user_tryout) == 0) {
-    //         $persentase = 0;
-    //     } else {
-    //         $persentase = $this->jawaban->getNumRows(['waktu_selesai !=' => null], $slug) / count($user_tryout) * 100;
-    //         $persentase = round($persentase, 2);
-    //     }
-
-    //     $user = $this->loginUser;
-
-    //     $data = [
-    //         'title' => $title,
-    //         'breadcrumb_item' => $breadcrumb_item,
-    //         'user' => $user,
-    //         'sidebar_menu' => $this->sidebarMenu,
-    //         'parent_submenu' => $parent_title,
-    //         'tryout' => $tryout,
-    //         'all_user' => $user_tryout,
-    //         'jawaban' => $this->jawaban->getAll($slug, array('email', 'waktu_mulai', 'waktu_selesai')),
-    //         'jumlah_soal' => $this->soal->getNumRows(['id >' => 0], $slug),
-    //         'persentase_selesai' => $persentase,
-    //         'slug' => $slug,
-    //         'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
-    //     ];
-
-    //     if ($tryout['kode_refferal']) {
-    //         $ref = $this->user_tryout->get('many', ['refferal !=' => null], $slug);
-    //         $non_ref = $this->user_tryout->get('many', ['refferal' => null], $slug);
-
-    //         $data['pendapatan'] = (count($non_ref) * $tryout['harga']) + (count($ref) * $tryout['harga_diskon']);
-    //     } elseif ($tryout['paid'] == 1) {
-    //         $data['pendapatan'] = count($user_tryout) * $tryout['harga'];
-    //     }
-
-    //     $this->load->view('templates/user_header', $data);
-    //     $this->load->view('templates/user_sidebar', $data);
-    //     $this->load->view('templates/user_topbar', $data);
-    //     $this->load->view('admin/detailtryout', $data);
-    //     $this->load->view('templates/user_footer');
-    // }
 
     public function rankingtryout($slug)
     {
@@ -3784,6 +3875,8 @@ class Admin extends CI_Controller
         $keterangan = $this->input->post('ket_tryout');
         $lama_pengerjaan = $this->input->post('lama_pengerjaan');
         $berbayar = $this->input->post('berbayar');
+        $link = $this->input->post('link');
+        $link_premium = $this->input->post('link_premium');
         $harga = $this->input->post('harga');
         $now = date("Y-m-d H:i:s", time());
 
@@ -3841,7 +3934,9 @@ class Admin extends CI_Controller
                 'lama_pengerjaan' => $lama_pengerjaan,
                 'paid' => $paid,
                 'harga' => $harga,
-                'updated_at' => $now
+                'updated_at' => $now,
+                'link' => $link,
+                'link_premium' => $link_premium
             ];
 
             if ($this->input->post('refferal') == 1) {
@@ -3951,6 +4046,29 @@ class Admin extends CI_Controller
         else
             redirect('admin/detaillatsol/' . $slug);
 
+    }
+
+    public function save_show_to_landing($slug)
+    {
+        $to_id      = $this->input->post('to_id');
+        $keterangan = $this->input->post('ket_display');
+
+        $this->db->truncate('show_to_landingpage');
+
+        $data = [
+            'to_id'      => $to_id,
+            'keterangan' => $keterangan
+        ];
+
+        $insert = $this->db->insert('show_to_landingpage', $data);
+
+        if ($insert) {
+            $this->session->set_flashdata('success', 'Data berhasil diperbarui!');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menyimpan data!');
+        }
+
+        redirect('admin/detailtryout/' . $slug);
     }
 
     public function getsoal()
@@ -4577,7 +4695,14 @@ class Admin extends CI_Controller
 
     public function downloadmateri($filename)
     {
+        $this->load->helper(array('url','download'));
         force_download('./assets/file/materi/' . $filename, NULL);
+    }
+
+    public function downloadtemplate($filename)
+    {
+        $this->load->helper(array('url','download'));
+        force_download('./assets/file/template/' . $filename, NULL);
     }
 
     private function _tinymcerepop($tinymce_content, $row_edit = null)

@@ -88,30 +88,27 @@
                                         Jangan lupa bergabung ke grup belajarnya! 📚
                                     </div>
                                 <?php else : ?>
-                                    <div class="d-grid gap-2 mb-3">
-                                        <?php if ($tryout['paid'] == 0) : ?>
-                                            <?php if ($tryout['freemium'] == 1) : ?>
-                                                <button type="button" class="btn btn-primary rounded-pill"
-                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                    Daftar Gratis
-                                                </button>
-                                                <button type="button" class="btn btn-outline-secondary rounded-pill"
-                                                    data-bs-toggle="modal" data-bs-target="#referralModal">
-                                                    Daftar Premium
-                                                </button>
-                                            <?php else : ?>
-                                                <button type="button" class="btn btn-primary rounded-pill"
-                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                    Daftar Gratis
-                                                </button>
-                                            <?php endif; ?>
-                                        <?php else : ?>
+                                    <?php if ($tryout['freemium'] == 1) : ?>
                                             <button type="button" class="btn btn-primary rounded-pill"
-                                                data-bs-toggle="modal" data-bs-target="#refferalModal">
+                                                    data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                            Daftar Premium
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                            Daftar Gratis
+                                            </button>
+                                        <?php elseif ($tryout['paid'] == 1) : ?>
+                                            <button type="button" class="btn btn-primary rounded-pill"
+                                                data-bs-toggle="modal" data-bs-target="#freemiumModal">
                                                 Daftar
                                             </button>
+                                        <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
+                                            <button type="button" class="btn btn-primary rounded-pill"
+                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                            Daftar Gratis
+                                            </button>
                                         <?php endif; ?>
-                                    <?php endif; ?>
+                                <?php endif; ?>
 
 
                                     <hr>

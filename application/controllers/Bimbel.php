@@ -58,6 +58,8 @@ class Bimbel extends CI_Controller
             'alljenis' => $alljenis
         ];
 
+        $this->user->update(['last_login_at' => date('Y-m-d H:i:s')], ['email' => $this->loginUser->email]);
+
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);

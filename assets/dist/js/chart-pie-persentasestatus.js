@@ -3,6 +3,7 @@ if ($("#dashboard").length) {
   (Chart.defaults.global.defaultFontFamily = "Nunito"), '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
   Chart.defaults.global.defaultFontColor = "#858796";
 
+  var myPieChart = null;
   var belumMemulai;
   var proses;
   var selesai;
@@ -33,8 +34,11 @@ if ($("#dashboard").length) {
             belumMemulai = data[0].belum_memulai;
             proses = data[0].proses;
             selesai = data[0].selesai;
+            if (myPieChart) {
+              myPieChart.destroy();
+            }
             chart();
-          }
+            }
         },
         error: function (request, status, error) {
           Swal.fire({

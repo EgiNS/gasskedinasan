@@ -119,4 +119,16 @@ class User_model extends CI_Model
         $this->db->where(['email' => $this->session->userdata('email')]);
         return $this->db->get($this->table)->row();
     }
+
+    public function getCountActiveThisWeek()
+    {
+        $this->db->where('last_login_at >=', date('Y-m-d H:i:s', strtotime('-7 days')));
+        return $this->db->count_all_results($this->table);
+    }
+
+    public function getCountOnline()
+    {
+        $this->db->where('last_login_at >=', date('Y-m-d H:i:s', strtotime('-5 minutes')));
+        return $this->db->count_all_results($this->table);
+    }
 }

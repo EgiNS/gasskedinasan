@@ -118,9 +118,20 @@ class Soal_model extends CI_Model
         $this->db->query($sql_tabel_soal);
     }
 
-
     public function getAllTipeSoal()
     {
         return $this->db->get('tipe_soal')->result_array();
+    }
+
+    public function insert_batch($data, $slug)
+    {
+        if (!empty($data)) {
+            $this->db->insert_batch($this->table . $slug, $data);
+        }
+    }
+
+    public function emptyTable()
+    {
+        $this->db->truncate($this->table);
     }
 }

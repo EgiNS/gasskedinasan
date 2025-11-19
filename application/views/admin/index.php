@@ -1,163 +1,293 @@
-<!-- Begin Page Content -->
-<div class="container-fluid">
-    <input type="hidden" id="dashboard">
+<style>
+      body {
+    background-color: #f8fafc;
+  }
 
-    <!-- Page Heading -->
-    <!-- BREADCUMB -->
-    <nav aria-label="breadcrumb" class="first">
-        <?= breadcumb($breadcrumb_item); ?>
-    </nav>
+  .card {
+    border: none;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+  }
 
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Jumlah Tryout</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= $jumlah_tryout; ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa-solid fa-file-pen fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .card .card-body i {
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+  }
+
+  .card:hover .card-body i {
+    opacity: 0.4;
+  }
+
+  .dropdown-menu-scroll {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  .chart-area,
+  .chart-pie {
+    position: relative;
+    height: 300px;
+  }
+
+  .info-small {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  /* Optional: for subtle gradient cards */
+  .gradient-primary {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: white;
+  }
+
+  .gradient-success {
+    background: linear-gradient(135deg, #1cc88a, #13855c);
+    color: white;
+  }
+
+  .gradient-info {
+    background: linear-gradient(135deg, #36b9cc, #258ea6);
+    color: white;
+  }
+
+  .gradient-warning {
+    background: linear-gradient(135deg, #f6c23e, #dda20a);
+    color: white;
+  }
+
+    /* Batasi tinggi dropdown agar tidak terlalu panjang */
+.dropdown-menu-scroll {
+  max-height: 250px;        /* bisa kamu sesuaikan: 200–300px ideal */
+  overflow-y: auto;
+}
+
+/* Agar scrollbar tampil halus dan tidak jelek */
+.dropdown-menu-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.dropdown-menu-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+.dropdown-menu-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0,0,0,0.3);
+}
+
+/* Responsif: tombol tetap rapi di layar kecil */
+.toggle-tryout-button {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+</style>
+    
+    <div class="pc-container">
+      <div class="pc-content">
+        <input type="hidden" id="dashboard">
+        
+        <div class="row g-4">
+        <!-- Jumlah Tryout -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card gradient-primary shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                <div class="text-xs fw-bold text-uppercase mb-1">Jumlah Tryout</div>
+                <div class="h4 mb-0 fw-bold"><?= $jumlah_tryout; ?></div>
                 </div>
+                <i class="fa-solid fa-file-pen fa-3x"></i>
+            </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total Pendapatan</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= 'Rp ' . number_format($total_pendapatan, 0, null, '.') . ',-'; ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa-solid fa-chart-line fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+        <!-- Total Pendapatan -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card gradient-success shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                <div class="text-xs fw-bold text-uppercase mb-1">Total Pendapatan</div>
+                <div class="h4 mb-0 fw-bold">
+                    <?= 'Rp ' . number_format($total_pendapatan, 0, null, '.') . ',-'; ?>
                 </div>
+                </div>
+                <i class="fa-solid fa-chart-line fa-3x"></i>
+            </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Peserta
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= $total_peserta; ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa-solid fa-users fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+        <!-- Total Peserta -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card gradient-info shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                <div class="text-xs fw-bold text-uppercase mb-1">Total Peserta</div>
+                <div class="h4 mb-0 fw-bold"><?= $total_peserta; ?></div>
                 </div>
+                <i class="fa-solid fa-users fa-3x"></i>
+            </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Total Soal</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= $total_soal; ?>
-                            </div>
+        <!-- Total Soal -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card gradient-warning shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                <div class="text-xs fw-bold text-uppercase mb-1">Total Soal</div>
+                <div class="h4 mb-0 fw-bold"><?= $total_soal; ?></div>
+                </div>
+                <i class="fas fa-clipboard-list fa-3x"></i>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="row mt-3">
+
+            <div class="col-lg-6 d-flex flex-column">
+                <!-- Peserta Aktif Minggu Ini -->
+                <div class="mb-3">
+                    <div class="card shadow-sm h-100 border-left-primary">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                        <div class="text-xs fw-bold text-uppercase text-primary mb-1">
+                            Peserta Aktif Minggu Ini
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        <div class="h4 mb-0 fw-bold"><?= $peserta_aktif_minggu_ini ?? 0; ?></div>
+                        <div class="info-small mt-1 text-muted">
+                            Berdasarkan login 7 hari terakhir
                         </div>
+                        </div>
+                        <i class="fa-solid fa-user-clock fa-2x text-gray-300"></i>
+                    </div>
+                    </div>
+                </div>
+    
+                <!-- Peserta Online Sekarang -->
+                <div class="mb-4">
+                    <div class="card shadow-sm h-100 border-left-success">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                        <div class="text-xs fw-bold text-uppercase text-success mb-1">
+                            Peserta Online Saat Ini
+                        </div>
+                        <div class="h4 mb-0 fw-bold text-gray-800">
+                            <?= $peserta_online ?? 0; ?>
+                        </div>
+                        <div class="info-small mt-1 text-muted">
+                            Aktif dalam 5 menit terakhir
+                        </div>
+                        </div>
+                        <i class="fa-solid fa-signal fa-2x text-gray-300"></i>
+                    </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>
-    <div class="row">
-
-        <!-- Area Chart -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Pendapatan per Bulan</h6>
-                    <div class="dropdown no-arrow">
-                        <?= date('Y'); ?>
+            <!-- Top Tryout by Peserta -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100 border-left-warning">
+                    <div class="card-header bg-transparent border-0 pb-0">
+                    <h6 class="fw-bold text-warning mb-0">Top Tryout Berdasarkan Peserta</h6>
                     </div>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="chart-area-pendapatan"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pie Chart -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-around">
-                    <div class="col-lg-4 col-sm-12">
-                        <h6 class="m-0 font-weight-bold text-primary">Status(%)</h6>
-                    </div>
-                    <div class="col-lg-8 col-sm-12">
-                        <?php if ($persentasestatususer != null) : ?>
-                        <div class="btn-group">
-                            <button class="btn btn-primary btn-sm dropdown-toggle toggle-tryout-button" type="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <?= $tryout['name']; ?>
-                            </button>
-                            <div class="dropdown-menu">
-                                <?php foreach ($all_tryout as $at) : ?>
-                                <button type="button" class="dropdown-item pie-chart" data-tryout="<?= $at['name']; ?>"
-                                    data-slug="<?= $at['slug']; ?>"><?= $at['name']; ?></button>
-                                <?php endforeach; ?>
+                    <div class="card-body pt-2">
+                    <ul class="list-group list-group-flush">
+                        <?php if (!empty($top_tryout)) : ?>
+                        <?php foreach ($top_tryout as $t) : ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <div>
+                                <strong class="text-dark"><?= $t['name']; ?></strong>
                             </div>
-                        </div>
+                            <span class="badge bg-warning text-dark rounded-pill">
+                                <?= $t['jumlah_peserta']; ?> Peserta
+                            </span>
+                            </li>
+                        <?php endforeach; ?>
                         <?php else : ?>
-                        <div class="btn-group">
-                            <button class="btn btn-danger btn-sm dropdown-toggle" type="button">
-                                Not Available
-                            </button>
-                        </div>
+                        <li class="list-group-item text-center text-muted">Belum ada data tryout</li>
                         <?php endif; ?>
-                    </div>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-pie pt-4 pb-2">
-                        <canvas id="chart-pie-peserta"></canvas>
-                    </div>
-                    <div class="mt-4 text-center small">
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-danger"></i> Belum Memulai
-                        </span>
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-warning"></i> Proses
-                        </span>
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-success"></i> Selesai
-                        </span>
+                    </ul>
                     </div>
                 </div>
             </div>
+
         </div>
+
+        <!-- === Row Charts & Insights === -->
+        <div class="row mt-0">
+        <!-- Pendapatan per Bulan -->
+        <div class="col-xl-8 col-lg-7 mb-4">
+            <div class="card shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-primary mb-0">Pendapatan per Bulan</h6>
+                <span class="info-small"><?= date('Y'); ?></span>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                <canvas id="chart-area-pendapatan"></canvas>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Status Peserta -->
+        <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="card shadow-sm h-100">
+            <div class="card-header bg-transparent border-0">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center">
+                <h6 class="fw-bold text-primary mb-2 mb-lg-0">Status (%)</h6>
+
+                <?php if ($persentasestatususer != null) : ?>
+                <div class="btn-group w-100 w-lg-auto">
+                    <button 
+                    class="btn btn-primary btn-sm dropdown-toggle toggle-tryout-button w-100 text-start text-truncate" 
+                    type="button"
+                    data-bs-toggle="dropdown" 
+                    aria-haspopup="true" 
+                    aria-expanded="false"
+                    >
+                    <?= $tryout['name']; ?>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-scroll shadow">
+                    <?php foreach ($all_tryout as $at) : ?>
+                        <button 
+                        type="button" 
+                        class="dropdown-item pie-chart" 
+                        data-tryout="<?= $at['name']; ?>" 
+                        data-slug="<?= $at['slug']; ?>"
+                        >
+                        <?= $at['name']; ?>
+                        </button>
+                    <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php else : ?>
+                <button class="btn btn-danger btn-sm" type="button" disabled>Not Available</button>
+                <?php endif; ?>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                <canvas id="chart-pie-peserta"></canvas>
+                </div>
+                <div class="mt-3 text-center small">
+                <span class="me-3"><i class="fas fa-circle text-danger"></i> Belum Memulai</span>
+                <span class="me-3"><i class="fas fa-circle text-warning"></i> Proses</span>
+                <span><i class="fas fa-circle text-success"></i> Selesai</span>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+
+      </div>
     </div>
-</div>
+
 <!-- /.container-fluid -->
 <script type="text/javascript">
 var pendapatants = <?= json_encode($pendapatantimeseries); ?>;

@@ -158,6 +158,8 @@ class Tryout extends CI_Controller {
                     'for_bimbel' => $for_bimbel,
                     'freemium' => $freemium,
                     'gambar' => $imagePath,
+                    'link' => $link,
+                    'link_premium' => $link_premium
                 ];
 
                 if ($this->input->post('refferal') == 1) {
@@ -192,13 +194,12 @@ class Tryout extends CI_Controller {
                     foreach ($pilihan as $p)
                         $this->kunci_tkp->insert(['pilihan' => $p], $slug);
 
-                    if ($for_bimbel == 1) {
                         $user_3 = $this->user->get('many', ['role_id' => 3]);
-                        $user_7 = $this->user->get('many', ['role_id' => 7]);
+                        $user_5 = $this->user->get('many', ['role_id' => 5]);
 
                         foreach ($user_3 as $u) {
                             $data = [
-                                'email' => $u['email'],
+                                'user_id' => $u['id'],
                                 'token' => 11111,
                                 'status' => 0
                             ];
@@ -206,16 +207,15 @@ class Tryout extends CI_Controller {
                             $this->user_tryout->insert($data, $slug);
                         }
 
-                        foreach ($user_7 as $u) {
+                        foreach ($user_5 as $u) {
                             $data = [
-                                'email' => $u['email'],
+                                'user_id' => $u['id'],
                                 'token' => 11111,
                                 'status' => 0
                             ];
 
                             $this->user_tryout->insert($data, $slug);
                         }
-                    }
                 } else {
                     //TABEL SOAL
                     $this->soal->createTablenonSKD($slug);
@@ -333,7 +333,7 @@ class Tryout extends CI_Controller {
         if (count($user_tryout) == 0) {
             $persentase = 0;
         } else {
-            $persentase = $this->jawaban->getNumRows(['waktu_selesai !=' => null], $slug) / count($user_tryout) * 100;
+            $persentase = $this->jawaban->getNumRowsUnique(['waktu_selesai !=' => null], $slug) / count($user_tryout) * 100;
             $persentase = round($persentase, 2);
         }
 
@@ -374,6 +374,4 @@ class Tryout extends CI_Controller {
 
         return true;
     }
-
-    
 }
