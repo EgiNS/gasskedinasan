@@ -44,10 +44,12 @@ $(document).ready(function () {
               dataPost: dataPost
           },
           success: function() {
-            if(url != 'admin/hapustryout/')
+            if(url != 'admin/hapustryout/' && url != 'admin/paket-to/delete/')
               window.location.reload();
-            else
+            else if(url == 'admin/hapustryout/')
               window.location.href = base_url + 'admin/tryout';
+            else if(url == 'admin/paket-to/delete/')
+              window.location.href = base_url + 'admin/paket-to';
           }
         });
       }

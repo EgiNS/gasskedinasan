@@ -316,6 +316,72 @@ class PaketTo extends CI_Controller
         }
     }
 
+    public function delete($id)
+    {
+        // Handle AJAX request
+        if ($this->input->method() === 'post') {
+            // Get paket data first
+            $paket = $this->paket_to->get('one', ['id' => $id]);
+            if (!$paket) {
+                $this->session->set_flashdata('error', 'Paket tryout tidak ditemukan.');
+                echo json_encode(['status' => 'error', 'message' => 'Paket tryout tidak ditemukan.']);
+                return;
+            }
+
+            // Check if paket has participants with settlement status
+            $this->db->select('COUNT(*) as count');
+            $this->db->from('pendaftar_paket_to');
+            $this->db->join('transactions', 'transactions.id = pendaftar_paket_to.transaction_id', 'left');
+            $this->db->where('pendaftar_paket_to.paket_to_id', $id);
+            $this->db->where('transactions.transaction_status', 'settlement');
+            $settlement_count = $this->db->get()->row()->count;
+
+            if ($settlement_count > 0) {
+                $this->session->set_flashdata('error', 'Tidak dapat menghapus paket yang masih memiliki peserta dengan status settlement. Total peserta settlement: ' . $settlement_count);
+                echo json_encode(['status' => 'error', 'message' => 'Tidak dapat menghapus paket yang masih memiliki peserta dengan status settlement. Total peserta settlement: ' . $settlement_count]);
+                return;
+            }
+
+            $this->db->trans_start();
+
+            try {
+                // Since we already validated no participants exist, we can safely delete all related data
+
+                // 1. Delete tryout relationships
+                $this->db->where('paket_to_id', $id);
+                $this->db->delete('tryout_paket_to');
+
+                // 2. Delete photo file if exists
+                if (!empty($paket['foto']) && file_exists('./assets/img/' . $paket['foto'])) {
+                    unlink('./assets/img/' . $paket['foto']);
+                }
+
+                // 3. Delete paket record
+                $this->db->where('id', $id);
+                $this->db->delete('paket_to');
+
+                $this->db->trans_complete();
+
+                if ($this->db->trans_status() === FALSE) {
+                    throw new Exception('Transaksi gagal.');
+                }
+
+                $success_message = 'Paket tryout "' . $paket['nama'] . '" berhasil dihapus.';
+                $this->session->set_flashdata('success', $success_message);
+                echo json_encode(['status' => 'success', 'message' => 'Paket tryout berhasil dihapus.']);
+
+            } catch (Exception $e) {
+                $this->db->trans_rollback();
+                log_message('error', 'Gagal hapus paket TO: ' . $e->getMessage());
+                $this->session->set_flashdata('error', 'Gagal menghapus paket tryout. Silakan coba lagi.');
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus paket tryout.']);
+            }
+        } else {
+            // Direct access (not AJAX), redirect to main page
+            redirect('admin/paket-to');
+        }
+    }
+
 
     public function delete_participant($pendaftar_packet_id){
         try {

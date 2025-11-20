@@ -30,6 +30,16 @@
             class="fas fa-pencil-alt">
           </i> Edit Paket Tryout</button>
       </div>
+      <!-- DELETE PAKET -->
+      <div class="btn-group mt-3">
+        <button type="button" class="btn rounded btn-danger btn-sm mb-3 btn-delete" 
+          data-url="admin/paket-to/delete/" 
+          data-key="<?= $paket_to['id'] ?? $pendaftar[0]->paket_to_id ?? ''; ?>" 
+          data-message="<?= htmlspecialchars($paket_to['nama'] ?? $pendaftar[0]->nama_paket ?? ''); ?>"
+          data-caption="Paket tidak dapat dihapus jika masih ada peserta terdaftar!">
+          <i class="fas fa-trash"></i> Hapus Paket Tryout
+        </button>
+      </div>
       <div class="btn-group">
         <button class="btn rounded btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           <?= ($paket_to['hidden'] == 0 ? 'Show Tryout' : 'Hide Tryout') ?>
@@ -42,13 +52,7 @@
           <?php endif; ?>
         </div>
       </div>
-      <!-- DELETE TRYOUT -->
-      <div class="btn-group mt-3">
-        <button type="button" class="btn rounded btn-danger btn-sm mb-3 btn-delete-tryout" data-id=""
-          data-kode=""><i class="fas fa-trash">
-          </i> Delete
-          Tryout</button>
-      </div>
+      
     </div>
     <!-- Card Content -->
     <div class="row">
