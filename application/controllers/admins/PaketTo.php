@@ -157,22 +157,23 @@ class PaketTo extends CI_Controller
     }
     public function detail($slug)
     {
-        
-
         $this->load->model('Pendaftar_to_model', 'pendaftar_to');
         $submenu_parent = 22;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
 
         $pendaftar = $this->pendaftar_to->get_all_by_packet_to_id($slug);
-        $packet_to = $this->paket_to->get('one', ['slug' => $slug]);
+        $paket_to = $this->paket_to->getBySlugWithTryouts($slug);
+        $tryout_available = $this->tryout->getAll();
+        
         $data = [
             'title' => $parent_title,
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
-            'paket_to' => $packet_to,
+            'paket_to' => $paket_to,
             'pendaftar' => $pendaftar,
+            'tryout_available' => $tryout_available,
         ];
         
         $data['page_scripts'] = [
@@ -197,7 +198,122 @@ class PaketTo extends CI_Controller
             $this->paket_to->update(['hidden' => 0], ['slug' => $slug]);
             $this->session->set_flashdata('success', 'Menampilkan Paket Tryout');
         }
-        redirect('admin/paket-to/' . $slug);
+        redirect('admin/paket-to');
+    }
+
+    public function edit($id)
+    {
+        $this->form_validation->set_rules('nama', 'Nama Paket', 'required', [
+            'required' => 'Nama paket wajib diisi.'
+        ]);
+        $this->form_validation->set_rules('paket_to_ids[]', 'Tryout', 'required', [
+            'required' => 'Minimal pilih satu tryout.'
+        ]);
+        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required', [
+            'required' => 'Keterangan wajib diisi.'
+        ]);
+        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
+            'numeric' => 'Hanya boleh diisi angka.',
+            'required' => 'Harga wajib diisi.'
+        ]);
+        $this->form_validation->set_rules('harga_diskon', 'Harga Diskon', 'required|numeric', [
+            'numeric' => 'Hanya boleh diisi angka.',
+            'required' => 'Harga diskon wajib diisi.'
+        ]);
+
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('error', 'Data tidak valid: ' . validation_errors());
+            redirect('admin/paket-to');
+            return;
+        }
+
+        // Get current paket data
+        $current_paket = $this->paket_to->get('one', ['id' => $id]);
+        if (!$current_paket) {
+            $this->session->set_flashdata('error', 'Paket tidak ditemukan.');
+            redirect('admin/paket-to');
+            return;
+        }
+
+        $foto_name = $current_paket['foto']; // Keep current photo by default
+
+        // Handle photo upload if new photo is provided
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+            $config['upload_path'] = './assets/img/';
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size'] = 2048;
+            $config['file_name'] = time();
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('foto')) {
+                $uploadData = $this->upload->data();
+                
+                // Delete old photo if exists and different from default
+                if ($current_paket['foto'] && file_exists('./assets/img/' . $current_paket['foto'])) {
+                    unlink('./assets/img/' . $current_paket['foto']);
+                }
+                
+                $foto_name = $uploadData['file_name'];
+            } else {
+                $error = $this->upload->display_errors();
+                $this->session->set_flashdata('error', $error);
+                redirect('admin/paket-to');
+                return;
+            }
+        }
+
+        $this->db->trans_start();
+
+        try {
+            // Update paket data
+            $data = [
+                'nama' => $this->input->post('nama'),
+                'slug' => generateSlug($this->input->post('nama'), $this->db, 'paket_to', $id),
+                'foto' => $foto_name,
+                'harga' => $this->input->post('harga'),
+                'harga_diskon' => $this->input->post('harga_diskon'),
+                'keterangan' => $this->input->post('keterangan'),
+            ];
+
+            $this->paket_to->update($data, ['id' => $id]);
+
+            // Delete existing tryout relationships
+            $this->db->where('paket_to_id', $id);
+            $this->db->delete('tryout_paket_to');
+
+            // Insert new tryout relationships
+            $tryout_ids = $this->input->post('paket_to_ids');
+            foreach ($tryout_ids as $tryout_id) {
+                $data_tryout_paket = [
+                    'paket_to_id' => $id,
+                    'tryout_id' => $tryout_id,
+                ];
+                $this->tryout_paket_to->insert($data_tryout_paket);
+            }
+
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                throw new Exception('Transaksi gagal.');
+            }
+
+            $this->session->set_flashdata('success', 'Paket tryout berhasil diperbarui');
+            redirect('admin/paket-to');
+
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            
+            // Delete uploaded file if transaction failed
+            if (isset($uploadData) && file_exists('./assets/img/' . $uploadData['file_name'])) {
+                unlink('./assets/img/' . $uploadData['file_name']);
+            }
+            
+            log_message('error', 'Gagal update paket TO: ' . $e->getMessage());
+            $this->session->set_flashdata('error', 'Gagal memperbarui paket tryout. Silakan coba lagi.');
+            redirect('admin/paket-to');
+        }
     }
 
 

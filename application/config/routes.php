@@ -57,6 +57,7 @@ $route['admin/tryout'] = 'admins/Tryout';
 $route['admin/tryout/(:any)'] = 'admins/Tryout/detailtryout/$1';
 $route['admin/paket-to'] = 'admins/PaketTo';
 $route['admin/paket-to/tambah'] = 'admins/PaketTo/tambahpaket';
+$route['admin/paket-to/edit/(:num)'] = 'admins/PaketTo/edit/$1';
 $route['admin/paket-to/participant/(:any)/delete'] = 'admins/PaketTo/delete_participant/$1/$2';
 $route['admin/paket-to/(:any)/show'] = 'admins/PaketTo/show_packet/$1';
 $route['admin/paket-to/(:any)'] = 'admins/PaketTo/detail/$1';
