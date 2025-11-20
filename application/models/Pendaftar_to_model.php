@@ -48,4 +48,16 @@ public function getByPacketToIdWithTransaction($paket_to_id, $user_id)
         return $this->db->update($this->table, $data);
     }
     
+    public function get($count, $key, $select = '*')
+    {
+        $this->db->select($select);
+        $result = $this->db->get_where($this->table, $key);
+        if ($count === 'many')
+            return $result->result_array();
+        else if ($count === 'one')
+            return $result->row_array();
+        else
+            return false;
+    }
+    
 }

@@ -84,7 +84,7 @@
                                                 <div class="border-top mt-auto">
 
                                                 </div>
-                                                <a href="<?= base_url('admin/event/') . $item['id']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
+                                                <a href="<?= base_url('admin/event/') . $item['slug']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
                                             </div>
                                         </div>
                                     </div>
