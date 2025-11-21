@@ -114,7 +114,10 @@ class Tryout extends CI_Controller
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
         $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
         $payment_status = '';
-        if ($pendaftar['transaction_status'] == 'settlement') {
+        if (!$pendaftar['freemium']){
+            $payment_status = "free";
+        }
+        else if ($pendaftar['transaction_status'] == 'settlement') {
             $payment_status = 'settlement';
 
         } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
@@ -140,9 +143,7 @@ class Tryout extends CI_Controller
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/detail/index', $data);
-        $this->load->view('tryout/detail/index', $data);
-        $this->load->view('templates/user_footer');
+        $this->load->view('tryout/detail/index', $data);$this->load->view('templates/user_footer');
 
         $jawaban_user = $this->jawaban->get('one', ['email' => $user->email], $slug);
 
@@ -589,6 +590,8 @@ class Tryout extends CI_Controller
         }
     }
 
+    
+
     public function freemium()
     {
 
@@ -753,7 +756,7 @@ class Tryout extends CI_Controller
         $transaction_id = $this->transaction->insert($data);
         $this->user_tryout->update(
             [
-                'freemium' => 0,
+                'freemium' => 1,
                 'transaction_id' => $transaction_id
             ],
             ['user_id' => $user->id],

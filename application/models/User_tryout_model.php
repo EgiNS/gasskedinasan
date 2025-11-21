@@ -43,6 +43,7 @@ class User_tryout_model extends CI_Model
         $user_tryout_table = $this->table . $slug;
         $this->db->select('
         ' . $user_tryout_table . '.id,
+        ' . $user_tryout_table . '.freemium,
         tr.transaction_status,
         tr.snap_token, tr.expiry_time
         

@@ -168,24 +168,24 @@
             <script>
                 $(document).ready(function() {
 
-                    $(document).on('change', '.upload-bukti', function() {
-                        console.log('File diubah:', $(this).attr('name') || 'tanpa name');
+                    // $(document).on('change', '.upload-bukti', function() {
+                    //     console.log('File diubah:', $(this).attr('name') || 'tanpa name');
 
-                        let semuaTerisi = true;
-                        $('.upload-bukti').each(function() {
-                            if (!$(this).val()) {
-                                semuaTerisi = false;
-                            }
-                        });
+                    //     let semuaTerisi = true;
+                    //     $('.upload-bukti').each(function() {
+                    //         if (!$(this).val()) {
+                    //             semuaTerisi = false;
+                    //         }
+                    //     });
 
-                        console.log('Semua terisi:', semuaTerisi);
+                    //     console.log('Semua terisi:', semuaTerisi);
 
-                        if (semuaTerisi) {
-                            $('.daftarTryoutBtn').removeClass('disabled');
-                        } else {
-                            $('.daftarTryoutBtn').addClass('disabled');
-                        }
-                    });
+                    //     if (semuaTerisi) {
+                    //         $('.daftarTryoutBtn').removeClass('disabled');
+                    //     } else {
+                    //         $('.daftarTryoutBtn').addClass('disabled');
+                    //     }
+                    // });
 
 
 
