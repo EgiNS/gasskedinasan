@@ -63,6 +63,7 @@ $route['admin/paket-to/participant/(:any)/delete'] = 'admins/PaketTo/delete_part
 $route['admin/paket-to/(:any)/show'] = 'admins/PaketTo/show_packet/$1';
 $route['admin/paket-to/(:any)'] = 'admins/PaketTo/detail/$1';
 $route['admin/event/(:any)/show'] = 'admins/Event/show_packet/$1';
+$route['admin/event/participant/(:any)/delete'] = 'admins/Event/delete_participant/$1/$2';
 $route['admin/event/(:any)'] = 'admins/Event/detail/$1';
 $route['404_override'] = 'my404';
 $route['translate_uri_dashes'] = FALSE;

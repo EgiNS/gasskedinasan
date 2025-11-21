@@ -8,7 +8,17 @@ class Event_pendaftar_model extends CI_Model
         parent::__construct();
         $this->table = 'events_pendaftar';
     }
-
+        public function get($count, $key, $select = '*')
+    {
+        $this->db->select($select);
+        $result = $this->db->get_where($this->table, $key);
+        if ($count === 'many')
+            return $result->result_array();
+        else if ($count === 'one')
+            return $result->row_array();
+        else
+            return false;
+    }
     public function insert($data)
     {
         $this->db->insert($this->table, $data);

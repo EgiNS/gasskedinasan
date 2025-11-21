@@ -33,13 +33,13 @@
       </div>
       <div class="btn-group">
         <button class="btn rounded btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <?= ($event['hidden'] == 0 ? 'Hide Tryout' : 'Show Tryout') ?> 
+          <?= ($event['hidden'] == 0 ? 'Hide Event' : 'Show Event') ?> 
         </button>
         <div class="dropdown-menu">
           <?php if ($event['hidden'] == 0) : ?>
-            <a class="dropdown-item" href="<?= base_url('admin/event/' . $event['slug'] . '/show'); ?>">Show Tryout</a>
+            <a class="dropdown-item" href="<?= base_url('admin/event/' . $event['slug'] . '/show'); ?>">Show Event</a>
           <?php else : ?>
-            <a class="dropdown-item" href="<?= base_url('admin/event/' . $event['slug'] . '/show'); ?>">Hide Tryout</a>
+            <a class="dropdown-item" href="<?= base_url('admin/event/' . $event['slug'] . '/show'); ?>">Hide Event</a>
           <?php endif; ?>
         </div>
       </div>
@@ -116,9 +116,27 @@
                 <th><?= parse_date($p->created_at) ?></th>
                 <th><?= parse_date($p->waktu_pembayaran) ?></th>
                 <th>
-                  <button class="btn btn-danger rounded btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="<?= $p->id; ?>" data-slug="">
+                                    <button class="btn btn-danger rounded btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="<?= $p->id; ?>">
                     Hapus peserta
                   </button>
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="exampleModalLabel">Hapus Peserta</h4>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          Apakah anda yakin untuk menghapus peserta ini?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                          <a href="#" id="deleteUserButton" class="btn btn-danger">Hapus!</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </th>
 
 
@@ -132,5 +150,19 @@
 
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+    $('#exampleModal').on('show.bs.modal', function(event) {
+      var button = $(event.relatedTarget); // tombol yang memicu modal
 
+      var userId = button.data('id');
+      var baseUrl = "<?= base_url(); ?>";
+
+      // Route: admin/paket-to/{slug}/delete/{userId}
+      var deleteUrl = baseUrl + "admin/event/participant/" + userId + "/delete";
+
+      $('#deleteUserButton').attr('href', deleteUrl);
+    });
+    });
+</script>
 <?php destroysession(); ?>
