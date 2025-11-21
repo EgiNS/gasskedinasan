@@ -105,7 +105,7 @@
                     <?php else : ?>
                         <div class="card-body">
                             <div class="row g-3">
-                                <p>Belum ada event yang tersedia</p>
+                                <p>Belum ada paket tryout yang tersedia</p>
                             </div>
                         </div>
                     <?php endif; ?>

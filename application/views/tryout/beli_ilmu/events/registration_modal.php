@@ -42,7 +42,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="ti ti-x me-1"></i>Batal
                         </button>
-                        <button data-event-id="<?= $event['id'] ?>" type="button" class="btn btn-primary" disabled id="proceedPayment">
+                        <button data-event-id="<?= $event['slug'] ?>" type="button" class="btn btn-primary" disabled id="proceedPayment">
                             <i class="ti ti-check me-2"></i>
                             Daftar Sekarang
                         </button>

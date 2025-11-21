@@ -57,12 +57,7 @@
                                     </div>
                                 <?php endif; ?>
 
-                                <!-- Event Status Badge -->
-                                <div class="position-absolute top-0 end-0 m-3">
-                                    <span class="badge bg-success fs-6 shadow">
-                                        <i class="ti ti-calendar-check me-1"></i>Event Aktif
-                                    </span>
-                                </div>
+                                
                             </div>
                         </div>
 
@@ -146,6 +141,17 @@
                                                         onclick="previewTryout('<?= htmlspecialchars($tryout['slug'] ?? $tryout['id'] ?? '', ENT_QUOTES); ?>')">
                                                         <i class="ti ti-eye me-1"></i>Preview Tryout
                                                     </button>
+                                                </div>
+                                                <div class="position-absolute top-0 end-0">
+                                                    <?php if ($tryout['status'] === 'registered'): ?>
+                                                        <span class="badge bg-success fs-6 shadow">
+                                                            <i class="ti ti-calendar-check me-1"></i>Sudah Dimiliki
+                                                        </span>
+                                                    <?php else: ?>
+                                                    <span class="badge bg-danger fs-6 shadow">
+                                                        <i class="ti ti-calendar-check me-1"></i>Belum Dimiliki
+                                                    </span>
+                                                    <?php endif; ?>
                                                 </div>
 
 
@@ -321,7 +327,7 @@
                         url: "<?= base_url('tryout/events/registration/'); ?>",
                         type: "POST",
                         data: {
-                            id: eventId
+                            slug: eventId
 
                         },
                         headers: {
