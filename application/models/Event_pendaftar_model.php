@@ -47,4 +47,17 @@ class Event_pendaftar_model extends CI_Model
         $this->db->where($where);
         return $this->db->update($this->table, $data);
     }
+
+    public function get_all_by_event_slug($slug){
+        $this->db->select($this->table . '.*, events.name as nama_event,events.hidden, events.slug , events.harga ,user.name as username, user.email, user.no_wa, transactions.gross_amount as jumlah_bayar, SUM(transactions.gross_amount) as total_pendapatan, transactions.updated_at as waktu_pembayaran');
+    $this->db->from($this->table);
+    $this->db->join('events', 'events.id = ' . $this->table . '.event_id', 'left');
+    $this->db->join('user', 'user.id = ' . $this->table . '.user_id', 'left');
+    $this->db->join('transactions','transactions.id = ' . $this->table . '.transaction_id','left');
+    $this->db->where('transactions.transaction_status', 'settlement');
+    $this->db->where('events.slug', $slug);
+    $this->db->group_by($this->table . '.id');
+    $query = $this->db->get();
+    return $query->result();
+    }
 }

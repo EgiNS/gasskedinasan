@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * @property Event_model $event
  * @property Tryout_model $tryout
+ * @property Event_pendaftar_model $event_pendaftar
  */
 class Event extends CI_Controller{
 
@@ -40,16 +41,20 @@ class Event extends CI_Controller{
     }
 
     public function detail($slug){
+        $this->load->model('Event_pendaftar_model','event_pendaftar');
         $submenu_parent = 22;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
-
+        $pendaftar = $this->event_pendaftar->get_all_by_event_slug($slug);
+        $event = $this->event->getBySlugWithTryouts($slug);
+        
         $data = [ 
             'title' => $parent_title,
             'user' => $this->loginUser,
             'sidebar_menu' => $this->sidebarMenu,
             'parent_submenu' => $parent_title,
-            // 'pendaftar'=> 
+            'event' => $event,
+            'pendaftar'=> $pendaftar
         ];
                 $data['page_scripts'] = [
             "$(document).ready(function () {

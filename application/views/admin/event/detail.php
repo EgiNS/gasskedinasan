@@ -62,7 +62,7 @@
                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                   Harga</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                  <?= 'Rp ' . number_format($pendaftar[0]->harga ?? 0, 0, null, '.') . ',-'; ?></div>
+                  <?= 'Rp ' . number_format($event['harga'] ?? 0, 0, null, '.') . ',-'; ?></div>
               </div>
               <div class="col-auto">
                 <i class="ti ti-currency-dollar fs-1 text-gray-300"></i>
@@ -106,7 +106,7 @@
             </tr>
           </thead>
           <tbody>
-            <!-- <?php $i = 0;
+            <?php $i = 0;
             foreach ($pendaftar as $p) : ?>
               <tr>
                 <th><?= $i + 1; ?></th>
@@ -125,7 +125,7 @@
 
               </tr>
             <?php $i++;
-            endforeach; ?> -->
+            endforeach; ?>
           </tbody>
         </table>
       </div>
