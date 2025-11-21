@@ -226,6 +226,70 @@ class Event extends CI_Controller{
         }
     }
 
+    public function delete($id)
+    {
+        // Handle AJAX request
+        if ($this->input->method() === 'post') {
+            // Get event data first
+            $event = $this->event->get('one', ['id' => $id]);
+            if (!$event) {
+                $this->session->set_flashdata('error', 'Event tidak ditemukan.');
+                echo json_encode(['status' => 'error', 'message' => 'Event tidak ditemukan.']);
+                return;
+            }
+
+            // Check if event has participants with settlement status
+            $this->db->select('COUNT(*) as count');
+            $this->db->from('events_pendaftar');
+            $this->db->join('transactions', 'transactions.id = events_pendaftar.transaction_id', 'left');
+            $this->db->where('events_pendaftar.event_id', $id);
+            $this->db->where('transactions.transaction_status', 'settlement');
+            $settlement_count = $this->db->get()->row()->count;
+
+            if ($settlement_count > 0) {
+                $this->session->set_flashdata('error', 'Tidak dapat menghapus event yang masih memiliki peserta terdaftar. Total peserta terdaftar: ' . $settlement_count);
+                echo json_encode(['status' => 'error', 'message' => 'Tidak dapat menghapus event yang masih memiliki peserta terdaftar. Total peserta terdaftar: ' . $settlement_count]);
+                return;
+            }
+
+            $this->db->trans_start();
+
+            try {
+                // 1. Delete tryout relationships
+                $this->db->where('event_id', $id);
+                $this->db->delete('events_tryout');
+
+                // 2. Delete photo file if exists
+                if (!empty($event['gambar']) && file_exists('./assets/img/' . $event['gambar'])) {
+                    unlink('./assets/img/' . $event['gambar']);
+                }
+
+                // 3. Delete event record
+                $this->db->where('id', $id);
+                $this->db->delete('events');
+
+                $this->db->trans_complete();
+
+                if ($this->db->trans_status() === FALSE) {
+                    throw new Exception('Transaksi gagal.');
+                }
+
+                $success_message = 'Event berhasil dihapus';
+                $this->session->set_flashdata('success', $success_message);
+                echo json_encode(['status' => 'success', 'message' => $success_message]);
+
+            } catch (Exception $e) {
+                $this->db->trans_rollback();
+                log_message('error', 'Gagal hapus event: ' . $e->getMessage());
+                $this->session->set_flashdata('error', 'Gagal menghapus event. Silakan coba lagi.');
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus event.']);
+            }
+        } else {
+            // Direct access (not AJAX), redirect to main page
+            redirect('admin/event');
+        }
+    }
+
     public function delete_participant($pendaftar_event_id){
         $this->load->model('Event_pendaftar_model','event_pendaftar');
         try {

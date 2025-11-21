@@ -63,6 +63,7 @@ $route['admin/paket-to/participant/(:any)/delete'] = 'admins/PaketTo/delete_part
 $route['admin/paket-to/(:any)/show'] = 'admins/PaketTo/show_packet/$1';
 $route['admin/paket-to/(:any)'] = 'admins/PaketTo/detail/$1';
 $route['admin/event/edit/(:num)'] = 'admins/Event/edit/$1';
+$route['admin/event/delete/(:num)'] = 'admins/Event/delete/$1';
 $route['admin/event/get_event_data/(:num)'] = 'admins/Event/get_event_data/$1';
 $route['admin/event/get_available_tryouts'] = 'admins/Event/get_available_tryouts';
 $route['admin/event/(:any)/show'] = 'admins/Event/show_packet/$1';

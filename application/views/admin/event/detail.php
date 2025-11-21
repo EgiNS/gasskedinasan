@@ -45,12 +45,15 @@
           <?php endif; ?>
         </div>
       </div>
-      <!-- DELETE TRYOUT -->
+      <!-- DELETE EVENT -->
       <div class="btn-group mt-3">
-        <button type="button" class="btn rounded btn-danger btn-sm mb-3 btn-delete-tryout" data-id=""
-          data-kode=""><i class="fas fa-trash">
-          </i> Delete
-          Tryout</button>
+        <button type="button" class="btn rounded btn-danger btn-sm mb-3 btn-delete" 
+          data-url="admin/event/delete/" 
+          data-key="<?= $event['id'] ?? ''; ?>" 
+          data-message="<?= htmlspecialchars($event['name'] ?? ''); ?>"
+          data-caption="Event tidak dapat dihapus jika masih ada peserta terdaftar">
+          <i class="fas fa-trash"></i> Hapus Event
+        </button>
       </div>
     </div>
     <!-- Card Content -->

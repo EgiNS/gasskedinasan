@@ -337,8 +337,8 @@ class PaketTo extends CI_Controller
             $settlement_count = $this->db->get()->row()->count;
 
             if ($settlement_count > 0) {
-                $this->session->set_flashdata('error', 'Tidak dapat menghapus paket yang masih memiliki peserta dengan status settlement. Total peserta settlement: ' . $settlement_count);
-                echo json_encode(['status' => 'error', 'message' => 'Tidak dapat menghapus paket yang masih memiliki peserta dengan status settlement. Total peserta settlement: ' . $settlement_count]);
+                $this->session->set_flashdata('error', 'Tidak dapat menghapus paket yang masih memiliki peserta terdaftar. Total peserta terdaftar: ' . $settlement_count);
+                echo json_encode(['status' => 'error', 'message' => 'Tidak dapat menghapus paket yang masih memiliki peserta terdaftar. Total peserta terdaftar: ' . $settlement_count]);
                 return;
             }
 
@@ -366,9 +366,9 @@ class PaketTo extends CI_Controller
                     throw new Exception('Transaksi gagal.');
                 }
 
-                $success_message = 'Paket tryout "' . $paket['nama'] . '" berhasil dihapus.';
+                $success_message = 'Paket tryout berhasil dihapus';
                 $this->session->set_flashdata('success', $success_message);
-                echo json_encode(['status' => 'success', 'message' => 'Paket tryout berhasil dihapus.']);
+                echo json_encode(['status' => 'success', 'message' => $success_message]);
 
             } catch (Exception $e) {
                 $this->db->trans_rollback();
