@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * @property Event_model $event
  * @property Tryout_model $tryout
+ * @property CI_Session $session
  * @property Event_pendaftar_model $event_pendaftar
  */
 class Event extends CI_Controller{
@@ -66,5 +67,18 @@ class Event extends CI_Controller{
         $this->load->view('templates/user_topbar', $data);
         $this->load->view('admin/event/detail', $data);
         $this->load->view('templates/user_footer');
+    }
+
+    public function show_packet($slug){
+        $event = $this->event->get('one', ['slug' => $slug]);
+         if ($event['hidden'] == 0) {
+            $this->event->update(['hidden' => 1], ['slug' => $slug]);
+
+            $this->session->set_flashdata('success', 'Menyembunyikan Paket Tryout');
+        } else if ($event['hidden'] == 1) {
+            $this->event->update(['hidden' => 0], ['slug' => $slug]);
+            $this->session->set_flashdata('success', 'Menampilkan Paket Tryout');
+        }
+        redirect('admin/paket-to');
     }
 }

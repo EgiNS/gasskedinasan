@@ -33,15 +33,14 @@
       </div>
       <div class="btn-group">
         <button class="btn rounded btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Hide Tryout
-          <!-- <?= ($pendaftar[0]->hidden == 0 ? 'Hide Tryout' : 'Show Tryout') ?> -->
+          <?= ($event['hidden'] == 0 ? 'Hide Tryout' : 'Show Tryout') ?> 
         </button>
         <div class="dropdown-menu">
-          <!-- <?php if ($pendaftar[0]->hidden == 0) : ?> -->
-            <!-- <a class="dropdown-item" href="<?= base_url('admin/paket-to/' . $pendaftar[0]->slug . '/ show'); ?>">Show Tryout</a> -->
-          <!-- <?php else : ?> -->
-            <a class="dropdown-item" href="<?= base_url('admin/paket-to/' . $pendaftar[0]->slug . '/show'); ?>">Hide Tryout</a>
-          <!-- <?php endif; ?> -->
+          <?php if ($event['hidden'] == 0) : ?>
+            <a class="dropdown-item" href="<?= base_url('admin/event/' . $event['slug'] . '/show'); ?>">Show Tryout</a>
+          <?php else : ?>
+            <a class="dropdown-item" href="<?= base_url('admin/event/' . $event['slug'] . '/show'); ?>">Hide Tryout</a>
+          <?php endif; ?>
         </div>
       </div>
       <!-- DELETE TRYOUT -->
