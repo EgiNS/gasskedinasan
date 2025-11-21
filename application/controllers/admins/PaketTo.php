@@ -193,10 +193,10 @@ class PaketTo extends CI_Controller
          if ($packet_to['hidden'] == 0) {
             $this->paket_to->update(['hidden' => 1], ['slug' => $slug]);
 
-            $this->session->set_flashdata('success', 'Menyembunyikan Paket Tryout');
+            $this->session->set_flashdata('success', 'Menampilkan Paket Tryout');
         } else if ($packet_to['hidden'] == 1) {
             $this->paket_to->update(['hidden' => 0], ['slug' => $slug]);
-            $this->session->set_flashdata('success', 'Menampilkan Paket Tryout');
+            $this->session->set_flashdata('success', 'Menyembunyikan Paket Tryout');
         }
         redirect('admin/paket-to');
     }

@@ -90,6 +90,33 @@ class Event_model extends CI_Model
     }
 
     /**
+     * Get event by ID with their associated tryouts
+     */
+    public function getByIdWithTryouts($id)
+    {
+        // First get event by ID
+        $this->db->select('*');
+        $this->db->where('id', $id);
+
+        $event = $this->db->get($this->table)->row_array();
+        
+        if (!$event) {
+            return null;
+        }
+        
+        // Then get tryouts for the event
+        $this->db->select('tryout.id, tryout.name, tryout.tipe_tryout, tryout.slug, tryout.keterangan, tryout.jumlah_soal, tryout.lama_pengerjaan, tryout.gambar');
+        $this->db->from('events_tryout');
+        $this->db->join('tryout', 'tryout.id = events_tryout.tryout_id', 'left');
+        $this->db->where('events_tryout.event_id', $event['id']);
+        $tryouts = $this->db->get()->result_array();
+        
+        $event['tryouts'] = $tryouts;
+
+        return $event;
+    }
+
+    /**
      * Generate unique slug from name
      */
     public function generateSlug($name)

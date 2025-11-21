@@ -6,6 +6,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @property Tryout_model $tryout
  * @property CI_Session $session
  * @property Event_pendaftar_model $event_pendaftar
+ * @property CI_DB_query_builder $db
+ * @property CI_Form_validation $form_validation
+ * @property CI_Upload $upload
  */
 class Event extends CI_Controller{
 
@@ -14,6 +17,8 @@ class Event extends CI_Controller{
     {
         parent::__construct();
         $this->load->helper('slug');
+        $this->load->library('form_validation');
+        $this->load->library('upload');
      
         $this->load->model('Event_model', 'event');
         $this->load->model('Tryout_model', 'tryout');
@@ -74,12 +79,151 @@ class Event extends CI_Controller{
          if ($event['hidden'] == 0) {
             $this->event->update(['hidden' => 1], ['slug' => $slug]);
 
-            $this->session->set_flashdata('success', 'Menyembunyikan Event');
+            $this->session->set_flashdata('success', 'Menampilkan Event');
         } else if ($event['hidden'] == 1) {
             $this->event->update(['hidden' => 0], ['slug' => $slug]);
-            $this->session->set_flashdata('success', 'Menampilkan Event ');
+            $this->session->set_flashdata('success', 'Menyembunyikan Event');
         }
         redirect('admin/event');
+    }
+
+    public function get_event_data($id)
+    {
+        $event = $this->event->getByIdWithTryouts($id);
+        
+        if ($event) {
+            echo json_encode(['status' => 'success', 'data' => $event]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Event tidak ditemukan']);
+        }
+    }
+
+    public function get_available_tryouts()
+    {
+        $tryouts = $this->tryout->getAll();
+        echo json_encode(['status' => 'success', 'data' => $tryouts]);
+    }
+
+    public function edit($id)
+    {
+        $this->form_validation->set_rules('name', 'Nama Event', 'required', [
+            'required' => 'Nama event wajib diisi.'
+        ]);
+        $this->form_validation->set_rules('paket_to_ids[]', 'Tryout', 'required', [
+            'required' => 'Minimal pilih satu tryout.'
+        ]);
+        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required', [
+            'required' => 'Keterangan wajib diisi.'
+        ]);
+        $this->form_validation->set_rules('harga', 'Harga', 'required|numeric', [
+            'numeric' => 'Hanya boleh diisi angka.',
+            'required' => 'Harga wajib diisi.'
+        ]);
+        $this->form_validation->set_rules('group_link', 'Link Grup', 'required|valid_url', [
+            'valid_url' => 'Link grup harus berupa URL yang valid.',
+            'required' => 'Link grup wajib diisi.'
+        ]);
+
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('error', 'Data tidak valid: ' . validation_errors());
+            redirect('admin/event');
+            return;
+        }
+
+        // Get current event data
+        $current_event = $this->event->get('one', ['id' => $id]);
+        if (!$current_event) {
+            $this->session->set_flashdata('error', 'Event tidak ditemukan.');
+            redirect('admin/event');
+            return;
+        }
+
+        $gambar_name = $current_event['gambar']; // Keep current photo by default
+
+        // Handle photo upload if new photo is provided
+        if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
+            $config['upload_path'] = './assets/img/events/';
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size'] = 2048;
+            $config['file_name'] = time();
+
+            // Create directory if it doesn't exist
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('gambar')) {
+                $uploadData = $this->upload->data();
+                
+                // Delete old photo if exists and different from default
+                if ($current_event['gambar'] && file_exists('./assets/img/' . $current_event['gambar'])) {
+                    unlink('./assets/img/' . $current_event['gambar']);
+                }
+                
+                $gambar_name = 'events/' . $uploadData['file_name'];
+            } else {
+                $error = $this->upload->display_errors();
+                $this->session->set_flashdata('error', $error);
+                redirect('admin/event');
+                return;
+            }
+        }
+
+        $this->db->trans_start();
+
+        try {
+            // Update event data
+            $data = [
+                'name' => $this->input->post('name'),
+                'slug' => generateSlug($this->input->post('name'), $this->db, 'events', $id),
+                'gambar' => $gambar_name,
+                'harga' => $this->input->post('harga'),
+                'group_link' => $this->input->post('group_link'),
+                'keterangan' => $this->input->post('keterangan'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            $this->event->update($data, ['id' => $id]);
+
+            // Delete existing tryout relationships
+            $this->db->where('event_id', $id);
+            $this->db->delete('events_tryout');
+
+            // Insert new tryout relationships
+            $tryout_ids = $this->input->post('paket_to_ids');
+            foreach ($tryout_ids as $tryout_id) {
+                $data_tryout_event = [
+                    'event_id' => $id,
+                    'tryout_id' => $tryout_id,
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+                $this->db->insert('events_tryout', $data_tryout_event);
+            }
+
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                throw new Exception('Transaksi gagal.');
+            }
+
+            $this->session->set_flashdata('success', 'Event berhasil diperbarui');
+            redirect('admin/event');
+
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            
+            // Delete uploaded file if transaction failed
+            if (isset($uploadData) && file_exists('./assets/img/' . $uploadData['file_name'])) {
+                unlink('./assets/img/' . $uploadData['file_name']);
+            }
+            
+            log_message('error', 'Gagal update event: ' . $e->getMessage());
+            $this->session->set_flashdata('error', 'Gagal memperbarui event. Silakan coba lagi.');
+            redirect('admin/event');
+        }
     }
 
     public function delete_participant($pendaftar_event_id){
