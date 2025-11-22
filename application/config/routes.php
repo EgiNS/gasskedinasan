@@ -77,6 +77,8 @@ $route['tryout/paket-to/registration'] = 'PaketTo/paket_to_registration';
 $route['tryout/paket-to/(:any)'] = 'PaketTo/detail/$1';
 $route['tryout/events/registration'] = 'Event/event_registration';
 $route['tryout/events/(:any)'] = 'Event/detail_event/$1';
+$route['tryout/my-orders'] = 'MyOrder/index';
+
 // $route['midtrans/snap/token'] = 'midtrans/snap/token';
 // $route['processing/(:any)'] = 'frontend/processing/$1';
 // $route['profile/(:any)'] = 'frontend/profile/$1';
