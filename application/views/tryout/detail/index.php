@@ -84,13 +84,24 @@
                                     </button>
                                 <?php elseif ($payment_status == 'settlement') : ?>
                                     <div class="alert alert-success text-center fw-bold">
-                                        Anda sudah terdaftar.<br>Tryout bisa diakses di <a href="<?= base_url('tryout/mytryout'); ?>">My Tryout</a>.<br>
+                                        Anda sudah terdaftar peserta premium.<br>Tryout bisa diakses di <a href="<?= base_url('tryout/mytryout'); ?>">My Tryout</a>.<br>
                                         Jangan lupa bergabung ke grup belajarnya! 📚
+                                    </div>
+                                <?php elseif ($payment_status == 'free') : ?>
+                                    <div class="alert alert-success text-center fw-bold">
+                                        Anda sudah terdaftar sebagai peserta.<br>Tryout bisa diakses di <a href="<?= base_url('tryout/mytryout'); ?>">My Tryout</a>.<br>
+                                        Jangan lupa bergabung ke grup belajarnya! 📚
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="button" id="upgrade-freemium" class="btn btn-primary rounded-pill"
+                                                data-id="<?= $tryout['id']; ?>">
+                                            Upgrade Premium
+                                        </button>
                                     </div>
                                 <?php else : ?>
                                     <?php if ($tryout['freemium'] == 1) : ?>
                                             <button type="button" class="btn btn-primary rounded-pill"
-                                                    data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                                    data-bs-toggle="modal" data-bs-target="#refferalModal">
                                             Daftar Premium
                                             </button>
                                             <button type="button" class="btn btn-outline-secondary rounded-pill"
@@ -99,7 +110,7 @@
                                             </button>
                                         <?php elseif ($tryout['paid'] == 1) : ?>
                                             <button type="button" class="btn btn-primary rounded-pill"
-                                                data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                                data-bs-toggle="modal" data-bs-target="#refferalModal">
                                                 Daftar
                                             </button>
                                         <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>

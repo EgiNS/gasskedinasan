@@ -114,7 +114,10 @@ class Tryout extends CI_Controller
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
         $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
         $payment_status = '';
-        if ($pendaftar['transaction_status'] == 'settlement') {
+        if (!$pendaftar['freemium']){
+            $payment_status = "free";
+        }
+        else if ($pendaftar['transaction_status'] == 'settlement') {
             $payment_status = 'settlement';
 
         } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
@@ -140,9 +143,7 @@ class Tryout extends CI_Controller
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/detail/index', $data);
-        $this->load->view('tryout/detail/index', $data);
-        $this->load->view('templates/user_footer');
+        $this->load->view('tryout/detail/index', $data);$this->load->view('templates/user_footer');
 
         $jawaban_user = $this->jawaban->get('one', ['email' => $user->email], $slug);
 
@@ -198,20 +199,12 @@ class Tryout extends CI_Controller
             ]
         ];
 
-        $email = $this->session->userdata('email');
         $user_id = $this->session->userdata('id');
+        $user = $this->loginUser;
 
-        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
-            $pengerjaan = $this->user_tryout->getNumRows(['user_id' => $user_id], $slug);
-    
-            $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id, 'pengerjaan' => $pengerjaan], $slug);
-            $all_nilai = $this->user_tryout->get('many', ['user_id' => $user_id], $slug);
-        } else {
-            $pengerjaan = $this->user_tryout->getNumRows(['email' => $email], $slug);
-    
-            $user_tryout = $this->user_tryout->get('one', ['email' => $email, 'pengerjaan' => $pengerjaan], $slug);
-            $all_nilai = $this->user_tryout->get('many', ['email' => $email], $slug);
-        }
+        $pengerjaan = $this->user_tryout->getNumRows(['user_id' => $user_id], $slug, $user);
+        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id, 'pengerjaan' => $pengerjaan], $slug, '*', $user);
+        $all_nilai = $this->user_tryout->get('many', ['user_id' => $user_id], $slug, '*', $user);
 
         // var_dump($all_nilai);
         $data = [
@@ -286,12 +279,9 @@ class Tryout extends CI_Controller
         $soal_pertama = $this->soal->get('one', ['id' => 1], $slug);
 
         $user_id = $this->session->userdata('id');
+        $user = $this->loginUser;
 
-        if (isset($data['user_tryout'][0]['transaction_id'])) {
-            $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id], $slug);
-        } else {
-            $user_tryout = $this->user_tryout->get('one', ['email' => $data['user']->email], $slug);
-        }
+        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id], $slug, '*', $user);
 
         $this->_checkaccesstotryout($user_tryout['status'], $soal_pertama['token'], $slug);
 
@@ -335,9 +325,10 @@ class Tryout extends CI_Controller
             'tryout' => $tryout
         ];
 
-        $email = $this->session->userdata('email');
+        $user_id = $this->session->userdata('id');
+        $user = $this->loginUser;
 
-        $user_tryout = $this->user_tryout->get('one', ['email' => $email], $slug);
+        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id], $slug, '*', $user);
         $soal_pertama = $this->soal->get('one', ['id' => 1], $slug);
 
         $this->_checkaccesstotryout($user_tryout['status'], $soal_pertama['token'], $slug);
@@ -405,11 +396,11 @@ class Tryout extends CI_Controller
         $this->load->model('Bobot_nilai_model', 'bobot_nilai');
         $this->load->model('Jawaban_model', 'jawaban');
 
-        $email = $this->session->userdata('email');
         $user_id = $this->session->userdata('id');
+        $user = $this->loginUser;
         $email_kunci_jawaban = 'kunci_jawaban_' . $slug . '@gmail.com';
 
-        $last = $this->jawaban->getLastRow(['email' => $email], $slug);
+        $last = $this->jawaban->getLastRow(['user_id' => $user_id], $slug, $user);
         $data = [
             'title' => $title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -448,11 +439,7 @@ class Tryout extends CI_Controller
         }
 
 
-        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
-            $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id], $slug);
-        } else {
-            $user_tryout = $this->user_tryout->get('one', ['email' => $email], $slug);
-        }
+        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user_id], $slug, '*', $user);
 
         $soal_pertama = $this->soal->get('one', ['id' => 1], $slug);
 
@@ -588,6 +575,8 @@ class Tryout extends CI_Controller
             $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
         }
     }
+
+    
 
     public function freemium()
     {
@@ -753,7 +742,7 @@ class Tryout extends CI_Controller
         $transaction_id = $this->transaction->insert($data);
         $this->user_tryout->update(
             [
-                'freemium' => 0,
+                'freemium' => 1,
                 'transaction_id' => $transaction_id
             ],
             ['user_id' => $user->id],
@@ -943,5 +932,6 @@ class Tryout extends CI_Controller
    
 
 
+    
 
 }

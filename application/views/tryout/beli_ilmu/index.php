@@ -128,7 +128,7 @@
                                     <?= $item['keterangan']; ?>
                                 </p>
                                 
-                                <a href="<?= base_url('tryout/events/') . $item['id']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
+                                <a href="<?= base_url('tryout/events/') . $item['slug']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
                                 </div>
                             </div>
                             </div>

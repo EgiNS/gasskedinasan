@@ -35,6 +35,7 @@ public function getBySlugWithTryouts($slug)
         paket_to.id,
         paket_to.nama,
         paket_to.slug,
+        paket_to.hidden,
         paket_to.harga,
         paket_to.harga_diskon,
         paket_to.foto,
@@ -68,6 +69,7 @@ public function getBySlugWithTryouts($slug)
         'nama' => $rows[0]['nama'],
         'harga_diskon' => $rows[0]['harga_diskon'],
         'harga' => $rows[0]['harga'],
+        'hidden' => $rows[0]['hidden'],
         'slug' => $rows[0]['slug'],
         'foto' => $rows[0]['foto'],
         'keterangan' => $rows[0]['keterangan'],
@@ -166,4 +168,24 @@ public function getAllWithTryouts()
         $this->db->query($sql_tabel_pendaftar);
     }
 
+
+    
+    public function get($count, $key, $select = '*')
+    {
+        $this->db->select($select);
+        $this->db->order_by('id', 'DESC');
+        $result = $this->db->get_where($this->table, $key);
+        if ($count === 'many')
+            return $result->result_array();
+        else if ($count === 'one')
+            return $result->row_array();
+        else
+            return false;
+    }
+
+    public function update($data, $where)
+    {
+        $this->db->where($where);
+        return $this->db->update($this->table, $data);
+    }
 }

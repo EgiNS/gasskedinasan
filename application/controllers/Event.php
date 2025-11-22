@@ -10,6 +10,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @property Midtrans $midtrans
  * @property CI_Input $input
  * @property CI_DB_query_builder $db
+ * @property User_tryout_model $user_tryout
  * 
  */
 
@@ -25,19 +26,21 @@ class Event extends CI_Controller
 
         $this->loginUser = $this->user->getLoginUser();
         $this->load->library('midtrans/Midtrans', 'midtrans');
+        $this->load->model('User_tryout_model','user_tryout');
         $params = array('server_key' => server_key(), 'production' => is_production());
         $this->midtrans->config($params);
         $this->sidebarMenu = 'Tryout';
     }
 
-    public function detail_event($id)
+    public function detail_event($slug)
     {
         $this->load->model('Event_model', 'event');
         $this->load->model('Event_pendaftar_model', 'event_pendaftar');
+        
         $submenu_parent = 10;
         $parent_title = getSubmenuTitleById($submenu_parent)['title'];
         submenu_access($submenu_parent);
-        $title = $id;
+        $title = $slug;
         $breadcrumb_item = [
             [
                 'title' => $parent_title,
@@ -49,10 +52,10 @@ class Event extends CI_Controller
             ]
         ];
         $total_soal = 0;
-        $jumlah_peserta = $this->event_pendaftar->getNumEventParticipantWithSuccessTransaction($id);
         $total_waktu = 0;
-        $event = $this->event->getByIdWithTryouts($id);
-        $pendaftar = $this->event_pendaftar->getByEventIdWithTransaction($id, $this->loginUser->id);
+        $event = $this->event->getBySlugWithTryouts($slug);
+        $jumlah_peserta = $this->event_pendaftar->getNumEventParticipantWithSuccessTransaction($event['id']);
+        $pendaftar = $this->event_pendaftar->getByEventIdWithTransaction($event['id'], $this->loginUser->id);
         $payment_status = '';
         if ($pendaftar['transaction_status'] == 'settlement') {
             $payment_status = 'settlement';
@@ -63,7 +66,16 @@ class Event extends CI_Controller
             $payment_status = 'expired';
         }
         
-        foreach ($event['tryouts'] as $tryout) {
+        foreach ($event['tryouts'] as $i => $tryout) {
+            $user_tryout = $this->user_tryout->get('one', ['user_id' => $this->loginUser->id], $tryout['slug'], '*');
+            if ($user_tryout){
+
+                $event['tryouts'][$i]['status'] = 'registered';
+                
+            }
+            else{
+                $event['tryouts'][$i]['status'] = 'not_registered';
+            }
             $total_soal += (int)$tryout['jumlah_soal'];
             $total_waktu += (int)$tryout['lama_pengerjaan'];
         }
@@ -77,7 +89,7 @@ class Event extends CI_Controller
             'jumlah_tryout' => count($event['tryouts']),
             'total_waktu' => $total_waktu,
             'sidebar_menu' => $this->sidebarMenu,
-            'payment_status' => $payment_status,
+            'payment_status' => $payment_status ,
             'parent_submenu' => $parent_title,
         ];
         $this->load->view('templates/user_header', $data);
@@ -93,18 +105,28 @@ class Event extends CI_Controller
         $this->load->model('Event_pendaftar_model', 'event_pendaftar');
         $this->load->model('Transaction_model', 'transaction');
 
-        $event_id = $this->input->post('id');
-
         $user = $this->loginUser;
-        $order_id = 'EVT-' . $event_id . '-USR-' . $user->id . '-' . time();
-        $pendaftar = $this->event_pendaftar->getByEventIdWithTransaction($event_id, $user->id);
+        $event_slug = $this->input->post('slug');
+
+        $event = $this->event->getBySlugWithTryouts($event_slug);
+        $pendaftar = $this->event_pendaftar->getByEventIdWithTransaction($event['id'], $user->id);
         if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
             print_r($pendaftar['snap_token']);
             exit;
             echo $pendaftar['snap_token'];
             return;
         }
-        $event = $this->event->getByIdWithTryouts($event_id);
+        $order_id = 'EVT-' . $event['id'] . '-USR-' . $user->id . '-' . time();
+        foreach ($event['tryouts'] as $i => $tryout) {
+            $user_tryout =  $this->user_tryout->get('one', ['user_id' => $this->loginUser->id], $tryout['slug'], '*');
+            if ($user_tryout){
+                $event['tryouts'][$i]['status'] = 'registered';
+                
+            }
+            else{
+                $event['tryouts'][$i]['status'] = 'not_registered';
+            }
+        }
         $gross_amount = (int)$event['harga'];
         $transaction_details = array(
             'order_id' => $order_id,
@@ -151,13 +173,23 @@ class Event extends CI_Controller
                     ['transaction_id' => $transaction_id],
                     ['id' => $pendaftar['id']]
                 );
+                $this-> user_tryout->updateUserTryoutMultiSlug(
+                    ['transaction_id' => $transaction_id],
+                    ['user_id' => $user->id],
+                    $event['tryouts']
+                );
             } else {
 
                 $this->event_pendaftar->insert([
-                    'event_id' => $event_id,
+                    'event_id' => $event['id'],
                     'user_id' => $user->id,
                     'transaction_id' => $transaction_id,
                 ]);
+                $this->user_tryout->insertUserTryoutMultiSlug(
+                    ['user_id' => $user->id, 'transaction_id' => $transaction_id,'token'=> 11111, 'status' => 0, 'freemium' => 1,'source_type'=>'event','source_id'=>$event['id']], 
+                    $event['tryouts']
+                );
+
             }
             $params = array(
                 'transaction_details' => $transaction_details,
