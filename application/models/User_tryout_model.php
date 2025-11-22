@@ -42,11 +42,12 @@ class User_tryout_model extends CI_Model
     {
         $user_tryout_table = $this->table . $slug;
         $this->db->select('
-            ' . $user_tryout_table . '.id,
-            tr.transaction_status,
-            tr.snap_token, tr.expiry_time
-            
-        ');
+        ' . $user_tryout_table . '.id,
+        ' . $user_tryout_table . '.freemium,
+        tr.transaction_status,
+        tr.snap_token, tr.expiry_time
+        
+    ');
         $this->db->from($user_tryout_table);
         $this->db->join('transactions tr', $user_tryout_table . '.transaction_id = tr.id', 'left');
 
@@ -78,6 +79,16 @@ class User_tryout_model extends CI_Model
             }
             // Kalau gak ada dua-duanya, return kosong
             else {
+                return [];
+            }
+        } else if (isset($key['email'])) {
+            // Jika key berisi email, cek kolom yang ada
+            if (in_array('email', $fields)) {
+                $where['email'] = $key['email'];
+            } else if (in_array('user_id', $fields) && isset($user->id)) {
+                // Jika tabel punya user_id tapi key pakai email, convert ke user_id
+                $where['user_id'] = $user->id;
+            } else {
                 return [];
             }
         } else {
@@ -142,10 +153,36 @@ class User_tryout_model extends CI_Model
         return ($result == true) ? true : false;
     }
 
-    public function getNumRows($data, $slug)
+    public function getNumRows($data, $slug, $user = null)
     {
-        $this->db->where($data);
-        $result = $this->db->get($this->table . $slug);
+        $table = $this->table . $slug;
+        $fields = $this->db->list_fields($table);
+        
+        $where = [];
+        
+        if (isset($data['user_id'])) {
+            // Kalau tabel punya kolom user_id
+            if (in_array('user_id', $fields)) {
+                $where['user_id'] = $data['user_id'];
+            }
+            // Kalau gak ada user_id tapi ada email dan user object dikirim
+            else if (in_array('email', $fields) && isset($user->email)) {
+                $where['email'] = $user->email;
+            }
+        } else if (isset($data['email'])) {
+            // Jika data berisi email, cek kolom yang ada
+            if (in_array('email', $fields)) {
+                $where['email'] = $data['email'];
+            } else if (in_array('user_id', $fields) && isset($user->id)) {
+                // Jika tabel punya user_id tapi data pakai email, convert ke user_id
+                $where['user_id'] = $user->id;
+            }
+        } else {
+            $where = $data;
+        }
+        
+        $this->db->where($where);
+        $result = $this->db->get($table);
         return $result->num_rows();
     }
 

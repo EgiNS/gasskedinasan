@@ -12,13 +12,15 @@ class Pendaftar_to_model extends CI_Model{
         $result = $this->db->insert($this->table, $data);
         return ($result == true) ? true : false;
     }
-public function get_all_by_packet_to_id($id){
-    $this->db->select($this->table . '.*, paket_to.nama as nama_to, user.name as username, transactions.transaction_status as status');
+public function get_all_by_packet_to_id($slug){
+    $this->db->select($this->table . '.*, paket_to.nama as nama_paket,paket_to.hidden, paket_to.slug , paket_to.harga ,user.name as username, user.email, user.no_wa, transactions.gross_amount as jumlah_bayar, SUM(transactions.gross_amount) as total_pendapatan, transactions.updated_at as waktu_pembayaran');
     $this->db->from($this->table);
     $this->db->join('paket_to', 'paket_to.id = ' . $this->table . '.paket_to_id', 'left');
     $this->db->join('user', 'user.id = ' . $this->table . '.user_id', 'left');
     $this->db->join('transactions','transactions.id = ' . $this->table . '.transaction_id','left');
-    $this->db->where($this->table . '.paket_to_id', $id);
+    $this->db->where('transactions.transaction_status', 'settlement');
+    $this->db->where('paket_to.slug', $slug);
+    $this->db->group_by($this->table . '.id');
     $query = $this->db->get();
     return $query->result();
 }
@@ -45,4 +47,17 @@ public function getByPacketToIdWithTransaction($paket_to_id, $user_id)
         $this->db->where($where);
         return $this->db->update($this->table, $data);
     }
+    
+    public function get($count, $key, $select = '*')
+    {
+        $this->db->select($select);
+        $result = $this->db->get_where($this->table, $key);
+        if ($count === 'many')
+            return $result->result_array();
+        else if ($count === 'one')
+            return $result->row_array();
+        else
+            return false;
+    }
+    
 }

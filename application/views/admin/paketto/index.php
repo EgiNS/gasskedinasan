@@ -1,3 +1,37 @@
+<style>
+  /* Pastikan gambar mengisi area ratio dan dicrop rapi */
+  .card .ratio img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Sedikit peningkatan shadow & spacing */
+  .card.custom-card {
+    background: #ffffff;
+    border: 0;
+  }
+
+  .card.custom-card .card-body {
+    padding: 1rem;
+  }
+
+  .ratio-3x4 {
+    position: relative;
+    width: 100%;
+    padding-top: calc(4 / 3 * 100%);
+    /* 3:4 ratio (tinggi > lebar) */
+  }
+
+  .ratio-3x4>* {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
 <div class="pc-container">
     <div class="pc-content">
 
@@ -34,23 +68,52 @@
         <?= form_error_message('paket_to_ids[]'); ?>
         <?= error_message_file_input('foto'); ?>
 
-        <div class="d-flex flex-row mb-4">
-            <?php foreach ($paket_to as $p) { ?>
-                <div class="card me-3 position-relative" style="width: 20rem; padding-bottom: 30px;">
-                    <img src="<?= base_url('assets/img/' . $p["foto"]); ?>" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <p class="card-title fs-4"><?= $p['nama']; ?></p>
-                        
-                        <p class="card-text"><?= $p['keterangan']; ?></p>
-                        
-                        <div class="position-absolute bottom-0 start-0 end-0 mb-3 px-3">
-                            <a href="<?= base_url("/admin/detailpendaftar/" . ($p["id"])); ?>" class="btn btn-primary w-100">Lihat Pendaftar</a>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <?php if ($paket_to) : ?>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- Repeat card: gunakan kelas col untuk responsive breakpoint -->
+                                <!-- col-12 (xs) | col-sm-6 (>=576px dua kolom) | col-md-4 (>=768px tiga kolom) | col-lg-3 (>=992px empat kolom) -->
 
+                                <?php foreach ($paket_to as $item) : ?>
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                        <div class="card custom-card shadow-sm h-100">
+                                            <div class="ratio ratio-3x4">
+                                                <img src="<?= '/assets/img/' . $item["foto"] ?>" alt="Gambar 1">
+                                            </div>
+                                            <div class="card-body d-flex flex-column">
+                                                <div class="d-flex align-items-center">
+                                                    <h5 class="card-title mb-2 text-uppercase fw-bolder"><?= $item['nama']; ?></h5>
+                                                </div>
+                                                <p class="card-text text-muted mb-3" style="flex:0 0 auto;">
+                                                    <?= $item['keterangan']; ?>
+                                                
+                                                </p>
+                                                <div class="border-top mt-auto">
+
+                                                </div>
+                                                <a href="<?= base_url('admin/paket-to/') . $item['slug']; ?>" class="btn w-100 btn-primary rounded">Selengkapnya</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+
+                            </div>
                         </div>
-                    </div>
+                    <?php else : ?>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <p>Belum ada paket tryout yang tersedia</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                 </div>
-            <?php } ?>
+            </div>
         </div>
+        
 
         <?php $this->load->view('admin/paketto/tambah_paket'); ?>
         

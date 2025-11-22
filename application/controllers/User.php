@@ -163,6 +163,7 @@ class User extends CI_Controller
         ];
         $this->form_validation->set_rules('name', 'Full Name', 'required|trim');
         $this->form_validation->set_rules('no_wa', 'WhatsApp', 'required|trim');
+        $this->form_validation->set_rules('kedinasan_tujuan', 'Kedinasan Tujuan', 'trim');
 
         if ($this->form_validation->run() == false) {
             $this->load->view('templates/user_header', $data);
@@ -174,6 +175,7 @@ class User extends CI_Controller
             $name = htmlspecialchars($this->input->post('name', true));
             $email = htmlspecialchars($this->input->post('email', true));
             $no_wa = htmlspecialchars($this->input->post('no_wa'));
+            $kedinasan_tujuan = htmlspecialchars($this->input->post('kedinasan_tujuan', true));
 
             //cek jika ada gambar yang akan di-upload
             $upload_image = $_FILES['image']['name'];
@@ -189,7 +191,7 @@ class User extends CI_Controller
                 if ($this->upload->do_upload('image')) {
 
                     //cari nama gambar lama
-                    $old_image = $data['user']['image'];
+                    $old_image = $data['user']->image;
                     if ($old_image != 'default.jpg') {
                         unlink(FCPATH . 'assets/img/profile/' . $old_image);
                     }
@@ -206,7 +208,8 @@ class User extends CI_Controller
 
             $this->user->update([
                 'name' => $name,
-                'no_wa' => $no_wa
+                'no_wa' => $no_wa,
+                'kedinasan_tujuan' => $kedinasan_tujuan
             ], ['email' => $email]);
 
             $this->session->set_flashdata('success', 'Update Profil');
