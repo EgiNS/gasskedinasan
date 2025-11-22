@@ -173,7 +173,7 @@ class Exam extends CI_Controller
             $this->ragu_ragu->insert(['email' => $email], $slug);
 
             if ($pengerjaan >= 1 && ($user_to['total'] != null || $user_to['nilai'] != null)) {
-                $this->user_tryout->insert(['user_id'=>$user_id, 'status'=>1, 'freemium'=>$user_to['freemium'], 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
+                $this->user_tryout->insert(['user_id'=>$user_id, 'status'=>1, 'transaction_id'=>$user_to['transaction_id'], 'freemium'=>$user_to['freemium'], 'token'=>11111, 'pengerjaan'=>$pengerjaan+1], $slug);
             } else {
                 $this->user_tryout->updateLastRow(['status' => 1], ['user_id' => $user_id], $slug);
             }

@@ -19,10 +19,24 @@
             margin: 0 auto;
             margin-bottom: 60px;
         }
-    
+        .accordion {
+          width: 75%;
+        }
+        @media (max-width: 992px) {
+            .faq-section {
+                padding: 40px 20px !important;
+            }
+            .gk-p {
+              font-size: 30px;
+              width: 100%;
+            }
+            .accordion {
+              width: 100%;
+            }
+        }
 </style>
 
-<div class="container-fluid gk-bg-faq" style="padding: 70px 100px;">
+<div class="container-fluid gk-bg-faq faq-section" style="padding: 70px 100px;">
     <div class=" text-center">
         <h3 class="gk-h3">
             Pertanyaan yang Sering Ditanyakan
@@ -34,7 +48,7 @@ seputar program bimbel di sini.
         </p>
     </div>
 
-    <div class="accordion w-50" style="margin: 0 auto;" id="accordionExample">
+    <div class="accordion" style="margin: 0 auto;" id="accordionExample">
   <div class="accordion-item">
     <h2 class="accordion-header">
       <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">

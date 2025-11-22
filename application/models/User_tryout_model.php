@@ -252,24 +252,45 @@ class User_tryout_model extends CI_Model
             $onClause = 'u.email = ut.email';
         }
 
-        $query = "
-    SELECT u.*, ut.*, tr.gross_amount, SUM(tr.gross_amount) AS jumlah_pembayaran
-    FROM user AS u
-    JOIN (
-        SELECT t1.*
-        FROM user_tryout_{$slug} t1
-        JOIN (
-            SELECT {$joinField}, MIN(id) AS min_id
-            FROM user_tryout_{$slug}
-            GROUP BY {$joinField}
-        ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
-    ) ut ON {$onClause}
-    JOIN transactions tr ON tr.id = ut.transaction_id
-    
-    WHERE tr.transaction_status = 'settlement' AND ut.source_type = 'tryout'
-    GROUP BY u.id
-    ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
-";
+        $hasSourceType = $this->db->field_exists('source_type', "user_tryout_{$slug}");
+        $whereSourceType = $hasSourceType ? "AND ut.source_type = 'tryout'" : "";
+        $hasTransaction = $this->db->field_exists('transaction_id', "user_tryout_{$slug}");
+
+        if ($hasTransaction) {
+            $query = "
+                SELECT u.*, ut.*, tr.gross_amount, SUM(tr.gross_amount) AS jumlah_pembayaran
+                FROM user AS u
+                JOIN (
+                    SELECT t1.*
+                    FROM user_tryout_{$slug} t1
+                    JOIN (
+                        SELECT {$joinField}, MIN(id) AS min_id
+                        FROM user_tryout_{$slug}
+                        GROUP BY {$joinField}
+                    ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
+                ) ut ON {$onClause}
+                JOIN transactions tr ON tr.id = ut.transaction_id
+                WHERE tr.transaction_status = 'settlement'
+                {$whereSourceType}
+                GROUP BY u.id
+                ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC
+            ";
+        } else {
+            $query = "
+                SELECT u.*, ut.*
+            FROM user AS u
+            JOIN (
+                SELECT t1.*
+                FROM user_tryout_{$slug} t1
+                JOIN (
+                    SELECT email, MIN(id) AS min_id
+                    FROM user_tryout_{$slug}
+                    GROUP BY email
+                ) t2 ON t1.email = t2.email AND t1.id = t2.min_id
+            ) ut ON u.email = ut.email
+            ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC;
+            ";
+        }
 
 
         return $this->db->query($query)->result_array();

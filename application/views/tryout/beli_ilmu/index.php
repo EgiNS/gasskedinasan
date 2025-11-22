@@ -71,7 +71,7 @@
                         <!-- col-12 (xs) | col-sm-6 (>=576px dua kolom) | col-md-4 (>=768px tiga kolom) | col-lg-3 (>=992px empat kolom) -->
 
                         <?php foreach ($paket_to as $item) : ?>
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="col-6 col-md-4 col-lg-3">
                             <div class="card custom-card shadow-sm h-100">
                                 <div class="ratio ratio-3x4">
                                 <img src="<?= base_url('assets/img/' . $item["foto"]); ?>" alt="Gambar 1" class="card-img-top">
@@ -115,7 +115,7 @@
                         <!-- col-12 (xs) | col-sm-6 (>=576px dua kolom) | col-md-4 (>=768px tiga kolom) | col-lg-3 (>=992px empat kolom) -->
 
                         <?php foreach ($events as $item) : ?>
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="col-6 col-md-4 col-lg-3">
                             <div class="card custom-card shadow-sm h-100">
                                 <div class="ratio ratio-3x4">
                                 <img src="<?= base_url('assets/img/' . $item["gambar"]); ?>" alt="Gambar 1" class="card-img-top">
@@ -157,7 +157,7 @@
                         <!-- col-12 (xs) | col-sm-6 (>=576px dua kolom) | col-md-4 (>=768px tiga kolom) | col-lg-3 (>=992px empat kolom) -->
 
                         <?php foreach ($tryout_skd as $item) : ?>
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="col-6 col-md-4 col-lg-3">
                             <div class="card custom-card shadow-sm h-100">
                                 <div class="ratio ratio-3x4">
                                 <img src="<?= base_url('assets/img/' . $item["gambar"]); ?>" alt="Gambar 1" class="card-img-top">
@@ -217,7 +217,7 @@
                         <!-- col-12 (xs) | col-sm-6 (>=576px dua kolom) | col-md-4 (>=768px tiga kolom) | col-lg-3 (>=992px empat kolom) -->
 
                         <?php foreach ($tryout_mtk as $item) : ?>
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="col-6 col-md-4 col-lg-3">
                             <div class="card custom-card shadow-sm h-100">
                                 <div class="ratio ratio-3x4">
                                 <img src="<?= base_url('assets/img/' . $item["gambar"]); ?>" alt="Gambar 1" class="card-img-top">

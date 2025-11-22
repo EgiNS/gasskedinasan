@@ -72,7 +72,7 @@ public function getAll($select = '*')
 
     public function getPendapatan($slug)
     {
-        $user_paid = $this->get('many', ['tryout' => $slug, 'status_code' => 200], array('gross_amount'));
+        $user_paid = $this->get('many', ['tryout' => $slug, 'transaction_status' => "settlement"], array('gross_amount'));
 
         $pendapatan = 0;
         foreach ($user_paid as $up)
@@ -83,7 +83,7 @@ public function getAll($select = '*')
 
     public function getAllPendapatan()
     {
-        $user_paid = $this->get('many', ['status_code' => 200], array('gross_amount'));
+        $user_paid = $this->get('many', ['transaction_status' => "settlement"], array('gross_amount'));
 
         $pendapatan = 0;
         foreach ($user_paid as $up)
@@ -150,9 +150,9 @@ public function getAll($select = '*')
         ];
 
         $stop = (string)date('M');
-        for ($i = 0; $i < array_search($stop, $month); $i++) {
+        for ($i = 0; $i <= array_search($stop, $month); $i++) {
             $like = (string)date('Y') . "-" . $time[$i]['no'] . "-";
-            $payment = $this->getPaymentbyTime(['status_code' => 200], ['updated_at' => $like], array('gross_amount'));
+            $payment = $this->getPaymentbyTime(['transaction_status' => "settlement"], ['updated_at' => $like], array('gross_amount'));
 
             $total = 0;
             foreach ($payment as $pm)

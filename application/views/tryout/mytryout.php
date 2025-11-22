@@ -139,7 +139,7 @@
                                 class="btn btn-sm btn-outline-secondary tryout-btn">Answer Analysis</a>
                             <?php else : ?>
                             <span class="text-muted small">
-                                Pembahasan tidak tersedia di versi gratis.  <a href="<?= base_url('upgrade/premium'); ?>" 
+                                Pembahasan tidak tersedia di versi gratis.  <a href="<?= base_url('tryout/detail/' . $tryout[$i]['slug']); ?>" 
                                 class="fw-bold text-decoration-underline">
                                 Upgrade ke versi Premium disini! 
                                 </a>

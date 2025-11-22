@@ -10,8 +10,18 @@
         border-color: #233876;
         color: #233876;
     }
+
+    .bungkus-navbar {
+        padding: 20px 60px;
+    }
+
+    @media (max-width: 992px) {
+        .bungkus-navbar {
+            padding: 20px;
+        }
+    }
 </style>
-<div class="container-fluid" style="padding: 20px 60px;">
+<div class="container-fluid bungkus-navbar">
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <a href="https://gasseducation.com">

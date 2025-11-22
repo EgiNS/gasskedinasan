@@ -728,7 +728,7 @@ class Admin extends CI_Controller
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => 'admin/tryout/' . $tryout['slug']
             ],
             [
                 'title' => 'Soal',
@@ -1611,7 +1611,7 @@ class Admin extends CI_Controller
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => 'admin/tryout/' . $tryout['slug']
             ],
             [
                 'title' => 'Soal',
@@ -2494,7 +2494,7 @@ class Admin extends CI_Controller
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => 'admin/tryout/' . $tryout['slug']
             ],
             [
                 'title' => 'Soal',
@@ -2798,7 +2798,7 @@ class Admin extends CI_Controller
             $jenis = 'tryout';
             $submenu_parent = 3;
             $href1 = 'admin/tryout';
-            $href2 = 'admin/detailtryout/';
+            $href2 = 'admin/tryout/';
         } else {
             $jenis = 'latsol';
             $submenu_parent = 15;
@@ -2928,7 +2928,7 @@ class Admin extends CI_Controller
             $jenis = 'tryout';
             $submenu_parent = 3;
             $href1 = 'admin/tryout';
-            $href2 = 'admin/detailtryout/';
+            $href2 = 'admin/tryout/';
         } else {
             $jenis = 'latsol';
             $submenu_parent = 15;
@@ -3012,7 +3012,7 @@ class Admin extends CI_Controller
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => 'admin/tryout/' . $tryout['slug']
             ],
             [
                 'title' => 'Ranking',
@@ -3059,7 +3059,7 @@ class Admin extends CI_Controller
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => 'admin/tryout/' . $tryout['slug']
             ],
             [
                 'title' => 'Pembahasan',
@@ -3128,7 +3128,7 @@ class Admin extends CI_Controller
             ],
             [
                 'title' => $tryout['name'],
-                'href' => 'admin/detailtryout/' . $tryout['slug']
+                'href' => 'admin/tryout/' . $tryout['slug']
             ],
             [
                 'title' => 'Soal',
@@ -3888,12 +3888,12 @@ class Admin extends CI_Controller
                 if ($harga == '') {
                     $success = false;
                     $this->session->set_flashdata('error', 'Harga wajib diisi');
-                    redirect('admin/detailtryout/' . $tryout['slug']);
+                    redirect('admin/tryout/' . $tryout['slug']);
                 }
             } else if ($lama_pengerjaan == '') {
                 $success = false;
                 $this->session->set_flashdata('error', 'Lama pengerjaan wajib diisi');
-                redirect('admin/detailtryout/' . $tryout['slug']);
+                redirect('admin/tryout/' . $tryout['slug']);
             }
         } else if ($tryout['tipe_tryout'] == 'SKD') {
             if ($berbayar) {
@@ -3901,12 +3901,12 @@ class Admin extends CI_Controller
                 if ($harga == '') {
                     $success = false;
                     $this->session->set_flashdata('error', 'Harga wajib diisi');
-                    redirect('admin/detailtryout/' . $tryout['slug']);
+                    redirect('admin/tryout/' . $tryout['slug']);
                 }
             } else if ($lama_pengerjaan == '') {
                 $success = false;
                 $this->session->set_flashdata('error', 'Lama pengerjaan wajib diisi');
-                redirect('admin/detailtryout/' . $tryout['slug']);
+                redirect('admin/tryout/' . $tryout['slug']);
             }
         }
 
@@ -3946,7 +3946,7 @@ class Admin extends CI_Controller
 
             $this->tryout->update($data, ['id' => $id]);
             $this->session->set_flashdata('success', 'Mengubah Tryout');
-            redirect('admin/detailtryout/' . $tryout['slug']);
+            redirect('admin/tryout/' . $tryout['slug']);
         }
     }
 
@@ -4068,7 +4068,7 @@ class Admin extends CI_Controller
             $this->session->set_flashdata('error', 'Gagal menyimpan data!');
         }
 
-        redirect('admin/detailtryout/' . $slug);
+        redirect('admin/tryout/' . $slug);
     }
 
     public function getsoal()
@@ -4190,10 +4190,6 @@ class Admin extends CI_Controller
                 'title' => $parent_title,
                 'href' => 'admin/bimbel' . $link
             ],
-            [
-                'title' => $title,
-                'href' => 'active'
-            ]
         ];
 
 
@@ -4211,9 +4207,11 @@ class Admin extends CI_Controller
         $slug = 'latsol_' . str_replace(' ', '_', strtolower($judul));
         $jumlah_soal = $this->input->post('jumlah_soal');
         $lama_pengerjaan = $this->input->post('lama_pengerjaan');
-
-        $this->form_validation->set_rules('jenis', 'Jenis Materi', 'required');
+        $this->form_validation->set_rules('jenis', 'Jenis Materi', 'required', [
+            'required' => 'Jenis materi wajib diisi.'
+        ]);
         $this->form_validation->set_rules('judul', 'Judul Materi', 'required|is_unique[latsol.name]', [
+            'required' => 'Judul materi wajib diisi.',
             'is_unique' => 'Tidak boleh sama.'
         ]);
         $this->form_validation->set_rules('upload_materi', 'File Materi', 'is_unique[latsol.materi]', [
@@ -4854,7 +4852,7 @@ class Admin extends CI_Controller
 
             $this->session->set_flashdata('success', 'Menginput Peserta');
         }
-        redirect('admin/detailtryout/' . $slug);
+        redirect('admin/tryout/' . $slug);
     }
 
 

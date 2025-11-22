@@ -67,6 +67,8 @@ class Tryout extends CI_Controller {
 
         $tipe_tryout = $this->input->post('tipe_tryout');
         $lama_pengerjaan = $this->input->post('lama_pengerjaan');
+        $link = $this->input->post('link');
+        $link_premium = $this->input->post('link_pre$link_premium');
 
         if ($this->input->post('refferal') == 1) {
             $raw_input = $this->input->post('kode_refferal');
@@ -201,7 +203,8 @@ class Tryout extends CI_Controller {
                             $data = [
                                 'user_id' => $u['id'],
                                 'token' => 11111,
-                                'status' => 0
+                                'status' => 0,
+                                'freemium' => 1,
                             ];
 
                             $this->user_tryout->insert($data, $slug);
@@ -211,7 +214,8 @@ class Tryout extends CI_Controller {
                             $data = [
                                 'user_id' => $u['id'],
                                 'token' => 11111,
-                                'status' => 0
+                                'status' => 0,
+                                'freemium' => 1
                             ];
 
                             $this->user_tryout->insert($data, $slug);
@@ -243,7 +247,6 @@ class Tryout extends CI_Controller {
                         $this->bobot_nilai->insert($data);
                     }
 
-                    if ($for_bimbel == 1) {
                         $user_4 = $this->user->get('many', ['role_id' => 4]);
                         $user_6 = $this->user->get('many', ['role_id' => 6]);
 
@@ -266,7 +269,8 @@ class Tryout extends CI_Controller {
 
                             $this->user_tryout->insert($data, $slug);
                         }
-                    } else if ($for_bimbel == 2) {
+
+                    if ($for_bimbel == 2) {
                         $user_8 = $this->user->get('many', ['role_id' => 8]);
 
                         foreach ($user_8 as $u) {
@@ -351,7 +355,8 @@ class Tryout extends CI_Controller {
             'jumlah_soal' => $this->soal->getNumRows(['id >' => 0], $slug),
             'persentase_selesai' => $persentase,
             'slug' => $slug,
-            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
+            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode'],
+            'show' => $this->db->get('show_to_landingpage')->row()
         ];
 
         $this->load->view('templates/user_header', $data);

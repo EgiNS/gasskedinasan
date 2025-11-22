@@ -112,7 +112,6 @@ class Tryout extends CI_Controller
 
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
-        $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
         $payment_status = '';
         if (!$pendaftar['freemium']){
             $payment_status = "free";
@@ -125,7 +124,7 @@ class Tryout extends CI_Controller
         } else {
             $payment_status = 'expired';
         }
-        
+
         $data = [
             'title' => 'Detail ' . $title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -513,11 +512,26 @@ class Tryout extends CI_Controller
         $all_tryout = $this->tryout->get('many', ['for_bimbel' => 0]);
         $tryout = [];
         $mytryout = [];
-
-
+        
         foreach ($all_tryout as $to) {
             $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $to['slug'], '*', $user);
             if ($user_tryout) {
+                if (isset($user_tryout['user_id'])) {
+                    $transaction = $this->transaction->get('one', ['id'=>$user_tryout['transaction_id']]);
+                    if ($transaction) {
+                        if ($transaction['transaction_status'] == 'settlement') {
+                            array_push($tryout, $to);
+                            array_push($mytryout, $user_tryout);
+                            continue;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        array_push($tryout, $to);
+                        array_push($mytryout, $user_tryout);
+                        continue;
+                    }
+                }
                 array_push($tryout, $to);
                 array_push($mytryout, $user_tryout);
             }

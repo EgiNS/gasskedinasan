@@ -192,7 +192,6 @@
                             <th class="text-center" style="vertical-align: middle;">Email</th>
                             <th class="text-center" style="vertical-align: middle;">No.WA</th>
                             <th class="text-center" style="vertical-align: middle;">Urutan Daftar</th>
-                            <th class="text-center" style="vertical-align: middle;">Harga Beli</th>
                             <th class="text-center" style="vertical-align: middle;">Premium</th>
                             <?php if (isset($all_user[0]['transaction_id'])) : ?>
                                 <th class="text-center" style="vertical-align: middle;">Jumlah Bayar</th>
@@ -219,7 +218,7 @@
                             <?php else: ?>
                                 <th class="text-center"><?= $index + 1; ?></th>
                             <?php endif ?>
-                            <th class="text-center"><?= $au['jumlah_pembayaran']; ?></th>
+                            <th class="text-center"><?= $au['name']; ?></th>
                             <th class="text-center"><?= $au['email']; ?></th>
                             <th class="text-center"><?= $au['no_wa']; ?></th>
                             <th class="text-center"><?= $au['id']; ?></th>
@@ -227,7 +226,6 @@
                                 <th class="text-center">
                                     Rp <?=  number_format($au['gross_amount'],0,',','.') ?>
                                 </th>
-\
                             <?php endif; ?>
                             <td class="text-center">
                                     <?php if ($au['freemium'] == 1) : ?>
@@ -241,9 +239,6 @@
                                         <input type="checkbox" disabled>
                                     <?php endif; ?>
                                 </td>
-                            <?php if (isset($au['transaction_id'])) : ?>
-                                <th class="text-center"><?= number_format($au['gross_amount'], 0, ',', '.'); ?></th>
-                            <?php endif ?>
                             <?php if ($tryout['kode_refferal']) : ?>
                                 <th class="text-center"><?= $au['refferal']; ?></th>
                             <?php endif ?>
@@ -456,7 +451,7 @@
                     <label for="ket_display">Isikan keterangan</label>
                    <textarea class="form-control" name="ket_display" id="ket_display" cols="10" rows="5"
                         placeholder="Keterangan tryout... (opsional)">
-                        <?= isset($show->keterangan) ? htmlspecialchars($show->keterangan) : '' ?>
+                        <?= isset($show->keterangan) ? $show->keterangan : '' ?>
                     </textarea>
                 </div>
                 <div class="modal-footer">
