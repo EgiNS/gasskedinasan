@@ -155,7 +155,7 @@
                       </p>
                       <div class="mt-auto d-flex justify-content-between align-items-center">
                         <small class="fw-medium"><?= 'Status: ' . ($item['status'] == 1 ? 'Release' : ($item['status'] == 2 ? 'Drawn' : 'Not release yet')); ?></small>
-                        <a href="<?= base_url('admin/detailtryout/') . $item['slug']; ?>" class="btn btn-sm btn-primary rounded">Detail</a>
+                        <a href="<?= base_url('admin/tryout/') . $item['slug']; ?>" class="btn btn-sm btn-primary rounded">Detail</a>
                       </div>
                     </div>
                   </div>
