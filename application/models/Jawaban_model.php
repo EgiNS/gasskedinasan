@@ -80,10 +80,31 @@ class Jawaban_model extends CI_Model
         return $result->num_rows();
     }
 
-    public function getLastRow($key, $slug) {
+    public function getLastRow($key, $slug, $user = null) {
+        $table = $this->table . $slug;
+        $fields = $this->db->list_fields($table);
+        
+        $where = [];
+        
+        if (isset($key['user_id'])) {
+            if (in_array('user_id', $fields)) {
+                $where['user_id'] = $key['user_id'];
+            } else if (in_array('email', $fields) && isset($user->email)) {
+                $where['email'] = $user->email;
+            }
+        } else if (isset($key['email'])) {
+            if (in_array('email', $fields)) {
+                $where['email'] = $key['email'];
+            } else if (in_array('user_id', $fields) && isset($user->id)) {
+                $where['user_id'] = $user->id;
+            }
+        } else {
+            $where = $key;
+        }
+        
         $this->db->select('id');
-        $this->db->from($this->table . $slug);
-        $this->db->where($key); // bisa pakai filter tambahan jika perlu
+        $this->db->from($table);
+        $this->db->where($where);
         $this->db->order_by('id', 'DESC');
         $this->db->limit(1);
         $query = $this->db->get();
