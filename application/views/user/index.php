@@ -39,8 +39,11 @@
                         <div class="col-md-8">
                             <div class="card-body">
                                 <h5 class="card-title"><?= $user->name; ?></h5>
-                                <p class="card-text"><?= $user->email; ?></p>
-                                <p class="card-text"><?= $user->no_wa; ?></p>
+                                <p class="card-text"><i class="ti ti-mail"></i> <?= $user->email; ?></p>
+                                <p class="card-text"><i class="ti ti-brand-whatsapp"></i> <?= $user->no_wa; ?></p>
+                                <?php if (isset($user->kedinasan_tujuan) && !empty($user->kedinasan_tujuan)): ?>
+                                <p class="card-text"><i class="ti ti-building"></i> <?= $user->kedinasan_tujuan; ?></p>
+                                <?php endif; ?>
 
                                 <!-- Divider -->
                                 <hr class="sidebar-divider">

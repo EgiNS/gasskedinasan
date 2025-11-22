@@ -58,6 +58,16 @@
                 </div>
 
                 <div class="form-group row mb-2">
+                    <label for="kedinasan_tujuan" class="col-sm-2 col-form-label">Kedinasan Tujuan</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="kedinasan_tujuan" name="kedinasan_tujuan" 
+                            value="<?= isset($user->kedinasan_tujuan) ? $user->kedinasan_tujuan : ''; ?>"
+                            autocomplete="off" placeholder="Contoh: Kementerian Keuangan">
+                        <?= form_error('kedinasan_tujuan', '<small class="text-danger pl-3">', '</small>'); ?>
+                    </div>
+                </div>
+
+                <div class="form-group row mb-2">
                     <div class="col-sm-2">Picture</div>
                     <div class="col-sm-10">
                         <div class="row">
