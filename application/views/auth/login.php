@@ -13,7 +13,7 @@
 </style>
 <div class="container-fluid ">
     <div class="row vh-100">
-        <div class="col ">
+        <div class="col d-none d-lg-block">
             <div class="d-flex flex-column justify-content-center align-items-center vh-100">
                 <img src="assets/assets_lp/img/gass/logo0.png" style="width:300px;" class="ml-4">
                 <p class="text-xl">Masuk ke aplikasi Gass Kedinasan adalah langkah awal perjalananan karirmu.</p>
@@ -23,8 +23,10 @@
             <form action="<?= base_url("/auth") ?>" method="POST">
             <div class="d-flex flex-column align-items-center justify-content-center vh-100">
 
-
-                    <div class="bg-white w-50 p-4 rounded shadow-lg">
+                    <div class="d-flex d-lg-none align-items-center mb-4">
+                        <img style="width: 80px" src="<?= base_url('assets/assets_lp/img/gass/Gass_Putih.png') ?>" alt="">
+                    </div>
+                    <div class="bg-white w-80 w-lg-50 p-4 rounded shadow-lg">
 
                         <h3 class="text-center text-3xl mb-4 font-bold">Login </h3>
                         <?= $this->session->flashdata('message'); ?>
@@ -39,7 +41,7 @@
                             <input name="password" type="password" class="form-control">
                         </div>
                         <div class="my-2 d-flex justify-content-end">
-                            <a  href="" class="text-blue">
+                            <a  href="<?= base_url('auth/forgotpassword') ?>" class="text-blue">
                                 Lupa Password?
                             </a>
                         </div>

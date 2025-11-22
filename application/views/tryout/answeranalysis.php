@@ -115,6 +115,16 @@ body {
   width: 1.5rem;
 }
 
+.custom-control-label p,
+.custom-control-label div,
+.custom-control-label span {
+font-size: 1rem;
+  margin: 0;                 /* Hilangkan margin bawaan <p> */
+  padding: 0;
+  display: inline;           /* Biar tetap sejajar teks */
+  line-height: 1.5;
+}
+
 /* Responsif & rapih */
 .custom-control {
   margin-bottom: 0.75rem;
@@ -231,6 +241,12 @@ body {
   font-size: 1.1rem;
   margin-top: 0.2rem;
 }
+
+.pembahasan-text p{
+  font-size: 1.2em;
+  text-align: justify;
+}
+
 /* Responsive tweak */
 @media (max-width: 992px) {
   #petaSoalPC {
@@ -940,7 +956,7 @@ body {
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_salah" type="radio" name="pilihan" disabled>
                             <label for="jawaban_salah" class="custom-control-label"
-                                style="background-color: #fee2e2; color: #b91c1c; border-color: #fca5a5; font-weight: bold;"><?= $soal[$i]; ?> <span class="badge text-bg-secondary rounded">Your
+                                style="background-color: #fee2e2; color: #b91c1c; border-color: #fca5a5; font-weight: bold;"><?= $soal[$i]; ?> <span class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span></label>
                             <?php else : ?>
                             <input class="custom-control-input input" id="jawaban_salah" type="radio" name="pilihan" disabled>
@@ -951,7 +967,7 @@ body {
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_tkp" type="radio" name="pilihan" checked>
                             <label for="jawaban_tkp" class="custom-control-label"><?= $soal[$i]; ?> <span
-                                style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded">Your
+                                style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span></label>
                             <?php else : ?>
                             <input class="custom-control-input input" id="jawaban_tkp" type="radio" name="pilihan" disabled>
@@ -1016,7 +1032,7 @@ body {
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_salah" type="radio" name="pilihan" disabled>
                             <label for="jawaban_salah" class="custom-control-label" style="background-color: #fee2e2; color: #b91c1c; border-color: #fca5a5; font-weight: bold;"><span
-                                    class="badge text-bg-secondary rounded">Your
+                                    class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span>
                                 <br>
                                 <div class="col-md-7">
@@ -1035,7 +1051,7 @@ body {
                             <?php else : ?>
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_tkp" type="radio" name="pilihan" checked>
-                            <label for="jawaban_tkp" class="custom-control-label"> <span style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded">Your
+                            <label for="jawaban_tkp" class="custom-control-label"> <span style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span>
                                 <div class="col-md-7">
                                     <img src="<?= base_url('assets/img/soal/') . $soal[$i]; ?>" class="img-fluid rounded-start">
@@ -1120,7 +1136,7 @@ body {
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_salah" type="radio" name="pilihan" disabled>
                             <label for="jawaban_salah" class="custom-control-label"
-                                style="background-color: #fee2e2; color: #b91c1c; border-color: #fca5a5; font-weight: bold;"><?= $soal[$i]; ?> <span class="badge text-bg-secondary rounded">Your
+                                style="background-color: #fee2e2; color: #b91c1c; border-color: #fca5a5; font-weight: bold;"><?= $soal[$i]; ?> <span class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span></label>
                             <?php else : ?>
                             <input class="custom-control-input input" id="jawaban_salah" type="radio" name="pilihan" disabled>
@@ -1131,7 +1147,7 @@ body {
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_tkp" type="radio" name="pilihan" checked>
                             <label for="jawaban_tkp" class="custom-control-label"><?= $soal[$i]; ?> <span
-                                    style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded">Your
+                                    style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span></label>
                             <?php else : ?>
                             <input class="custom-control-input input" id="jawaban_tkp" type="radio" name="pilihan" disabled>
@@ -1194,7 +1210,7 @@ body {
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_salah" type="radio" name="pilihan" disabled>
                             <label for="jawaban_salah" class="custom-control-label" style="background-color: #fee2e2; color: #b91c1c; border-color: #fca5a5; font-weight: bold;"> <span
-                                    class="badge text-bg-secondary rounded">Your
+                                    class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span>
                                 <br>
                                 <div class="col-md-7">
@@ -1213,7 +1229,7 @@ body {
                             <?php else : ?>
                             <?php if ($jawaban[$id] == $data[$i]) : ?>
                             <input class="custom-control-input input" id="jawaban_tkp" type="radio" name="pilihan" checked>
-                            <label for="jawaban_tkp" class="custom-control-label"> <span style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded">Your
+                            <label for="jawaban_tkp" class="custom-control-label"> <span style="background-color: #fef9c3; color: #92400e; border-color: #fde68a; box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.5);" class="badge text-bg-secondary rounded-pill fs-6 px-2 py-1">Your
                                     Answer</span>
                                 <div class="col-md-7">
                                     <img src="<?= base_url('assets/img/soal/') . $soal[$i]; ?>" class="img-fluid rounded-start">
@@ -1271,7 +1287,7 @@ body {
                         <br>
                         <?php endif; ?>
                         <?php if ($pembahasan) : ?>
-                        <p class="" style="color: black; font-size: 125%; text-align: justify;"><?= $pembahasan; ?></p>
+                        <div class="pembahasan-text"><?= $pembahasan; ?></div>
                         <?php endif; ?>
 
                         <div class="text-center my-4">

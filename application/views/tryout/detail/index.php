@@ -88,26 +88,51 @@
                                         Jangan lupa bergabung ke grup belajarnya! 📚
                                     </div>
                                 <?php else : ?>
-                                    <?php if ($tryout['freemium'] == 1) : ?>
-                                            <button type="button" class="btn btn-primary rounded-pill"
+                                    <div class="d-grid gap-2 mb-3">
+                                    <?php if ($tryout['kode_refferal']) : ?>
+                                            <?php if ($tryout['freemium'] == 1) : ?>
+                                                <button type="button" class="btn btn-primary rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#refferalModal">
+                                                Daftar Premium
+                                                </button>
+                                                <button type="button" class="btn  btn-outline-secondary rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                Daftar Gratis
+                                                </button>
+                                            <?php elseif ($tryout['paid'] == 1) : ?>
+                                                <button type="button" class="btn btn-primary rounded-pill"
+                                                    data-bs-toggle="modal" data-bs-target="#refferalModal">
+                                                    Daftar
+                                                </button>
+                                            <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
+                                                <button type="button" class="btn btn-primary rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                Daftar Gratis
+                                                </button>
+                                            <?php endif; ?>
+                                    <?php else : ?>
+                                        <?php if ($tryout['freemium'] == 1) : ?>
+                                                <button type="button" class="btn btn-primary rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                                Daftar Premium
+                                                </button>
+                                                <button type="button" class="btn  btn-outline-secondary rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                Daftar Gratis
+                                                </button>
+                                            <?php elseif ($tryout['paid'] == 1) : ?>
+                                                <button type="button" class="btn btn-primary rounded-pill"
                                                     data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                                            Daftar Premium
-                                            </button>
-                                            <button type="button" class="btn btn-outline-secondary rounded-pill"
-                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                            Daftar Gratis
-                                            </button>
-                                        <?php elseif ($tryout['paid'] == 1) : ?>
-                                            <button type="button" class="btn btn-primary rounded-pill"
-                                                data-bs-toggle="modal" data-bs-target="#freemiumModal">
-                                                Daftar
-                                            </button>
-                                        <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
-                                            <button type="button" class="btn btn-primary rounded-pill"
-                                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                            Daftar Gratis
-                                            </button>
-                                        <?php endif; ?>
+                                                    Daftar
+                                                </button>
+                                            <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>
+                                                <button type="button" class="btn btn-primary rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                Daftar Gratis
+                                                </button>
+                                            <?php endif; ?>
+                                    <?php endif; ?>
+                                    </div>
                                 <?php endif; ?>
 
 
@@ -120,6 +145,12 @@
                                             <h2 class="fw-bold text-primary mb-2">
                                                 <?= 'Rp ' . number_format($tryout['harga'], 0, null, '.') . ',-'; ?>
                                             </h2>
+                                            <?php if ($tryout['freemium'] == 1) : ?>
+                                                <div class="alert alert-warning small text-center" role="alert">
+                                                    Silakan <strong>Daftar Premium</strong> untuk mendapatkan
+                                                    <em>answer analysis</em> & pembahasan lengkap!
+                                                </div>
+                                            <?php endif; ?>
                                         <?php else : ?>
                                             <?php if ($tryout['freemium'] == 0) : ?>
                                                 <h2 class="fw-bold text-success mb-2">GRATIS 🎉</h2>

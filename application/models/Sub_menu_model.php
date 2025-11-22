@@ -32,14 +32,31 @@ class Sub_menu_model extends CI_Model
         $data = $this->db->query($query)->result_array();
         return $data;
     }
-
+    
     public function getForSidebar($menu_id, $role_id, $select = '*')
     {
         $this->db->select($select);
-        $this->db->join('user_access_sub_menu', 'user_access_sub_menu.sub_menu_id = ' . $this->table . '.id');
+        $this->db->join(
+            'user_access_sub_menu', 
+            'user_access_sub_menu.sub_menu_id = ' . $this->table . '.id'
+        );
+
         $this->db->where('user_access_sub_menu.role_id', $role_id);
-        $this->db->where([$this->table . '.menu_id' => $menu_id, $this->table . '.menu_id !=' => 5, $this->table . '.is_active' => 1]);
-        $this->db->order_by('sub_menu_id', 'ASC');
+        $this->db->where([
+            $this->table . '.menu_id'   => $menu_id,
+            $this->table . '.menu_id !=' => 5,
+            $this->table . '.is_active' => 1
+        ]);
+
+        // Manipulasi urutan jika menu_id = 2
+        if ($menu_id == 2) {
+            // Prioritaskan submenu id 27 di posisi pertama
+            $this->db->order_by("(CASE WHEN {$this->table}.id = 27 THEN 0 ELSE 1 END)", "ASC");
+        }
+
+        // Urutan default untuk semua submenu
+        $this->db->order_by("{$this->table}.id", "ASC");
+
         return $this->db->get($this->table)->result_array();
     }
 

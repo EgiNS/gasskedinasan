@@ -112,17 +112,23 @@ class Tryout extends CI_Controller
 
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
-        $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
         $payment_status = '';
-        if ($pendaftar['transaction_status'] == 'settlement') {
-            $payment_status = 'settlement';
-
-        } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
-            $payment_status = 'pending';
-        } else {
-            $payment_status = 'expired';
-        }
+        if ($this->db->field_exists('user_id', 'user_tryout_' . $slug)) {
+            $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
+            if ($pendaftar) {
+                if ($pendaftar['transaction_status'] == 'settlement') {
+                    $payment_status = 'settlement';
         
+                } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
+                    $payment_status = 'pending';
+                } else {
+                    $payment_status = 'expired';
+                }
+            }
+        } else {
+            $pendaftar = $this->user_tryout->get('one', ['email' => $user->email], $slug);
+        }
+
         $data = [
             'title' => 'Detail ' . $title,
             'breadcrumb_item' => $breadcrumb_item,
@@ -140,7 +146,6 @@ class Tryout extends CI_Controller
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/detail/index', $data);
         $this->load->view('tryout/detail/index', $data);
         $this->load->view('templates/user_footer');
 
@@ -526,11 +531,26 @@ class Tryout extends CI_Controller
         $all_tryout = $this->tryout->get('many', ['for_bimbel' => 0]);
         $tryout = [];
         $mytryout = [];
-
-
+        
         foreach ($all_tryout as $to) {
             $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $to['slug'], '*', $user);
             if ($user_tryout) {
+                if (isset($user_tryout['user_id'])) {
+                    $transaction = $this->transaction->get('one', ['id'=>$user_tryout['transaction_id']]);
+                    if ($transaction) {
+                        if ($transaction['transaction_status'] == 'settlement') {
+                            array_push($tryout, $to);
+                            array_push($mytryout, $user_tryout);
+                            continue;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        array_push($tryout, $to);
+                        array_push($mytryout, $user_tryout);
+                        continue;
+                    }
+                }
                 array_push($tryout, $to);
                 array_push($mytryout, $user_tryout);
             }
