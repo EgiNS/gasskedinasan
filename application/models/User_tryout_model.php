@@ -215,6 +215,7 @@ class User_tryout_model extends CI_Model
             `total` int(11) DEFAULT NULL,
             `pengerjaan` int(11) DEFAULT 1,
             `source_type` enum('tryout','event','paket_to') NOT NULL DEFAULT 'tryout',
+            `source_id` int(11) DEFAULT NULL,
             `created_at` datetime NOT NULL DEFAULT current_timestamp(),
             `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
              PRIMARY KEY (`id`),
@@ -242,6 +243,7 @@ class User_tryout_model extends CI_Model
             `created_at` datetime NOT NULL DEFAULT current_timestamp(),
             `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
             `source_type` enum('tryout','event','paket_to') NOT NULL DEFAULT 'tryout',
+            `source_id` int(11) DEFAULT NULL,
             PRIMARY KEY (`id`),
                          CONSTRAINT `fk_user_tryout_user_{$slug}` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
              CONSTRAINT `fk_user_tryout_transaction_{$slug}` FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON DELETE CASCADE

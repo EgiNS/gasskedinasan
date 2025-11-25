@@ -189,7 +189,7 @@ class PaketTo extends CI_Controller
                     ]
                 );
                 $this->user_tryout->insertUserTryoutMultiSlug(
-                    ['user_id' => $user->id, 'transaction_id' => $transaction_id,'token'=> 11111, 'status' => 0, 'freemium' => 1,'source_type'=>'paket_to','source_id'=>$paket_to['id']], 
+                    ['user_id' => $user->id, 'transaction_id' => $transaction_id,'token'=> 11111, 'status' => 0, 'freemium' => 1,'source_type'=>'paket_to', 
                     $paket_to['tryouts']
                 );
 

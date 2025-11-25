@@ -422,7 +422,8 @@ class PaketTo extends CI_Controller
                     // Delete from user_tryout_{slug} table where user_id, source_type='paket_to', source_id=paket_to_id
                     $this->db->where([
                         'user_id' => $user_id,
-                        'source_type' => 'paket_to'
+                        'source_type' => 'paket_to',
+                        'source_id' => $paket_to_id
                     ]);
                     
                     // Add condition for source_id if column exists (some tables might have source_id column)
