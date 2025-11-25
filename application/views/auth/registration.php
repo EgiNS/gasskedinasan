@@ -103,9 +103,15 @@
                                 </label>
                                 <select class="form-select" name="kedinasan" aria-label="Default select example">
                                     <option selected disabled>Pilih Kedinasan Tujuan</option>
-                                    <option value="1">Polstat STIS</option>
-                                    <option value="2">PKN STAN</option>
-                                    <option value="3">IPDN</option>
+                                    <option value="Politeknik Keuangan Negara STAN (PKN STAN)">Politeknik Keuangan Negara STAN (PKN STAN)</option>
+                                    <option value="Institut Pemerintahan Dalam Negeri (IPDN)">Institut Pemerintahan Dalam Negeri (IPDN)</option>
+                                    <option value="Politeknik Statistika STIS">Politeknik Statistika STIS</option>
+                                    <option value="Sekolah Tinggi Intelijen Negara (STIN)">Sekolah Tinggi Intelijen Negara (STIN)</option>
+                                    <option value="Politeknik Siber dan Sandi Negara (Poltek SSN)">Politeknik Siber dan Sandi Negara (Poltek SSN)</option>
+                                    <option value="Sekolah Tinggi Meteorologi Klimatologi dan Geofisika (STMKG)">Sekolah Tinggi Meteorologi Klimatologi dan Geofisika (STMKG)</option>
+                                    <option value="Politeknik Pengayoman Indonesia (Poltekpin)">Politeknik Pengayoman Indonesia (Poltekpin)</option>
+                                    <option value="Sekolah Tinggi Ilmu Pelayaran (STIP)">Sekolah Tinggi Ilmu Pelayaran (STIP)</option>
+                                    <option value="Politeknik Transportasi Darat Indonesia (PTDI-STTD)">Politeknik Transportasi Darat Indonesia (PTDI-STTD)</option>
                                 </select>
                                 <?= form_error('kedinasan', '<small class="text-danger pl-3">', '</small>'); ?>
                             </div>
