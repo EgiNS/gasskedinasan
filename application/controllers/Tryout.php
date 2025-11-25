@@ -114,7 +114,6 @@ class Tryout extends CI_Controller
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
         $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
         
-
         $payment_status = '';
         
         if ($pendaftar) {

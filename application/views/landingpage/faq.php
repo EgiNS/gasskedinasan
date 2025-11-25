@@ -36,7 +36,7 @@
         }
 </style>
 
-<div class="container-fluid gk-bg-faq faq-section" style="padding: 70px 100px;">
+<div id="id-faq-section" class="container-fluid gk-bg-faq faq-section" style="padding: 70px 100px;">
     <div class=" text-center">
         <h3 class="gk-h3">
             Pertanyaan yang Sering Ditanyakan

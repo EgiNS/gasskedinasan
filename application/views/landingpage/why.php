@@ -93,7 +93,7 @@
 
 </style>
 
-<div class="container-fluid why-bg d-flex justify-content-center align-items-stretch overflow-hidden">
+<div id="keunggulan-section" class="container-fluid why-bg d-flex justify-content-center align-items-stretch overflow-hidden">
   <div class="why-left text-white">
     <h1 class="why-title">Kenapa Harus <br> Gass Education?</h1>
     <p class="why-desc">

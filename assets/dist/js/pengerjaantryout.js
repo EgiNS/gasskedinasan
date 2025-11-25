@@ -261,19 +261,19 @@ $(function () {
 
   $(".selesai").on("click", function (e) {
     const tryout = $(this).data("tryout");
-    const kosong = $(".btn-danger").length;
-    if (document.getElementById("ragu-ragu").innerHTML != "Ragu-Ragu") {
-      ragu_ragu = $(".btn-warning").length;
-    } else {
-      ragu_ragu = $(".btn-warning").length - 1;
-    }
-    // const ragu_ragu = $('.btn-warning').length - 1;
+    const kosong = $("#petaSoalPC .btn-danger").length;
+    // if (document.getElementById("ragu-ragu").innerHTML != "Ragu-Ragu") {
+    //   ragu_ragu = $("#petaSoalPC .btn-warning").length;
+    // } else {
+    //   ragu_ragu = $("#petaSoalPC .btn-warning").length - 1;
+    // }
+    const ragu_ragu = $('#petaSoalPC .btn-warning').length;
 
-    // if (kosong == 0 && ragu_ragu == 0) var pesan = "";
-    // else if (kosong == 0) var pesan = '<b style="color: red;">Masih ada ' + ragu_ragu + " soal ragu-ragu</b>";
-    // else if (ragu_ragu == 0) var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab</b>";
-    // else var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab dan " + ragu_ragu + " ragu-ragu</b>";
-    var pesan = "";
+    if (kosong == 0 && ragu_ragu == 0) var pesan = "";
+    else if (kosong == 0) var pesan = '<b style="color: red;">Masih ada ' + ragu_ragu + " soal ragu-ragu</b>";
+    else if (ragu_ragu == 0) var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab</b>";
+    else var pesan = '<b style="color: red;">Masih ada ' + kosong + " soal belum dijawab dan " + ragu_ragu + " ragu-ragu</b>";
+    // var pesan = "";
 
     e.preventDefault();
     Swal.fire({

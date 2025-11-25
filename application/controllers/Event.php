@@ -55,13 +55,18 @@ class Event extends CI_Controller
         $total_waktu = 0;
         $event = $this->event->getBySlugWithTryouts($slug);
         $jumlah_peserta = $this->event_pendaftar->getNumEventParticipantWithSuccessTransaction($event['id']);
-        $pendaftar = $this->event_pendaftar->getByEventIdWithTransaction($event['id'], $this->loginUser->id);
         $payment_status = '';
-        if ($pendaftar['transaction_status'] == 'settlement') {
-            $payment_status = 'settlement';
-
-        } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
-            $payment_status = 'pending';
+        $pendaftar = $this->event_pendaftar->getByEventIdWithTransaction($event['id'], $this->loginUser->id);
+        if ($pendaftar) {
+            if (!$pendaftar['freemium']){
+                $payment_status = "free";
+            }
+            else if ($pendaftar['transaction_status'] == 'settlement') {
+                $payment_status = 'settlement';
+    
+            } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
+                $payment_status = 'pending';
+            }
         } else {
             $payment_status = 'expired';
         }

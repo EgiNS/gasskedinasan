@@ -57,13 +57,20 @@ class PaketTo extends CI_Controller
         $jumlah_peserta = $this->pendaftar_to->getNumPaketParticipantWithSuccessTransaction($paket_to['id']);
         $pendaftar = $this->pendaftar_to->getByPacketToIdWithTransaction($paket_to['id'], $this->loginUser->id);
         $payment_status = '';
-        if ($pendaftar['transaction_status'] == 'settlement') {
-            $payment_status = 'settlement';
-        } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
-            $payment_status = 'pending';
+        if ($pendaftar) {
+            if (!$pendaftar['freemium']){
+                $payment_status = "free";
+            }
+            else if ($pendaftar['transaction_status'] == 'settlement') {
+                $payment_status = 'settlement';
+    
+            } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
+                $payment_status = 'pending';
+            }
         } else {
             $payment_status = 'expired';
         }
+
         $is_diskon = false;
         foreach ($paket_to['tryouts'] as $i => $tryout) {
             $user_tryout =  $this->user_tryout->get('one', ['user_id' => $this->loginUser->id], $tryout['slug'], '*');

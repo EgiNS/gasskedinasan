@@ -124,7 +124,7 @@
                                     <?php else : ?>
                                         <?php if ($tryout['freemium'] == 1) : ?>
                                                 <button type="button" class="btn btn-primary rounded-pill"
-                                                        data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                                        data-bs-toggle="modal" data-bs-target="#pembayaranModal">
                                                 Daftar Premium
                                                 </button>
                                                 <button type="button" class="btn  btn-outline-secondary rounded-pill"
@@ -133,7 +133,7 @@
                                                 </button>
                                             <?php elseif ($tryout['paid'] == 1) : ?>
                                                 <button type="button" class="btn btn-primary rounded-pill"
-                                                    data-bs-toggle="modal" data-bs-target="#freemiumModal">
+                                                    data-bs-toggle="modal" data-bs-target="#pembayaranModal">
                                                     Daftar
                                                 </button>
                                             <?php elseif ($item['paid'] == 0 && $item['freemium'] == 0): ?>

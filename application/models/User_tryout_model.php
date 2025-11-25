@@ -240,6 +240,7 @@ class User_tryout_model extends CI_Model
             `bukti` varchar(256) DEFAULT NULL,
             `refferal` varchar(256) DEFAULT NULL,
             `nilai` int(11) DEFAULT NULL,
+            `pengerjaan` int(11) DEFAULT 1,
             `created_at` datetime NOT NULL DEFAULT current_timestamp(),
             `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
             `source_type` enum('tryout','event','paket_to') NOT NULL DEFAULT 'tryout',
@@ -314,19 +315,33 @@ class User_tryout_model extends CI_Model
 
     public function getRankingnonSKD($slug, $select = '*')
     {
+        $table = $this->table . $slug;
+
+        // Cek apakah kolom user_id ada
+        $useUserId = $this->db->field_exists('user_id', $table);
+
+        if ($useUserId) {
+            $field = 'user_id';
+            $u_field = 'id';
+        } else {
+            $field = 'email';
+            $u_field = 'email';
+        }
+
         $query = $this->db->query("
             SELECT ut.*, u.*
             FROM (
-                SELECT * FROM {$this->table}{$slug} ut1
+                SELECT * FROM {$table} ut1
                 WHERE id IN (
-                    SELECT MIN(id) FROM {$this->table}{$slug}
+                    SELECT MIN(id) FROM {$table}
                     WHERE nilai IS NOT NULL
-                    GROUP BY email
+                    GROUP BY {$field}
                 )
             ) ut
-            JOIN user u ON u.email = ut.email
+            JOIN user u ON u.{$u_field} = ut.{$field}
             ORDER BY ut.nilai DESC
         ");
+
         return $query->result_array();
     }
 

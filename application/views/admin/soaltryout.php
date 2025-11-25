@@ -51,8 +51,11 @@
                 Baru</a>
             <a href="<?= base_url('admin/generatedummysoal/') . $slug . '?' . $page; ?>"
                 class="btn rounded btn-primary btn-sm mb-3 submit">Generate Dummy Soal</a>
+
+            <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
             <button type="button" class="btn rounded btn-primary btn-sm mb-3 tampilModalUbahTryout"
                 data-id="<?= $tryout['id']; ?>" data-bs-toggle="modal" data-bs-target="#imporModal">Impor Soal</button>
+            <?php endif; ?>
 
             <!-- BOBOT NILAI -->
             <?php if ($tryout['tipe_tryout'] == 'nonSKD') : ?>

@@ -43,7 +43,7 @@
         }
     }
 </style>
-<div class="container-fluid overflow-hidden testimoni-section" style="padding: 50px 100px;">
+<div id="id-testimoni-section" class="container-fluid overflow-hidden testimoni-section" style="padding: 50px 100px;">
     <h3 class="text-dark text-center" style="font-size: 36px; margin-bottom: 20px;">Cerita Sukses dari Mereka yang Sudah Lolos</h3>
     <p class="text-center text-dark" style="font-size: 18px; margin-bottom: 60px;"> Ribuan pelajar sudah berhasil menembus sekolah kedinasan berkat bimbingan di Gass Education. Berikut kisah inspiratif mereka.</p>
     

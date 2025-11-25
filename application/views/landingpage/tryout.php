@@ -28,7 +28,7 @@
 
 </style>
 
-<div class="container-fluid text-dark tryout-section" style="padding: 50px 100px;">
+<div id="id-tryout-section" class="container-fluid text-dark tryout-section" style="padding: 50px 100px;">
 
     <!-- Bagian Judul + List -->
     <div class="d-flex mb-0 mb-lg-5 flex-column flex-lg-row-reverse align-items-center responsive-gap">
@@ -74,9 +74,9 @@
                 <?= $show->keterangan ?>
             </div>
 
-            <button class="btn btn-blue" style="padding: 16px 28px; font-size: 16px;">
+            <a href="<?= base_url("/auth/registration") ?>" class="btn btn-blue" style="padding: 16px 28px; font-size: 16px;">
                 Daftar Sekarang <span><i class="fas fa-arrow-right"></i></span>
-            </button>
+            </a>
         </div>
 
     </div>

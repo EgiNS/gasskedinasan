@@ -23,7 +23,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                 <h3 class="fw-bold mb-1">Selamat Datang, <?= $user->name ?> 👋</h3>
-                <div class="fs-5">Kedinasan impian: <span class="fw-bold text-warning">Politeknik Statistika STIS</span></div>
+                <div class="fs-5">Kedinasan impian: <span class="fw-bold text-warning"><?= $user->kedinasan_tujuan ?></span></div>
                 </div>
                 <div>
                 <!-- <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="70" class="rounded-circle shadow-sm"> -->
@@ -163,7 +163,7 @@
                 },
                 labels: {
                 rotate: -45,
-                style: { fontSize: '12px' }
+                style: { fontSize: '9px' }
                 }
             },
             yaxis: {
