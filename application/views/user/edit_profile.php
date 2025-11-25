@@ -58,13 +58,32 @@
                 </div>
 
                 <div class="form-group row mb-2">
+                  <?php $kedinasan = [
+                    "Politeknik Keuangan Negara STAN (PKN STAN)",
+                    "Institut Pemerintahan Dalam Negeri (IPDN)",
+                    "Politeknik Statistika STIS",
+                    "Sekolah Tinggi Intelijen Negara (STIN)",                   
+                    "Politeknik Siber dan Sandi Negara (Poltek SSN)",
+                    "Sekolah Tinggi Meteorologi Klimatologi dan Geofisika (STMKG)",
+                    "Politeknik Pengayoman Indonesia (Poltekpin)",
+                    "Sekolah Tinggi Ilmu Pelayaran (STIP)",
+                    "Politeknik Transportasi Darat Indonesia (PTDI-STTD)"
+                  ]; ?>
                     <label for="kedinasan_tujuan" class="col-sm-2 col-form-label">Kedinasan Tujuan</label>
                     <div class="col-sm-10">
+                    <select class="form-select col-sm-10" name="kedinasan_tujuan" id="kedinasan_tujuan">
+                      <?php foreach($kedinasan as $kd) : ?>
+                        <option value="<?= $kd; ?>" <?= (isset($user->kedinasan_tujuan) && $user->kedinasan_tujuan == $kd) ? 'selected' : ''; ?>><?= $kd; ?></option>
+                      <?php endforeach; ?>
+                      
+                    </select>
+                    </div>
+                    <!-- <div class="col-sm-10">
                         <input type="text" class="form-control" id="kedinasan_tujuan" name="kedinasan_tujuan" 
                             value="<?= isset($user->kedinasan_tujuan) ? $user->kedinasan_tujuan : ''; ?>"
                             autocomplete="off" placeholder="Contoh: Kementerian Keuangan">
                         <?= form_error('kedinasan_tujuan', '<small class="text-danger pl-3">', '</small>'); ?>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="form-group row mb-2">
