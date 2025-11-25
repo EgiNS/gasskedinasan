@@ -38,9 +38,15 @@ class User_tryout_model extends CI_Model
         $this->db->select($select);
         return $this->db->get($this->table . $slug)->result_array();
     }
-    public function getByTryoutIdWithTransaction($slug,$user_id)
+    public function getByTryoutIdWithTransaction($slug, $user_id, $user_email = null)
     {
         $user_tryout_table = $this->table . $slug;
+        
+        // Check which column exists
+        $fields = $this->db->list_fields($user_tryout_table);
+        $has_user_id = in_array('user_id', $fields);
+        $has_email = in_array('email', $fields);
+        
         $this->db->select('
         ' . $user_tryout_table . '.id,
         ' . $user_tryout_table . '.freemium,
@@ -51,7 +57,12 @@ class User_tryout_model extends CI_Model
         $this->db->from($user_tryout_table);
         $this->db->join('transactions tr', $user_tryout_table . '.transaction_id = tr.id', 'left');
 
-        $this->db->where($user_tryout_table . '.user_id', $user_id);
+        // Use user_id if column exists, otherwise use email
+        if ($has_user_id) {
+            $this->db->where($user_tryout_table . '.user_id', $user_id);
+        } else if ($has_email && $user_email !== null) {
+            $this->db->where($user_tryout_table . '.email', $user_email);
+        }
 
         $query = $this->db->get();
         return $query->row_array();
@@ -220,8 +231,9 @@ class User_tryout_model extends CI_Model
         $tabel_user_tryout = $this->table . $slug;
         $sql_tabel_user_tryout = "CREATE TABLE `$tabel_user_tryout` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
-            `email` varchar(256) NOT NULL,
+            `user_id` int(11) NOT NULL,
             `token` int(11) DEFAULT NULL,
+            `transaction_id` int(11) DEFAULT NULL,
             `status` int(11) DEFAULT 0,
             `freemium` int(11) DEFAULT 0,
             `bukti` varchar(256) DEFAULT NULL,
@@ -230,7 +242,9 @@ class User_tryout_model extends CI_Model
             `created_at` datetime NOT NULL DEFAULT current_timestamp(),
             `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
             `source_type` enum('tryout','event','paket_to') NOT NULL DEFAULT 'tryout',
-            PRIMARY KEY (`id`)
+            PRIMARY KEY (`id`),
+                         CONSTRAINT `fk_user_tryout_user_{$slug}` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
+             CONSTRAINT `fk_user_tryout_transaction_{$slug}` FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON DELETE CASCADE
         ) ENGINE=InnoDB";
 
         $this->db->query($sql_tabel_user_tryout);
@@ -318,15 +332,27 @@ class User_tryout_model extends CI_Model
     {
         $slug_table = 'user_tryout_' . $slug;
 
+        // Check which column exists
+        $checkColumn = $this->db->query("SHOW COLUMNS FROM {$slug_table} LIKE 'user_id'");
+        $useUserId = $checkColumn->num_rows() > 0;
+
+        if ($useUserId) {
+            $groupByField = 'user_id';
+            $joinCondition = "u.id = ut.user_id";
+        } else {
+            $groupByField = 'email';
+            $joinCondition = "u.email = ut.email";
+        }
+
         $subquery = "
             SELECT MIN(id) AS min_id
             FROM {$slug_table}
-            GROUP BY email
+            GROUP BY {$groupByField}
         ";
 
-        $this->db->select('user.*, ut.*');
-        $this->db->from('user');
-        $this->db->join("({$slug_table} ut)", "user.email = ut.email");
+        $this->db->select('u.*, ut.*');
+        $this->db->from('user u');
+        $this->db->join("({$slug_table} ut)", $joinCondition);
         $this->db->where("ut.id IN ({$subquery})");
         $this->db->order_by('ut.nilai', 'DESC');
 

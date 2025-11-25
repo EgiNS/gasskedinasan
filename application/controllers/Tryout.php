@@ -112,8 +112,10 @@ class Tryout extends CI_Controller
 
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
-        $payment_status = '';
         $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
+        
+        $payment_status = '';
+        
         if ($pendaftar) {
             if (!$pendaftar['freemium']){
                 $payment_status = "free";
@@ -127,6 +129,7 @@ class Tryout extends CI_Controller
         } else {
             $payment_status = 'expired';
         }
+        
 
         $data = [
             'title' => 'Detail ' . $title,
@@ -580,8 +583,17 @@ class Tryout extends CI_Controller
     {
         $user = $this->loginUser;
         $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $slug);
-        if ($user_tryout)
+        if ($user_tryout && $user_tryout['freemium'] == 1) {
+
+            $this->user_tryout->update(
+                [ 'freemium' => 0],
+                ['user_id' => $user->id],
+                $slug);
+                $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+            }
+        else if ($user_tryout && $user_tryout['freemium'] == 0) {
             $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
+        }
         else {
             $data = [
                 'user_id' => $user->id,
@@ -648,8 +660,8 @@ class Tryout extends CI_Controller
 
         $custom_expiry = array(
             'start_time' => date("Y-m-d H:i:s O", time()),
-            'unit' => 'hour',
-            'duration'  => 2
+            'unit' => 'minute',
+            'duration'  => 1
         );
         $data = [
             'user_id' => $user->id,
@@ -691,7 +703,7 @@ class Tryout extends CI_Controller
             $snapToken = $this->midtrans->getSnapToken($params);
             $this->transaction->updateByOrderId(
                 $order_id,
-                ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (2 * 60 * 60))]
+                ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (1 * 1 * 60))]
             );
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
@@ -746,8 +758,8 @@ class Tryout extends CI_Controller
 
         $custom_expiry = array(
             'start_time' => date("Y-m-d H:i:s O", time()),
-            'unit' => 'day',
-            'duration'  => 1
+            'unit' => 'hour',
+            'duration'  => 2
         );
         $data = [
             'user_id' => $user->id,
@@ -776,7 +788,7 @@ class Tryout extends CI_Controller
         $snapToken = $this->midtrans->getSnapToken($params);
         $this->transaction->updateByOrderId(
             $order_id,
-            ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (24 * 60 * 60))]
+            ['snap_token' => $snapToken, 'expiry_time' => date("Y-m-d H:i:s", time() + (2 * 60 * 60))]
         );
         echo $snapToken;
     }
