@@ -113,14 +113,17 @@ class Tryout extends CI_Controller
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
         $payment_status = '';
-        if (!$pendaftar['freemium']){
-            $payment_status = "free";
-        }
-        else if ($pendaftar['transaction_status'] == 'settlement') {
-            $payment_status = 'settlement';
-
-        } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
-            $payment_status = 'pending';
+        $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
+        if ($pendaftar) {
+            if (!$pendaftar['freemium']){
+                $payment_status = "free";
+            }
+            else if ($pendaftar['transaction_status'] == 'settlement') {
+                $payment_status = 'settlement';
+    
+            } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
+                $payment_status = 'pending';
+            }
         } else {
             $payment_status = 'expired';
         }

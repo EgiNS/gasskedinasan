@@ -76,6 +76,9 @@ class User extends CI_Controller
             }
         }
 
+        $tryout_names  = array_reverse($tryout_names, false);
+        $tryout_scores = array_reverse($tryout_scores, false);
+
         if (!empty($mytryout)) {
             $jumlah_tryout = count($mytryout);
             $rata_rata = round(array_sum($tryout_scores) / $jumlah_tryout);

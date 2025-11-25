@@ -52,6 +52,7 @@ class Auth extends CI_Controller
             redirect('user');
         }
         $this->form_validation->set_rules('name', 'Name', 'required|trim');
+        $this->form_validation->set_rules('kedinasan', 'Kedinasan', 'required|trim');
         $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email|is_unique[user.email]', [
             'is_unique' => 'This email has already registered!'
         ]);
@@ -69,6 +70,7 @@ class Auth extends CI_Controller
             $this->load->view('templates/auth_footer');
         } else {
             $name = $this->input->post('name', true);
+            $kedinasan = $this->input->post('kedinasan', true);
             $email = $this->input->post('email', true);
             $no_wa =  $this->input->post('no_wa', true);
             $password = $this->input->post('password1');
@@ -106,6 +108,7 @@ class Auth extends CI_Controller
             $data = [
                 'name' => htmlspecialchars($name),
                 'email' => htmlspecialchars($email),
+                'kedinasan_tujuan' => htmlspecialchars($kedinasan),
                 'no_wa' => htmlspecialchars($no_wa),
                 'image' => 'default.jpg',
                 'password' => password_hash($password, PASSWORD_DEFAULT),
@@ -725,7 +728,7 @@ class Auth extends CI_Controller
                             } else if ($user['role_id'] == 8) {
                                 redirect('bimbel/tryout');
                             } else {
-                                redirect('tryout');
+                                redirect('user/dashboard');
                             }
                         } else {
                             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
@@ -768,7 +771,7 @@ class Auth extends CI_Controller
                         } else if ($user['role_id'] == 8) {
                             redirect('bimbel/tryout');
                         } else {
-                            redirect('tryout');
+                            redirect('user/dashboard');
                         }
                     } else {
                         $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');

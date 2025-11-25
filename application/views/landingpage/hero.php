@@ -24,7 +24,7 @@
         }
     }
 </style>
-<div class="container-fluid w-100">
+<div class="container-fluid w-100" style="background-color: #F0F4F8;">
     <div class="d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center hero-section"
          style="gap: 50px; padding: 60px 100px;">
         
@@ -35,13 +35,13 @@
                 Platform yang menyediakan bimbingan belajar berbasis daring khusus Perguruan Tinggi Kedinasan sejak tahun 2021. Gass Education juga menyediakan berbagai konten pembelajaran yang edukatif dan interaktif. Selain itu, tersedia juga try out khusus Perguruan Tinggi Kedinasan yang terbukti efektif dalam mempersiapkan diri untuk seleksi. Gass Education juga menyediakan layanan konsultasi gratis yang berkaitan dengan Perguruan Tinggi Kedinasan.
             </p>
 
-            <button class="btn btn-blue px-3 py-2">
+            <a href="<?= base_url("/auth/registration") ?>" class="btn btn-blue px-3 py-2">
                 Daftar Sekarang <span class="ml-1"><i class="fa-solid fa-arrow-right"></i></span>
-            </button>
+            </a>
         </div>
 
         <div class="w-50 hero-img d-flex justify-content-end align-items-center">
-            <img class="rounded" src="assets/assets_lp/img/gass/hero.jpg" style="width: 80%;" alt="">
+            <img class="rounded shadow-sm" src="assets/assets_lp/img/gass/hero.jpg" style="width: 85%;" alt="">
         </div>
 
     </div>

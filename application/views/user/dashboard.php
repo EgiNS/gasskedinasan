@@ -163,7 +163,7 @@
                 },
                 labels: {
                 rotate: -45,
-                style: { fontSize: '12px' }
+                style: { fontSize: '9px' }
                 }
             },
             yaxis: {
