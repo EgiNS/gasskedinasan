@@ -156,12 +156,7 @@
                                             <h2 class="fw-bold text-primary mb-2">
                                                 <?= 'Rp ' . number_format($tryout['harga'], 0, null, '.') . ',-'; ?>
                                             </h2>
-                                            <?php if ($tryout['freemium'] == 1) : ?>
-                                                <div class="alert alert-warning small text-center" role="alert">
-                                                    Silakan <strong>Daftar Premium</strong> untuk mendapatkan
-                                                    <em>answer analysis</em> & pembahasan lengkap!
-                                                </div>
-                                            <?php endif; ?>
+                                            
                                         <?php else : ?>
                                             <?php if ($tryout['freemium'] == 0) : ?>
                                                 <h2 class="fw-bold text-success mb-2">GRATIS 🎉</h2>

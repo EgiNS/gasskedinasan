@@ -331,6 +331,7 @@ class Event extends CI_Controller{
                     $this->db->where([
                         'user_id' => $user_id,
                         'source_type' => 'event',
+                        'source_id' => $event['id']
                     
                     ]);
                     

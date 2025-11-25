@@ -43,15 +43,35 @@
           <div class="col-sm-12">
             <div class="card">  
               <div class="card-body">
+                 <div class="d-flex justify-content-end mb-3" >
+                  <?php $kedinasan = [
+                    "Politeknik Keuangan Negara STAN (PKN STAN)",
+                    "Institut Pemerintahan Dalam Negeri (IPDN)",
+                    "Politeknik Statistika STIS",
+                    "Sekolah Tinggi Intelijen Negara (STIN)",                   
+                    "Politeknik Siber dan Sandi Negara (Poltek SSN)",
+                    "Sekolah Tinggi Meteorologi Klimatologi dan Geofisika (STMKG)",
+                    "Politeknik Pengayoman Indonesia (Poltekpin)",
+                    "Sekolah Tinggi Ilmu Pelayaran (STIP)",
+                    "Politeknik Transportasi Darat Indonesia (PTDI-STTD)"
+                  ]; ?>
+        <select id="filterKedinasan" class="form-select" >
+            <option value="semua">Semua Kedinasan</option>
+            <?php foreach ($kedinasan as $kd) : ?>
+                <option value="<?= $kd; ?>"><?= $kd; ?></option>
+            <?php endforeach; ?>
+                  </select>
+    </div>
                 <?php if ($tryout['tipe_tryout'] == 'SKD') : ?>
                     <input type="hidden" id="success" data-flashdata="<?= $this->session->flashdata('success'); ?>">
                     <input type="hidden" id="error" data-flashdata="<?= $this->session->flashdata('error'); ?>">
 
-                    <table class="table nowrap table-striped projects" id="tabelwoi">
+                    <table class="table nowrap table-striped projects" id="tabelkoi">
                         <thead>
                             <tr>
                                 <th class="text-center">Peringkat</th>
                                 <th class="text-center">Nama</th>
+                                <th class="text-center">Kedinasan Tujuan</th>
                                 <th class="text-center">TWK</th>
                                 <th class="text-center">TIU</th>
                                 <th class="text-center">TKP</th>
@@ -68,6 +88,7 @@
                                 <td class="text-center"><?= $i; ?></td>
                                 <td class="text-center"><?= ucwords(strtolower($uu['name'])); ?></td>
 
+                                <td class="text-center"><?= $uu['kedinasan_tujuan']; ?></td>
                                 <!--Nilai TWK-->
                                 <td class="btn-success text-center"><?= $uu['twk']; ?></td>
 
@@ -94,6 +115,7 @@
                                 <td class="text-center"><?= $j; ?></td>
                                 <td class="text-center"><?= ucwords(strtolower($uu['name'])); ?></td>
 
+                                <td class="text-center"><?= $uu['kedinasan_tujuan']; ?></td>
                                 <!--Nilai TWK-->
                                 <?php if ($uu['twk'] >= 65) : ?>
                                 <td class="btn-success text-center"><?= $uu['twk']; ?></td>
@@ -125,11 +147,12 @@
                         </tbody>
                     </table>
                 <?php elseif ($tryout['tipe_tryout'] == 'nonSKD') : ?>
-                    <table id="tabelwoi" class="table nowrap table-striped projects">
+                    <table id="tabelkoi" class="table nowrap table-striped projects">
                         <thead>
                             <tr>
                                 <th class="text-center">Peringkat</th>
                                 <th class="text-center">Nama</th>
+                                <th class="text-center">Kedinasan Tujuan</th>
                                 <th class="text-center">Email</th>
                                 <th class="text-center">Nilai</th>
                             </tr>
@@ -140,6 +163,7 @@
                             <tr>
                                 <td class="text-center"><?= $i; ?></td>
                                 <td class="text-center"><?= $ut['name']; ?></td>
+                                <td class="text-center"><?= $ut['kedinasan_tujuan']; ?></td>
                                 <td class="text-center"><?= $ut['email']; ?></td>
                                 <td class="text-center"><?= $ut['nilai']; ?></td>
                             </tr>
@@ -156,4 +180,48 @@
         <!-- [ Main Content ] end -->
       </div>
     </div>
+    <script>
+      $(document).ready(function() {
+       var table = $('#tabelkoi').DataTable({
+        responsive: true,
+        initComplete: function() {
+
+            // Ambil wrapper tempat Search berada
+            let searchWrapper = $('#tabelkoi_wrapper .dt-search');
+
+            // Pindahkan dropdown ke sebelah kiri search
+            $('#filterKedinasan')
+                .detach()
+                .prependTo(searchWrapper)
+                .css({
+                    'margin-right': '15px',
+                    'width': '200px',
+                    'display': 'inline-block'
+                });
+        }
+    });
+
+    // Filter berdasarkan kedinasan tujuan
+    $('#filterKedinasan').on('change', function() {
+        var filterValue = $(this).val();
+        
+        if (filterValue === 'semua') {
+            // Tampilkan semua data
+            table.column(2).search('').draw();
+        } else {
+            // Filter berdasarkan kedinasan tujuan (kolom index 2) - tanpa regex untuk lebih fleksibel
+            table.column(2).search(filterValue, false, true).draw();
+        }
+    });
+    
+    // Update nomor urut setelah setiap draw
+    table.on('draw', function() {
+        var pageInfo = table.page.info();
+        table.column(0, {search: 'applied', order: 'applied', page: 'current'}).nodes().each(function(cell, i) {
+            cell.innerHTML = pageInfo.start + i + 1;
+        });
+    });
+});
+
+    </script>
     <?php destroysession(); ?>
