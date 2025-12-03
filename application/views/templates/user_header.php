@@ -2,23 +2,23 @@
 <html lang="en">
   <!-- [Head] start -->
   <head>
-    <title>Dashboard | Berry Dashboard Template</title>
+    <title>Gass Education - Temanmu Berjuang ! </title>
     <!-- [Meta] -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
       name="description"
-      content="Berry is trending dashboard template made using Bootstrap 5 design framework. Berry is available in Bootstrap, React, CodeIgniter, Angular,  and .net Technologies."
+      content="Gass Education adalah platform bimbingan belajar khusus sekolah kedinasan yang telah membantu ribuan pelajar di seluruh Indonesia mewujudkan mimpinya masuk perguruan tinggi kedinasan."
     />
     <meta
       name="keywords"
-      content="Bootstrap admin template, Dashboard UI Kit, Dashboard Template, Backend Panel, react dashboard, angular dashboard"
+      content="Sekolah kedinasan, CPNS, SKD, STIS, STMKG, STAN, IPDN, Kedinasan"
     />
     <meta name="author" content="codedthemes" />
 
     <!-- [Favicon] icon -->
-<link rel="icon" href="<?= base_url('assets/images/favicon.svg'); ?>" type="image/x-icon" />
+<link rel="icon" type="image/png" href="<?= base_url('assets/assets_lp/img/gass/logo0.png'); ?>">
 
 <!-- [Google Font] tetap pakai link eksternal -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" id="main-font-link" />

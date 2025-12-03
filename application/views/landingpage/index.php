@@ -11,6 +11,15 @@
     <!-- <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/css/bootstrap.css">
     <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/vendors/linericon/style.css"> -->
 
+    <meta
+      name="description"
+      content="Gass Education adalah platform bimbingan belajar khusus sekolah kedinasan yang telah membantu ribuan pelajar di seluruh Indonesia mewujudkan mimpinya masuk perguruan tinggi kedinasan."
+    />
+    <meta
+      name="keywords"
+      content="Sekolah kedinasan, CPNS, SKD, STIS, STMKG, STAN, IPDN, Kedinasan"
+    />
+
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css'); ?>" id="main-style-link" />
 <link rel="stylesheet" href="<?= base_url('assets/css/style-preset.css'); ?>" />
     <!-- <link rel="stylesheet" href="<?= base_url(); ?>assets/assets_lp/css/font-awesome.min.css"> -->
