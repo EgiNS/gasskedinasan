@@ -286,8 +286,8 @@ class User_tryout_model extends CI_Model
                         GROUP BY {$joinField}
                     ) t2 ON t1.{$joinField} = t2.{$joinField} AND t1.id = t2.min_id
                 ) ut ON {$onClause}
-                JOIN transactions tr ON tr.id = ut.transaction_id
-                WHERE tr.transaction_status = 'settlement'
+                LEFT JOIN transactions tr ON tr.id = ut.transaction_id
+                WHERE (ut.transaction_id IS NULL OR tr.transaction_status = 'settlement')
                 {$whereSourceType}
                 GROUP BY u.id
                 ORDER BY ut.total DESC, ut.tkp DESC, ut.tiu DESC, ut.twk DESC
@@ -396,13 +396,20 @@ class User_tryout_model extends CI_Model
 
     public function getPendapatan($slug)
     {
-        $this->db->select_sum('tr.gross_amount', 'total_amount');
-        $this->db->from("user_tryout_{$slug} ut");
-        $this->db->join('transactions tr', 'ut.transaction_id = tr.id', 'inner');
-        $this->db->where('ut.transaction_id IS NOT NULL');
-        $this->db->where('tr.status_code', 200);
+        $checkColumn = $this->db->query("SHOW COLUMNS FROM user_tryout_{$slug} LIKE 'transaction_id'");
+        $isTransaction = $checkColumn->num_rows() > 0;
 
-        $query = $this->db->get();
-        return $query->row()->total_amount ?? 0;
+        if ($isTransaction) {
+            $this->db->select('SUM(DISTINCT tr.gross_amount) AS total_amount');
+            $this->db->from("user_tryout_{$slug} ut");
+            $this->db->join('transactions tr', 'ut.transaction_id = tr.id', 'inner');
+            $this->db->where('ut.transaction_id IS NOT NULL');
+            $this->db->where('tr.status_code', 200);
+    
+            $query = $this->db->get();
+            return $query->row()->total_amount ?? 0;
+        } else {
+            return 0;
+        }
     }
 }

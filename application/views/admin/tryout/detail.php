@@ -114,7 +114,7 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Pendapatan</div>
                              <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= 'Rp ' . number_format($all_user[0]['jumlah_pembayaran'] ?? 0, 0, null, '.') . ',-'; ?></div> 
+                                <?= 'Rp ' . number_format($pendapatan ?? 0, 0, null, '.') . ',-'; ?></div> 
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
@@ -195,7 +195,7 @@
                             <th class="text-center" style="vertical-align: middle;">Urutan Daftar</th>
                             
                             <th class="text-center" style="vertical-align: middle;">Premium</th>
-                            <?php if (isset($all_user[0]['transaction_id'])) : ?>
+                            <?php if (!empty($all_user) && array_key_exists('transaction_id', $all_user[0])) : ?>
                                 <th class="text-center" style="vertical-align: middle;">Jumlah Bayar</th>
                             <?php endif; ?>
                             <?php if ($tryout['kode_refferal']) : ?>
@@ -237,7 +237,7 @@
                                         <input type="checkbox" disabled>
                                     <?php endif; ?>
                                 </td>
-                            <?php if (isset($au['transaction_id'])) : ?>
+                            <?php if ((array_key_exists('transaction_id', $au))) : ?>
                                 <th class="text-center"><?= number_format($au['gross_amount']?? 0, 0, ',', '.'); ?></th>
                             <?php endif ?>
                             <?php if ($tryout['kode_refferal']) : ?>
