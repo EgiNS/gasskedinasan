@@ -112,24 +112,25 @@ class Tryout extends CI_Controller
 
         $soal_starting_three = null;
         $soal_starting_three = $this->soal->get('many', ['id >= ' => 1, 'id <= ' => 3], $slug);
-        $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id);
-        
+        $pendaftar = $this->user_tryout->getByTryoutIdWithTransaction($slug, $user->id, $user);
+
         $payment_status = '';
-        
+
         if ($pendaftar) {
-            if (!$pendaftar['freemium']){
+            if (isset($pendaftar['transaction_id'])) {
+                if ($pendaftar['transaction_status'] == 'settlement') {
+                    $payment_status = 'settlement';
+                } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
+                    $payment_status = 'pending';
+                }
+            } else {
                 $payment_status = "free";
-            }
-            else if ($pendaftar['transaction_status'] == 'settlement') {
-                $payment_status = 'settlement';
-    
-            } else if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] > date('Y-m-d H:i:s')) {
-                $payment_status = 'pending';
+                
             }
         } else {
             $payment_status = 'expired';
         }
-        
+
 
         $data = [
             'title' => 'Detail ' . $title,
@@ -141,14 +142,15 @@ class Tryout extends CI_Controller
             'slug' => $slug,
             // 'soal_nomor_satu' => $this->soal->get('one', ['id' => 1], $slug),
             'soal_starting_three' => $soal_starting_three,
-            'payment_status'=> $payment_status
-          
+            'payment_status' => $payment_status
+
         ];
 
         $this->load->view('templates/user_header', $data);
         $this->load->view('templates/user_sidebar', $data);
         $this->load->view('templates/user_topbar', $data);
-        $this->load->view('tryout/detail/index', $data);$this->load->view('templates/user_footer');
+        $this->load->view('tryout/detail/index', $data);
+        $this->load->view('templates/user_footer');
 
         $jawaban_user = $this->jawaban->get('one', ['email' => $user->email], $slug);
 
@@ -518,12 +520,12 @@ class Tryout extends CI_Controller
         $all_tryout = $this->tryout->get('many', ['for_bimbel' => 0]);
         $tryout = [];
         $mytryout = [];
-        
+
         foreach ($all_tryout as $to) {
             $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $to['slug'], '*', $user);
             if ($user_tryout) {
                 if (isset($user_tryout['user_id'])) {
-                    $transaction = $this->transaction->get('one', ['id'=>$user_tryout['transaction_id']]);
+                    $transaction = $this->transaction->get('one', ['id' => $user_tryout['transaction_id']]);
                     if ($transaction) {
                         if ($transaction['transaction_status'] == 'settlement') {
                             array_push($tryout, $to);
@@ -545,7 +547,7 @@ class Tryout extends CI_Controller
 
         $data['tryout'] = $tryout;
         $data['mytryout'] = $mytryout;
-        
+
         $this->user->update(['last_login_at' => date('Y-m-d H:i:s')], ['email' => $this->loginUser->email]);
 
         $this->load->view('templates/user_header', $data);
@@ -582,30 +584,68 @@ class Tryout extends CI_Controller
     public function free($slug)
     {
         $user = $this->loginUser;
-        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $slug);
-        if ($user_tryout && $user_tryout['freemium'] == 1) {
+        $table = 'user_tryout_' . $slug;
 
-            $this->user_tryout->update(
-                [ 'freemium' => 0],
-                ['user_id' => $user->id],
-                $slug);
-                $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
-            }
-        else if ($user_tryout && $user_tryout['freemium'] == 0) {
-            $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
-        }
-        else {
+        // Cek kolom yang ada di tabel
+        $fields = $this->db->list_fields($table);
+        $has_user_id = in_array('user_id', $fields);
+        $has_email = in_array('email', $fields);
+
+        // Get user tryout berdasarkan kolom yang tersedia
+        $tryout = $this->tryout->get('one', ['slug' => $slug]);
+        $user_tryout = $this->user_tryout->get('one', ['user_id' => $user->id], $slug, '*', $user);
+        $data = [];
+        if ($has_user_id) {
             $data = [
                 'user_id' => $user->id,
                 'token' => 11111,
                 'status' => 0
             ];
-            $this->user_tryout->insert($data, $slug);
-            $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+        } else if ($has_email) {
+            $data = [
+                'email' => $user->email,
+                'token' => 11111,
+                'status' => 0
+            ];
+        }
+        if ($tryout['paid'] == 1) {
+            if ($user_tryout && $user_tryout['freemium'] == 1) {
+                // Update freemium berdasarkan kolom yang ada
+                if ($has_user_id) {
+                    $this->user_tryout->update(
+                        ['freemium' => 0],
+                        ['user_id' => $user->id],
+                        $slug
+                    );
+                } else if ($has_email) {
+                    $this->user_tryout->update(
+                        ['freemium' => 0],
+                        ['email' => $user->email],
+                        $slug
+                    );
+                }
+                $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+            } else if ($user_tryout && $user_tryout['freemium'] == 0) {
+                $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
+            } else {
+                // Insert data berdasarkan kolom yang ada
+                $data['freemium'] = 0;
+                $this->user_tryout->insert($data, $slug);
+                $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+            }
+        } else {
+            if ($user_tryout) {
+                $this->session->set_flashdata('error', "Anda sudah terdaftar pada tryout ini");
+            } else {
+                // Insert data berdasarkan kolom yang ada
+                $data['freemium'] = 1;
+                $this->user_tryout->insert($data, $slug);
+                $this->session->set_flashdata('success', "melakukan pendaftaran pada tryout ini");
+            }
         }
     }
 
-    
+
 
     public function freemium()
     {
@@ -671,25 +711,24 @@ class Tryout extends CI_Controller
             'transaction_status' => 'pending'
         ];
         try {
-            
+
             $this->db->trans_begin();
             $transaction_id = $this->transaction->insert($data);
             if ($pendaftar['transaction_status'] == 'pending' && $pendaftar['expiry_time'] <= date('Y-m-d H:i:s')) {
                 $this->user_tryout->update(
-                    ['transaction_id'=> $transaction_id ],
-                    ['id'=> $pendaftar['id'] ],
+                    ['transaction_id' => $transaction_id],
+                    ['id' => $pendaftar['id']],
                     $tryout['slug']
                 );
             } else {
 
-                        $this->user_tryout->insert([
-            'token' => 11111,
-            'status' => 0,
-            'freemium' => 1,
-            'user_id' => $user->id,
-            'transaction_id' => $transaction_id
-        ], $tryout['slug']);
-
+                $this->user_tryout->insert([
+                    'token' => 11111,
+                    'status' => 0,
+                    'freemium' => 1,
+                    'user_id' => $user->id,
+                    'transaction_id' => $transaction_id
+                ], $tryout['slug']);
             }
 
             $params = array(
@@ -717,8 +756,6 @@ class Tryout extends CI_Controller
             log_message('error', 'Gagal buat transaksi: ' . $th->getMessage());
             throw $th;
         }
-
-
     }
 
     public function upgradefreemium()
@@ -928,7 +965,7 @@ class Tryout extends CI_Controller
         }
     }
 
-    public function detail_paket_to( $id )
+    public function detail_paket_to($id)
     {
 
         $submenu_parent = 10;
@@ -957,10 +994,4 @@ class Tryout extends CI_Controller
         $this->load->view('tryout/beli_ilmu/paket_to/detail', $data);
         $this->load->view('templates/user_footer');
     }
-
-   
-
-
-    
-
 }

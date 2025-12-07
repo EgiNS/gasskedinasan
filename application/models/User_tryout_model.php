@@ -38,7 +38,7 @@ class User_tryout_model extends CI_Model
         $this->db->select($select);
         return $this->db->get($this->table . $slug)->result_array();
     }
-    public function getByTryoutIdWithTransaction($slug, $user_id, $user_email = null)
+    public function getByTryoutIdWithTransaction($slug, $user_id, $user =  null)
     {
         $user_tryout_table = $this->table . $slug;
         
@@ -60,8 +60,8 @@ class User_tryout_model extends CI_Model
         // Use user_id if column exists, otherwise use email
         if ($has_user_id) {
             $this->db->where($user_tryout_table . '.user_id', $user_id);
-        } else if ($has_email && $user_email !== null) {
-            $this->db->where($user_tryout_table . '.email', $user_email);
+        } else if ($has_email && $user !== null) {
+            $this->db->where($user_tryout_table . '.email', $user->email);
         }
 
         $query = $this->db->get();

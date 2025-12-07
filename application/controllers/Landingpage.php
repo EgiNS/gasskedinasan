@@ -31,4 +31,8 @@ class Landingpage extends CI_Controller
         
         $this->load->view('landingpage/index', $data);
     }
+    public function refund_policy()
+    {
+        $this->load->view('landingpage/refund-policy/index');
+    }
 }
