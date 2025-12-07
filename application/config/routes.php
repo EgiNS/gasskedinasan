@@ -51,6 +51,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 */
 
 $route['default_controller'] = 'landingpage';
+
 // $route['default_controller'] = 'auth';
 // $route['(:any)'] = 'maintenance';
 $route['admin/tryout'] = 'admins/Tryout';
@@ -78,6 +79,7 @@ $route['tryout/paket-to/(:any)'] = 'PaketTo/detail/$1';
 $route['tryout/events/registration'] = 'Event/event_registration';
 $route['tryout/events/(:any)'] = 'Event/detail_event/$1';
 $route['tryout/my-orders'] = 'MyOrder/index';
+$route['refund-policy'] = 'landingpage/refund_policy';
 
 // $route['midtrans/snap/token'] = 'midtrans/snap/token';
 // $route['processing/(:any)'] = 'frontend/processing/$1';

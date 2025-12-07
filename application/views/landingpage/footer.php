@@ -31,12 +31,17 @@
         <div class="w-50 footer-info-content-section">
         <img style="width: 70px; margin-bottom: 20px;" src="<?= base_url('assets/assets_lp/img/gass/Gass_Putih.png') ?>" alt="">
             <p style="font-size: 18px;">Platform resmi bimbingan belajar khusus perguruan tinggi kedinasan.</p>
+            <div class="mt-3">
+                <a href="<?= base_url('refund-policy') ?>" class="text-white" style="font-size: 16px; text-decoration: underline;">
+                    Kebijakan Refund
+                </a>
+            </div>
         </div>
         <div class="w-50 footer-kontak-content-section">
             <h6 class="gk-footer-h6">Kontak</h6>
             <ul class="d-flex flex-column" style="list-style-type: none; padding: 0; gap:10px;">
                 <li class="gk-li-size"><span class="me-2"><img src="assets/assets_lp/img/icon/Instagram - Original.svg" alt=""></span>Instagram: @gasskedinasan</li>
-                <li class="gk-li-size"><span class="me-2"><img src="assets/assets_lp/img/icon/phone.svg" alt=""></span>WhatsApp: (0542) 123456</li>
+                <li class="gk-li-size"><span class="me-2"><img src="assets/assets_lp/img/icon/phone.svg" alt=""></span>WhatsApp: +62 831-4043-4133</li>
                 <li class="gk-li-size"><span class="me-2"><img src="assets/assets_lp/img/icon/message-dots.svg" alt=""></span>Email: gasskedinasan@gmail.com</li>
             </ul>
         </div>
