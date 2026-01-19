@@ -15,6 +15,7 @@ class Auth extends CI_Controller
         $this->load->model('Token_settings_model', 'token_settings');
         $this->load->model('Email_settings_model', 'email_settings');
         $this->load->model('User_tryout_model', 'user_tryout');
+        $this->load->model('Sessions_model', 'Sessions_model');
         $this->loginUser = $this->user->getLoginUser();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -696,61 +697,23 @@ class Auth extends CI_Controller
         $user = $this->user->get('one', ['email' => $email]);
         //jika user ada
         if ($user) {
-            if (!empty($user['session_token']) && $user['role_id'] != 1) {
-                $inactive_limit = 2 * 60 * 60; // 2 jam dalam detik
-                $last_ts = $last_ts = strtotime($user['last_login_at'] . ' +7 hours');
-                                
-                // var_dump(time(), $inactive_limit, $user['last_login_at'], $last_ts, time() - $last_ts);
-                // var_dump((time() - $last_ts) > $inactive_limit);
-                // die;
-
-                if (time() - $last_ts > $inactive_limit) {
-                    if ($user['is_active'] == 1) {
-                        //cek password
-                        if (password_verify($password, $user['password'])) {
-                            $token = bin2hex(random_bytes(32));
-
-                            $this->user->update(['session_token' => $token, 'last_login_at' => date('Y-m-d H:i:s')], ['email' => $email]);
-                            
-                            $data = [
-                                'id' => $user['id'],
-                                'email' => $user['email'],
-                                'role_id' => $user['role_id'],
-                                'session_token' => $token
-                            ];
-                            $this->session->set_userdata($data);
-
-                            // $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
-
-                            //jika benar
-                            if ($user['role_id'] == 1) {
-                                redirect('admin');
-                            } else if ($user['role_id'] == 8) {
-                                redirect('bimbel/tryout');
-                            } else {
-                                redirect('user/dashboard');
-                            }
-                        } else {
-                            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
-                            $this->session->set_flashdata('auth_email', $user['email']);
-                            redirect('auth');
-                        }
-                    } else {
-                        $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Email ini belum diaktivasi. Silakan aktivasi melalui email!</div>');
-                        $this->session->set_flashdata('auth_email', $user['email']);
-                        redirect('auth');
-                    }
-                } else {
-                    $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Akun ini sedang aktif di perangkat lain.</div>');
-                    $this->session->set_flashdata('auth_email', $user['email']);
-                    redirect('auth');
-                }
-
-            } else {
-                //jika user aktif
                 if ($user['is_active'] == 1) {
                     //cek password
                     if (password_verify($password, $user['password'])) {
+                        // revoke session idle
+                        $this->Sessions_model->revokeIdleSessions($user['id'], 3600);
+
+                        // hitung session aktif
+                        $activeSessions = $this->Sessions_model
+                            ->countActiveSessions($user['id'], 3600);
+
+                        if ($activeSessions >= 2) {
+                            $this->session->set_flashdata('message',
+                                '<div class="alert alert-danger">Akun sedang login di 2 perangkat lain!</div>'
+                            );
+                            redirect('auth');
+                        }
+
                         $token = bin2hex(random_bytes(32));
 
                         $this->user->update(['session_token' => $token, 'last_login_at' => date('Y-m-d H:i:s')], ['email' => $email]);
@@ -762,6 +725,24 @@ class Auth extends CI_Controller
                             'session_token' => $token
                         ];
                         $this->session->set_userdata($data);
+
+                        // simpan session
+                        $this->Sessions_model->create([
+                            'user_id' => $user['id'],
+                            'session_token' => $token,
+                            'device_id' => $this->_deviceId(),
+                            'device_info' => $this->input->user_agent(),
+                            'ip_address' => $this->input->ip_address(),
+                            'last_activity_at' => date('Y-m-d H:i:s'),
+                            'last_activity_ts'  => time(),
+                            'created_at' => date('Y-m-d H:i:s'),
+                        ]);
+
+                        // simpan ke CI session
+                        $this->session->set_userdata([
+                            'user_id' => $user->id,
+                            'session_token' => $token
+                        ]);
 
                         // $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
 
@@ -783,7 +764,92 @@ class Auth extends CI_Controller
                     $this->session->set_flashdata('auth_email', $user['email']);
                     redirect('auth');
                 }
-            }
+
+            // if (!empty($user['session_token']) && $user['role_id'] != 1) {
+            //     $inactive_limit = 2 * 60 * 60; // 2 jam dalam detik
+            //     $last_ts = $last_ts = strtotime($user['last_login_at'] . ' +7 hours');
+                                
+
+            //     if (time() - $last_ts > $inactive_limit) {
+            //         if ($user['is_active'] == 1) {
+            //             //cek password
+            //             if (password_verify($password, $user['password'])) {
+            //                 $token = bin2hex(random_bytes(32));
+
+            //                 $this->user->update(['session_token' => $token, 'last_login_at' => date('Y-m-d H:i:s')], ['email' => $email]);
+                            
+            //                 $data = [
+            //                     'id' => $user['id'],
+            //                     'email' => $user['email'],
+            //                     'role_id' => $user['role_id'],
+            //                     'session_token' => $token
+            //                 ];
+            //                 $this->session->set_userdata($data);
+
+            //                 // $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
+
+            //                 //jika benar
+            //                 if ($user['role_id'] == 1) {
+            //                     redirect('admin');
+            //                 } else if ($user['role_id'] == 8) {
+            //                     redirect('bimbel/tryout');
+            //                 } else {
+            //                     redirect('user/dashboard');
+            //                 }
+            //             } else {
+            //                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
+            //                 $this->session->set_flashdata('auth_email', $user['email']);
+            //                 redirect('auth');
+            //             }
+            //         } else {
+            //             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Email ini belum diaktivasi. Silakan aktivasi melalui email!</div>');
+            //             $this->session->set_flashdata('auth_email', $user['email']);
+            //             redirect('auth');
+            //         }
+            //     } else {
+            //         $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Akun ini sedang aktif di perangkat lain.</div>');
+            //         $this->session->set_flashdata('auth_email', $user['email']);
+            //         redirect('auth');
+            //     }
+
+            // } else {
+            //     //jika user aktif
+            //     if ($user['is_active'] == 1) {
+            //         //cek password
+            //         if (password_verify($password, $user['password'])) {
+            //             $token = bin2hex(random_bytes(32));
+
+            //             $this->user->update(['session_token' => $token, 'last_login_at' => date('Y-m-d H:i:s')], ['email' => $email]);
+                        
+            //             $data = [
+            //                 'id' => $user['id'],
+            //                 'email' => $user['email'],
+            //                 'role_id' => $user['role_id'],
+            //                 'session_token' => $token
+            //             ];
+            //             $this->session->set_userdata($data);
+
+            //             // $this->user_tryout->update(['ip' => $_SERVER['REMOTE_ADDR']], ['email' => $email], 'focus_matematika_stis_series_1');
+
+            //             //jika benar
+            //             if ($user['role_id'] == 1) {
+            //                 redirect('admin');
+            //             } else if ($user['role_id'] == 8) {
+            //                 redirect('bimbel/tryout');
+            //             } else {
+            //                 redirect('user/dashboard');
+            //             }
+            //         } else {
+            //             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
+            //             $this->session->set_flashdata('auth_email', $user['email']);
+            //             redirect('auth');
+            //         }
+            //     } else {
+            //         $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Email ini belum diaktivasi!</div>');
+            //         $this->session->set_flashdata('auth_email', $user['email']);
+            //         redirect('auth');
+            //     }
+            // }
         } else {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Email tidak terdaftar!</div>');
             $this->session->set_flashdata('auth_email', $user['email']);
@@ -796,9 +862,16 @@ class Auth extends CI_Controller
         $email = $this->session->userdata('email');
         $this->user->update(['session_token' => NULL], ['email' => $email]);
 
-        $this->session->unset_userdata('email');
-        $this->session->unset_userdata('role_id');
-        $this->session->unset_userdata('session_token');
+        $token = $this->session->userdata('session_token');
+
+        if ($token) {
+            $this->Sessions_model->revoke($token);
+        }
+
+        // $this->session->unset_userdata('email');
+        // $this->session->unset_userdata('role_id');
+        // $this->session->unset_userdata('session_token');
+        $this->session->sess_destroy();
 
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Kamu telah berhasil log out!</div>');
         redirect('auth');
@@ -929,5 +1002,13 @@ class Auth extends CI_Controller
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Password has been changed! Please login.</div>');
             redirect('auth');
         }
+    }
+
+    private function _deviceId()
+    {
+        return sha1(
+            $this->input->user_agent() . '|' .
+            $this->input->ip_address()
+        );
     }
 }

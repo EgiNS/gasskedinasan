@@ -67,7 +67,8 @@
                     "Sekolah Tinggi Meteorologi Klimatologi dan Geofisika (STMKG)",
                     "Politeknik Pengayoman Indonesia (Poltekpin)",
                     "Sekolah Tinggi Ilmu Pelayaran (STIP)",
-                    "Politeknik Transportasi Darat Indonesia (PTDI-STTD)"
+                    "Politeknik Transportasi Darat Indonesia (PTDI-STTD)",
+                    "CPNS Umum"
                   ]; ?>
                     <label for="kedinasan_tujuan" class="col-sm-2 col-form-label">Kedinasan Tujuan</label>
                     <div class="col-sm-10">

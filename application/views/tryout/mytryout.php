@@ -101,7 +101,7 @@
                             <?php if ($myt['freemium'] == 1) : ?>
                             <a href="<?= $tryout[$i]['link_premium']; ?>" target="_blank"><?= $tryout[$i]['link_premium']; ?></a>
                             <?php else : ?>
-                            <span class="text-muted">-</span>
+                            <a href="<?= $tryout[$i]['link']; ?>" target="_blank"><?= $tryout[$i]['link']; ?></a>
                             <?php endif; ?>
                         <?php else : ?>
                             <span class="text-muted">-</span>

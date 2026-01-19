@@ -18,7 +18,7 @@
   .ratio-3x4 {
   position: relative;
   width: 100%;
-  padding-top: calc(2 / 3 * 100%); /* 3:4 ratio (tinggi > lebar) */
+  padding-top: calc(3 / 4 * 100%); /* 3:4 ratio (tinggi > lebar) */
 }
 .ratio-3x4 > * {
   position: absolute;

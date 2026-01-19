@@ -112,6 +112,7 @@
                                     <option value="Politeknik Pengayoman Indonesia (Poltekpin)">Politeknik Pengayoman Indonesia (Poltekpin)</option>
                                     <option value="Sekolah Tinggi Ilmu Pelayaran (STIP)">Sekolah Tinggi Ilmu Pelayaran (STIP)</option>
                                     <option value="Politeknik Transportasi Darat Indonesia (PTDI-STTD)">Politeknik Transportasi Darat Indonesia (PTDI-STTD)</option>
+                                    <option value="CPNS Umum">CPNS Umum</option>
                                 </select>
                                 <?= form_error('kedinasan', '<small class="text-danger pl-3">', '</small>'); ?>
                             </div>
