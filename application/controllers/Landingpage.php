@@ -12,20 +12,24 @@ class Landingpage extends CI_Controller
 
     public function index()
     {
-        $show = $this->db->get('show_to_landingpage')->row();
-
-        // Cek jika datanya ada
-        if ($show) {
-            // Ambil data tryout berdasarkan to_id
-            $tryout = $this->tryout->get('one', ['id' => $show->to_id]);
-        } else {
-            $tryout = null;
-        }
+        $shows = $this->db
+            ->select('
+                s.id AS show_id,
+                s.keterangan AS show_keterangan,
+                s.to_id,
+                t.id AS tryout_id,
+                t.name,
+                t.gambar
+            ')
+            ->from('show_to_landingpage s')
+            ->join('tryout t', 't.id = s.to_id')
+            ->order_by('s.id', 'DESC')
+            ->get()
+            ->result();
         
         $role = check_role();
         $data = [
-            'show' => $show,
-            'tryout' => $tryout,
+            'shows' => $shows,
             'role' => $role,
         ];
         

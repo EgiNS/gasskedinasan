@@ -81,9 +81,15 @@
         </div>
 
         <div class="btn-group mt-3">
-            <button type="button" class="btn rounded btn-secondary btn-sm mb-3"
-                data-id="<?= $tryout['id']; ?>" data-bs-toggle="modal" data-bs-target="#LandingModal">
-                Tampilkan di Landing</button>
+            <?php if($show): ?>
+                <button type="button" class="btn rounded btn-danger btn-sm mb-3"
+                    data-id="<?= $tryout['id']; ?>" data-bs-toggle="modal" data-bs-target="#LandingModalDel">
+                    Hapus di Landing</button>
+            <?php else: ?>
+                <button type="button" class="btn rounded btn-secondary btn-sm mb-3"
+                    data-id="<?= $tryout['id']; ?>" data-bs-toggle="modal" data-bs-target="#LandingModal">
+                    Tampilkan di Landing</button>
+            <?php endif; ?>
         </div>
     </div>
     <!-- Card Content -->
@@ -452,7 +458,6 @@
                     <label for="ket_display">Isikan keterangan</label>
                    <textarea class="form-control" name="ket_display" id="ket_display" cols="10" rows="5"
                         placeholder="Keterangan tryout... (opsional)">
-                        <?= isset($show->keterangan) ? htmlspecialchars($show->keterangan) : '' ?>
                     </textarea>
                 </div>
                 <div class="modal-footer">
@@ -463,6 +468,29 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="LandingModalDel" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" action="<?= base_url('admin/delete_from_landing/' . $tryout['id']); ?>">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    Yakin ingin menghapus tryout ini dari landing page?
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Hapus</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function () {

@@ -4053,8 +4053,6 @@ class Admin extends CI_Controller
         $to_id      = $this->input->post('to_id');
         $keterangan = $this->input->post('ket_display');
 
-        $this->db->truncate('show_to_landingpage');
-
         $data = [
             'to_id'      => $to_id,
             'keterangan' => $keterangan
@@ -4069,6 +4067,16 @@ class Admin extends CI_Controller
         }
 
         redirect('admin/tryout/' . $slug);
+    }
+
+    public function delete_from_landing($to_id)
+    {
+        $this->db->where('to_id', $to_id)
+                ->delete('show_to_landingpage');
+
+        $this->session->set_flashdata('success', 'Tryout berhasil dihapus dari landing page!');
+
+        redirect($_SERVER['HTTP_REFERER']);
     }
 
     public function getsoal()

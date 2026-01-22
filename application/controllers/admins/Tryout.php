@@ -356,7 +356,7 @@ class Tryout extends CI_Controller {
             'persentase_selesai' => $persentase,
             'slug' => $slug,
             'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode'],
-            'show' => $this->db->get('show_to_landingpage')->row(),
+            'show' => $this->db->where('to_id', $tryout['id'])->get('show_to_landingpage')->row(),
             'pendapatan' => $this->user_tryout->getPendapatan($slug),
         ];
 

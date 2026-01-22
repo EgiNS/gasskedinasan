@@ -58,28 +58,38 @@
     </div>
 
     <!-- Bagian Tryout -->
-    <?php if($show): ?>
-    <div class="d-flex flex-column flex-lg-row justify-content-start align-items-center responsive-gap">
+    <?php if (!empty($shows)): ?>
+        <?php foreach ($shows as $item): ?>
 
-        <!-- Gambar -->
-        <div class="w-100 w-lg-50 text-center mb-4 mb-lg-0">
-            <img class="w-75 w-lg-75" src="<?= base_url('assets/img/' . $tryout["gambar"]); ?>" alt="Banner">
-        </div>
+            <div class="d-flex flex-column flex-lg-row justify-content-start align-items-center responsive-gap mb-5">
 
-        <!-- Keterangan -->
-        <div class="w-100 w-lg-50 text-center text-lg-start">
-            <h3 class="text-blue mb-3" style="font-size: 20px;"><?= $tryout['name'] ?></h3>
+                <!-- Gambar -->
+                <div class="w-100 w-lg-50 text-center mb-4 mb-lg-0">
+                    <img class="w-75 w-lg-75"
+                        src="<?= base_url('assets/img/' . $item->gambar); ?>"
+                        alt="Banner">
+                </div>
 
-            <div class="keterangan-wrapper mb-4" style="font-size:18px; line-height:1.6;">
-                <?= $show->keterangan ?>
+                <!-- Keterangan -->
+                <div class="w-100 w-lg-50 text-center text-lg-start">
+                    <h3 class="text-blue mb-3" style="font-size: 20px;">
+                        <?= $item->name ?>
+                    </h3>
+
+                    <div class="keterangan-wrapper mb-4" style="font-size:18px; line-height:1.6;">
+                        <?= $item->show_keterangan ?>
+                    </div>
+
+                    <a href="<?= base_url('auth/registration') ?>"
+                    class="btn btn-blue"
+                    style="padding: 16px 28px; font-size: 16px;">
+                        Daftar Sekarang <span><i class="fas fa-arrow-right"></i></span>
+                    </a>
+                </div>
+
             </div>
 
-            <a href="<?= base_url("/auth/registration") ?>" class="btn btn-blue" style="padding: 16px 28px; font-size: 16px;">
-                Daftar Sekarang <span><i class="fas fa-arrow-right"></i></span>
-            </a>
-        </div>
-
-    </div>
+        <?php endforeach; ?>
     <?php endif; ?>
 
 </div>
