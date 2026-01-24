@@ -422,7 +422,7 @@ class Admin extends CI_Controller
         $email = $this->input->post('email');
         $role_id = $this->input->post('role_id');
 
-        print_r($email, $role_id);
+        // print_r($email, $role_id);
 
         $user = $this->user->get('one', ['email' => $email]);
 
@@ -480,6 +480,20 @@ class Admin extends CI_Controller
                     ];
 
                     $this->user_tryout->insert($data_user, $l['slug']);
+                }
+
+                $to_assign = $this->input->post('paket_to_ids');
+                foreach ($to_assign as $id) {
+                    $the_to = $this->tryout->get('one', ['id' => $id]);
+
+                    $data_user = [
+                        'email' => $email,
+                        'token' => 11111,
+                        'status' => 0,
+                        'freemium' => 1
+                    ];
+
+                    $this->user_tryout->insert($data_user, $the_to['slug']);
                 }
             } else if ($role_id == 4) {
                 $latsol_mtk = $this->latsol->get('many', ['jenis' => 4]);
@@ -611,7 +625,8 @@ class Admin extends CI_Controller
             'email' => $email,
             'role' => $role,
             'all_role' => $all_role,
-            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode']
+            'kode' => $this->kode_settings->get('one', ['id' => 1], array('kode'))['kode'],
+            'tryout_available' => $this->tryout->getAll()
         ];
 
         $this->load->view('templates/user_header', $data);

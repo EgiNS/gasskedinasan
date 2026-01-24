@@ -41,6 +41,15 @@
         <a id="lock-role" href="#" data-kode="<?= $kode; ?>"><i class="fa-solid fa-lock"></i></a> <a
             class="unlock-role d-none"><i class="fa-solid fa-lock-open"></i></a>
     </div>
+
+    <div class="form-group mb-3" id="tryout-wrapper">
+      <select name="paket_to_ids[]" class="select2" multiple>
+        <?php foreach ($tryout_available as $to): ?>
+            <option value="<?= $to['id'] ?>"><?= $to['name'] ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
     <div class="modal-footer">
         <button type="submit" class="btn btn-primary" id="update-user-role" disabled>Update</button>
     </div>
@@ -48,4 +57,37 @@
 
 </div>
 </div>
+
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="<?= base_url('assets/plugins/select2/js/select2.js'); ?>"></script>
+<script>
+  $('.select2').select2({
+      placeholder: 'Pilih Tryout...',
+        width: '100%',
+        theme: 'bootstrap-5'
+    });
+</script>
+<script>
+$(document).ready(function () {
+    const $roleSelect = $('#role_id');
+    const $tryoutWrapper = $('#tryout-wrapper');
+
+    function toggleTryout() {
+        if ($roleSelect.val() === '3') {
+            $tryoutWrapper.removeClass('d-none');
+        } else {
+            $tryoutWrapper.addClass('d-none');
+        }
+    }
+
+    // cek saat page load
+    toggleTryout();
+
+    // kalau suatu saat role di-unlock
+    $roleSelect.on('change', function () {
+        toggleTryout();
+    });
+});
+</script>
+
 <?php destroysession(); ?>
